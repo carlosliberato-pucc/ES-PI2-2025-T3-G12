@@ -1,5 +1,6 @@
 # Projeto Integrador II - Engenharia de Software
 
+<center>
 ## 📌 Informações Gerais
 - **Disciplina:** Projeto Integrador II  
 - **Curso:** Engenharia de Software  
@@ -13,5 +14,5 @@
 - Gabriel Coutinho  
 - Leonardo Amad
 - Nicolas Reis  
-
+</center>
 
