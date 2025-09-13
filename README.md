@@ -17,10 +17,10 @@
 
 ---
 
-## 🌟 Sobre o Projeto – NotaDez
-O **NotaDez** é uma aplicação web inovadora voltada para **docentes do ensino superior**, com o objetivo de gerenciar notas e desempenho acadêmico de seus estudantes de forma **intuitiva, segura e automatizada**.  
+## 🌟 Sobre o Projeto – ClassBoard
+O **ClassBoard** é uma aplicação web inovadora voltada para **docentes do ensino superior**, com o objetivo de gerenciar notas e desempenho acadêmico de seus estudantes de forma **intuitiva, segura e automatizada**.  
 
-Atualmente, muitos professores dependem de planilhas como Excel para registrar notas, o que limita a integração com sistemas institucionais e dificulta o gerenciamento eficiente ao longo do tempo. O NotaDez resolve esse problema, permitindo que o docente:
+Atualmente, muitos professores dependem de planilhas como Excel para registrar notas, o que limita a integração com sistemas institucionais e dificulta o gerenciamento eficiente ao longo do tempo. O ClassBoard resolve esse problema, permitindo que o docente:
 
 - Cadastre instituições, disciplinas e turmas com facilidade;  
 - Importe e gerencie listas de estudantes via CSV ou JSON;  
