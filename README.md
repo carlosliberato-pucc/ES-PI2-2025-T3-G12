@@ -17,7 +17,12 @@
 
 ---
 
-## 🌟 Sobre o Projeto – ClassBoard
+## 🌟 Projeto ClassBoard
+
+<p align="center">
+  <img src="Visual_Identity/logotype.png" alt="Logo ClassBoard" width="200"/>
+</p>
+
 O **ClassBoard** é uma aplicação web inovadora voltada para **docentes do ensino superior**, com o objetivo de gerenciar notas e desempenho acadêmico de seus estudantes de forma **intuitiva, segura e automatizada**.  
 
 Atualmente, muitos professores dependem de planilhas como Excel para registrar notas, o que limita a integração com sistemas institucionais e dificulta o gerenciamento eficiente ao longo do tempo. O ClassBoard resolve esse problema, permitindo que o docente:
