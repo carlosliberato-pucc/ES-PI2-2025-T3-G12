@@ -4,7 +4,7 @@
 - **Disciplina:** Projeto Integrador II  
 - **Curso:** Engenharia de Software  
 - **Semestre:** 2025/2  
-- **Turma:** T2  
+- **Turma:** T3  
 - **Grupo:** G12  
 - **Professor:** Lua Marcelo Muriana  
 
