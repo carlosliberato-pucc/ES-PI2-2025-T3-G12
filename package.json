@@ -1,0 +1,31 @@
+{
+  "name": "es-pi2-2025-t3-g12",
+  "version": "1.0.0",
+  "description": "- **Disciplina:** Projeto Integrador II  \r - **Curso:** Engenharia de Software  \r - **Semestre:** 2025/2  \r - **Turma:** T3  \r - **Grupo:** G12  \r - **Professor:** Lua Marcelo Muriana",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/http/server.js",
+    "dev": "npx ts-node src/http/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.6.0",
+    "typescript": "^5.9.2"
+  }
+}

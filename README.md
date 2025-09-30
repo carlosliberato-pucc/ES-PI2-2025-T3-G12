@@ -6,7 +6,7 @@
 - **Semestre:** 2025/2  
 - **Turma:** T3  
 - **Grupo:** G12  
-- **Professor:** Lua Marcelo Muriana  
+- **Professor:** Luâ Marcelo Muriana  
 
 ## 👨‍💻 Integrantes do Grupo
 - Carlos Liberato  
