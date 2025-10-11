@@ -1,56 +1,58 @@
 "use strict";
-// src/script/sign_in.ts
-// NOTA: Não podemos pegar o loginForm, pois ele não existe no seu HTML atual.
-// Apenas pegamos o botão e a DIV de mensagem.
+// Desenvolvido por Carlos Liberato
+// Captura o botão de login pelo ID "login-btn"
 const signinBtn = document.getElementById("login-btn");
-const messageDiv_SIN = document.getElementById("signin-message"); // Este ID DEVE EXISTIR no HTML!
-// Adiciona um evento de CLICK ao botão.
+// Captura o elemento DIV onde as mensagens de status (sucesso/erro) serão exibidas.
+const messageDiv_SIN = document.getElementById("signin-message");
+// Adiciona um "ouvinte" para o evento de clique no botão de login.
 signinBtn.addEventListener("click", async (e) => {
-    // Usamos e.preventDefault() para evitar que o navegador tente submeter algo,
-    // embora seja menos crítico sem a tag <form>.
+    // Impede que o botão execute qualquer ação padrão do navegador (como recarregar a página).
     e.preventDefault();
-    // Pega os valores dos campos de email e senha
+    // Pega os valores digitados nos campos de e-mail e senha.
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    // 1. Validação de campos vazios
+    // Verifica se ambos os campos estão preenchidos ANTES de enviar ao servidor.
     if (!email || !password) {
         messageDiv_SIN.textContent = "Por favor, preencha todos os campos.";
         messageDiv_SIN.style.color = "red";
-        return;
+        messageDiv_SIN.style.fontSize = "12px";
+        return; // Sai da função, não prossegue.
     }
-    // Feedback visual
-    signinBtn.disabled = true;
+    //Feedback Visual
+    signinBtn.disabled = true; // Desabilita o botão para evitar cliques duplicados.
     messageDiv_SIN.textContent = "Tentando entrar...";
-    messageDiv_SIN.style.color = "blue";
+    messageDiv_SIN.style.color = "blue"; // Alerta visual que está em andamento.
+    messageDiv_SIN.style.fontSize = "12px";
     try {
-        // 2. Faz a requisição POST para a API de login
+        // Envia uma requisição POST para o endpoint de login do seu servidor Node.js.
         const response = await fetch("http://localhost:3000/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            // ENVIO CORRETO: 'senha' (igual ao Controller)
+            // Envia e-mail e a senha (correta no backend: 'senha') em formato JSON.
             body: JSON.stringify({ email, senha: password }),
         });
-        // Pega a resposta do servidor
+        // Obtém a mensagem de sucesso ou erro enviada pelo servidor.
         const message = await response.text();
         messageDiv_SIN.textContent = message;
+        // Se o status da resposta for 200 (ok), a mensagem fica verde; caso contrário (401, 500), fica vermelha.
         messageDiv_SIN.style.color = response.ok ? "green" : "red";
         if (response.ok) {
-            // Se o login for bem-sucedido, redireciona
+            // Se o login for bem-sucedido, redireciona para o dashboard após 1.5 segundos.
             setTimeout(() => {
                 window.location.href = "/dashboard.html";
-            }, 1500);
+            }, 500);
         }
         else {
-            // Se falhar, reabilita o botão
+            // Se houver falha (401, 500), reabilita o botão para permitir nova tentativa.
             signinBtn.disabled = false;
         }
     }
     catch (error) {
-        // 3. Trata erros de conexão
+        // Trata erros que ocorrem antes mesmo de o servidor responder (ex: servidor offline).
         console.error("Erro ao conectar com o servidor:", error);
         messageDiv_SIN.textContent = "Erro ao conectar com o servidor. Tente novamente mais tarde.";
         messageDiv_SIN.style.color = "red";
-        // Reabilita o botão em caso de erro
-        signinBtn.disabled = false;
+        messageDiv_SIN.style.fontSize = "12px";
+        signinBtn.disabled = false; // Reabilita o botão.
     }
 });

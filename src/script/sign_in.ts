@@ -19,6 +19,7 @@ signinBtn.addEventListener("click", async (e) => {
     if (!email || !password) {
         messageDiv_SIN.textContent = "Por favor, preencha todos os campos.";
         messageDiv_SIN.style.color = "red";
+        messageDiv_SIN.style.fontSize = "12px"
         return; // Sai da função, não prossegue.
     }
 
@@ -26,6 +27,8 @@ signinBtn.addEventListener("click", async (e) => {
     signinBtn.disabled = true; // Desabilita o botão para evitar cliques duplicados.
     messageDiv_SIN.textContent = "Tentando entrar...";
     messageDiv_SIN.style.color = "blue"; // Alerta visual que está em andamento.
+    messageDiv_SIN.style.fontSize = "12px"
+
 
 
     try {
@@ -47,7 +50,7 @@ signinBtn.addEventListener("click", async (e) => {
             // Se o login for bem-sucedido, redireciona para o dashboard após 1.5 segundos.
             setTimeout(() => {
                 window.location.href = "/dashboard.html";
-            }, 1500);
+            }, 500);
         } else {
             // Se houver falha (401, 500), reabilita o botão para permitir nova tentativa.
             signinBtn.disabled = false;
@@ -57,6 +60,7 @@ signinBtn.addEventListener("click", async (e) => {
         console.error("Erro ao conectar com o servidor:", error);
         messageDiv_SIN.textContent = "Erro ao conectar com o servidor. Tente novamente mais tarde.";
         messageDiv_SIN.style.color = "red";
+        messageDiv_SIN.style.fontSize = "12px"
         signinBtn.disabled = false; // Reabilita o botão.
     }
 });

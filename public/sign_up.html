@@ -5,9 +5,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style_sign.css">
-  <title>Crie sua Conta | ClassBoard</title>
-  <link rel="icon" type="logo.jpg" href="img/ClassBoard_Logotype.png">
+  <link rel="stylesheet" href="css/style_signUp.css">
+  <title>Crie sua Conta | NotaDez</title>
+  <link rel="icon" type="logo.jpg" href="img/NotaDez_Logo.png">
 </head>
 
 <body>
@@ -15,18 +15,22 @@
     <div class="login-box">
       <h2>Seja Bem Vindo!</h2>
       <p>Faça Parte Você Também!</p>
-      <input id="name" type="text" placeholder="Nome completo">
-      <input id="email" type="email" placeholder="Email">
-      <input id="phone" type="tel" placeholder="Telefone">
-      <input id="password" type="password" placeholder="Senha">
-      <br>
-      <button id="signup-btn"><strong>Cadastrar</strong></button>
-      <br>
+      <small class="info-input">Todos os campos são obrigatórios.</small>
+
+      <input id="name" type="text" placeholder="Nome completo*" required>
+      <input id="email" type="email" placeholder="Email*" required>
+      <input id="phone" type="tel" placeholder="Telefone*" required>
+      <input id="password" type="password" placeholder="Senha*" required>
+      <small>Use 8 caracteres ou mais para sua senha.</small>
+      <input id="confirm-password" type="password" placeholder="Confirme sua senha*" required>
+
       <div id="signup-message"></div>
+      <button id="signup-btn"><strong>Cadastrar</strong></button>
+
     </div>
 
     <div class="signup-box">
-      <img src="img/ClassBoard_Logotype.png" alt=""><br>
+      <img src="img/NotaDez_Logo.png" alt=""><br>
       <h2>Já possuí Conta?</h2>
       <p>Clique aqui para acessar sua conta!</p>
       <a href="sign_in.html">Clique Aqui</a>

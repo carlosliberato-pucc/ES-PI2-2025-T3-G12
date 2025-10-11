@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Carlos Liberato
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -37,23 +38,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
-dotenv.config();
+dotenv.config(); // Carrega variáveis de ambiente (como a porta) do arquivo .env.
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
-const path_1 = __importDefault(require("path"));
-const authRouter_1 = __importDefault(require("../database/auth/authRouter"));
-const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(body_parser_1.default.json());
+const path_1 = __importDefault(require("path")); // Módulo nativo do Node.js para trabalhar com caminhos de arquivo.
+const authRouter_1 = __importDefault(require("../database/auth/authRouter")); // Importa as rotas de login/cadastro.
+const app = (0, express_1.default)(); // Inicializa o aplicativo Express.
+//Middlewares Globais, Regras Aplicadas a Todas as Requisições
+app.use((0, cors_1.default)()); // Permite requisições de diferentes domínios (importante para o frontend/API).
+app.use(body_parser_1.default.json()); //Processa o corpo da requisição e o converte para JSON.
+//O '__dirname' retorna o caminho da pasta atual.
+//Esta linha constrói o caminho absoluto para a pasta 'public', onde estão seus HTMLs.
 const publicPath = path_1.default.resolve(__dirname, '../../public');
-// 1. Servir arquivos estáticos da pasta public (HTML, CSS)
+//Serve arquivos estáticos: Permite que arquivos dentro da pasta 'public' 
+//(como imagens, CSS) sejam acessados diretamente pela URL.
 app.use(express_1.default.static(publicPath));
-// 2. CORREÇÃO DE CAMINHO: Serve os scripts compilados (.js) via URL /dist
+//Serve o código javascript compilado: Permite que o navegador acesse os scripts
+//compilados (sign_in.js, sign_up.js) na URL /dist.
 app.use('/dist', express_1.default.static(path_1.default.resolve(__dirname, '../../dist')));
+// Quando um usuário acessa a URL base o servidor envia o arquivo 'sign_in.html'.
 app.get('/', (req, res) => {
     res.sendFile('sign_in.html', { root: publicPath });
 });
+// Anexa todas as rotas importadas do 'authRouter' (register e login) 
+// sob o prefixo '/auth' (ex: /auth/login, /auth/register).
 app.use('/auth', authRouter_1.default);
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+const PORT = 3000; // Define a porta de escuta.
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`)); // Inicia o servidor.
