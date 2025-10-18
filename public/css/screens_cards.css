@@ -1,0 +1,389 @@
+/* Estilos básicos para visualização: adaptar para sua stack (Tailwind, Bootstrap, etc.) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg: #f5f7fb;
+    --divider: #fff;
+    --blue-nt: #0a3db7;
+    --accent: #2858c9;
+    --muted: #6b7280;
+    --yellow-nt: #ffc30f;
+    --white-yellow: #facc43
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    margin: 0;
+    background: var(--bg);
+    color: #111;
+}
+
+header {
+    background: var(--divider);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e6e9ef;
+}
+
+.brand {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.brand h1 {
+    font-size: 18px;
+    margin: 0;
+}
+
+header img {
+    width: 50px;
+}
+
+nav.sidebar {
+    width: 220px;
+    background: transparent;
+    padding: 20px;
+    border-right: 1px solid #e6e9ef;
+    min-height: calc(100vh - 66px);
+}
+
+.container {
+    display: flex;
+}
+
+main {
+    flex: 1;
+    padding: 24px;
+}
+
+.divider {
+    background: var(--divider);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.inline-grid {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.small {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.btn {
+    background: var(--blue-nt);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: var(--white-yellow);
+    color: var(--blue-nt);
+    transition: 0.3s;
+}
+
+.link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.link:hover {
+    color: #19053f;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ddd;
+    display: inline-block;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* Cards e Títulos */
+
+.info-input {
+    font-size: 10px;
+    color: gray;
+    width: 100%;
+    text-align: left;
+}
+
+.titulo-tela {
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.titulo-tela button {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border-style: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.card {
+    width: 200px;
+    height: 200px;
+    background-color: var(--blue-nt);
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.descricao {
+    width: 100%;
+    height: 100px;
+    background-color: #fff;
+    border-radius: 0px 0px 5px 5px;
+    padding: 5px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2)
+}
+
+.descricao h1 {
+    font-size: 16px;
+    font-family: 'Montserrat', 'sans-serif';
+    font-weight: 500;
+    overflow: hidden;
+    margin: 3px;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.descricao h2 {
+    font-size: 12px;
+    font-family: 'Montserrat', 'sans-serif';
+    font-weight: 500;
+    overflow: hidden;
+    margin: 10px 5px 5px 5px;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.card button {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border-style: none;
+    padding: 5px;
+    position: absolute;
+    top: 8px;
+    right: 5px;
+    cursor: pointer;
+}
+
+/* Painel de Edição */
+
+.edicao-card {
+    position: fixed;
+    transform: scale(0);
+    transform-origin: left center;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    width: 200px;
+    height: 200px;
+    padding: 10px;
+    display: none;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.2)
+}
+
+.edicao-card.aberto {
+    transform: scale(1);
+}
+
+.edicao-card h2 {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0 0 5px;
+}
+
+.edicao-card h3 {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+    margin: 0 0 10px 0;
+}
+
+.edicao-card .div_cores .cor-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    margin: 10px auto;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    align-items: center;
+}
+
+/* Botões de Cor */
+
+.cor-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cor-btn:focus {
+    outline: 3px solid var(--muted);
+    outline-offset: 2px;
+}
+
+/* Modal de Criação */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 999;
+}
+
+.modal-overlay.ativo {
+    display: block;
+}
+
+.create-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 500px;
+    max-height: 90vh;
+    display: none;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+}
+
+.create-card h2 {
+    text-align: center;
+    font-size: 25px;
+    font-family: 'Montserrat', 'sans-serif';
+    margin: 0 0 10px 0;
+}
+
+.create-card h3 {
+    text-align: center;
+    font-size: 15px;
+    font-family: 'Montserrat', 'sans-serif';
+    color: var(--muted);
+    margin: 10px 0;
+}
+
+.create-card input {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 6px;
+    background: #f2f2f2;
+    font-size: 15px;
+    padding-left: 10px;
+    margin-top: 10px;
+}
+
+.create-card label {
+    display: block;
+    font-size: 14px;
+    font-family: 'Montserrat', 'sans-serif';
+    font-weight: 500;
+    color: var(--muted);
+    margin-top: 15px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+}
+
+.create-card select {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 6px;
+    background: #f2f2f2;
+    font-size: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.41 0L6 4.59 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+}
+
+.create-card select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.create-card select option {
+    padding: 10px;
+    background: #fff;
+    color: #111;
+}
+
+.create-card .cor-btn {
+    width: 55px;
+    height: 55px;
+    border-radius: 100%;
+    margin: 15px auto;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    align-items: center;
+}
+
+.create-card button[type="submit"] {
+    width: 120px;
+    padding: 10px;
+    background: var(--blue-nt);
+    color: var(--yellow-nt);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 15px auto 0;
+    display: block;
+    transition: 0.3s;
+}
+
+.create-card button[type="submit"]:hover {
+    background: var(--yellow-nt);
+    color: var(--blue-nt);
+}

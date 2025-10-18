@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="css/screens_cards.css">
+    <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
+    <title>Cursos | NotaDez</title>
+</head>
+
+<body>
+    <header>
+        <div class="brand">
+            <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
+            <div>
+                <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">Nota<span
+                        style="color: #ffc30f;">Dez</span></h1>
+                <div class="small">Cursos</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:center">
+            <div class="inline-grid">
+                <div style="text-align:right">
+                    <div class="small muted">Olá, Professor(a)</div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <img class="avatar" src="img/avatar.jpg" alt="Icone de perfil">
+                        <a href="#" class="link">Sair</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="divider" style="padding:12px;margin-bottom:12px">
+                <div style="font-weight:600">Navegação</div>
+                <ul style="list-style:none;padding:8px 0;margin:0;display:grid;gap:6px">
+                    <li><a href="dashboard.html" class="link">Painel do Docente</a></li>
+                    <li><a href="instituicoes.html" class="link">Instituições</a></li>
+                    <li><a href="cursos.html" class="link">Cursos</a></li>
+                    <li><a href="disciplinas.html" class="link">Disciplinas</a></li>
+                    <li><a href="turmas.html" class="link">Turmas</a></li>
+                </ul>
+            </div>
+
+            <div class="divider small">
+                <div style="font-weight:600;margin-bottom:8px;">Atalhos rápidos</div>
+                <div style="display:grid;gap:8px">
+                    <a class="btn btn-create-card">+ Nova Instituição</a>
+                    <a class="btn" href="cursos.html">+ Novo Curso</a>
+                    <a class="btn" href="disciplinas.html">+ Nova Disciplina</a>
+                    <a class="btn" href="turmas.html">+ Nova Turma</a>
+                    <a class="btn" href="alunos.html">Importar Alunos</a>
+                </div>
+            </div>
+
+            <div class="divider small">
+                <div style="font-weight:600;margin-bottom:8px">Resumo</div>
+                <div>Instituições: <strong id="number_inst"></strong></div>
+                <div>Cursos: <strong id="number_curs"></strong></div>
+                <div>Disciplinas: <strong id="number_disc"></strong></div>
+                <div>Turmas: <strong id="number_turm"></strong></div>
+                <div>Alunos: <strong id="number_alunos"></strong></div>
+            </div>
+        </nav>
+
+        <main>
+
+            <div class="titulo-tela">
+                <h1>Seus Cursos</h1>
+                <button class="btn-create-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com -->
+                        <path d="M232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 
+                                            24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 
+                                            24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 
+                                            24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24zM256 
+                                            464A208 208 0 1 0 256 48a208 208 0 1 0 0 
+                                            416zm0 48A256 256 0 1 1 256 0a256 256 0 1 1 0 
+                                            512z" />
+                    </svg>
+
+                </button>
+            </div>
+
+            <section style="display:grid;grid-template-columns: repeat(5, 1fr);">
+                <!-- Aqui ficará os cards criados -->
+            </section>
+
+        </main>
+
+        <div class="modal-overlay">
+            <div class="create-card">
+                <h2>Criar Curso</h2>
+                <center>
+                    <small class="info-input">Todos os campos são obrigatórios.</small>
+                </center>
+                <input id="nome" type="text" placeholder="Digite o nome do curso." required>
+                <label for="periodo">Selecine o Período:</label>
+                <select id="periodo" name="periodo">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="matutino">Matutino</option>
+                    <option value="vespertino">Vespertino</option>
+                    <option value="noturno">Noturno</option>
+                    <option value="integral">Integral</option>
+                    <option value="ead">Ensino a Distância</option>
+                </select>
+                <h3>Escolha uma cor para o curso:</h3>
+                <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+                    <button class="cor-btn" data-context="create" style="background: rgb(196, 30, 58);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(209, 0, 106);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(10, 61, 183);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(0, 155, 119);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(255, 195, 15);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(125, 60, 152);"></button>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" id="btn-criar">Criar</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="edicao-card">
+            <h2>Editar Cor</h2>
+            <h3>Escolha uma cor para o curso</h3>
+            <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+                <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../dist/script/cardCurso.js"></script>
+
+</body>
+
+</html>

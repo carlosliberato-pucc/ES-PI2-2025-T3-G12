@@ -11,6 +11,7 @@
 body {
   background: #fff;
   display: flex;
+  flex-direction: column; /* Chave 1: Organiza os elementos (título e formulário) em uma coluna vertical */
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -18,52 +19,90 @@ body {
 
 .container {
   display: flex;
-  width: 850px;
-  height: 470px;
+  width: 600px;
+  height: 600px;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Lado esquerdo - Login */
-.login-box {
-  flex: 1;
-  background: #fff;
+.signup-box .campos {
   display: flex;
+  width: 600px;
+  background: #fff;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 30px;
 }
 
-.login-box h2 {
-  font-size: 28px;
-  font-weight: bold;
+.signup-box .header {
+  background: #0a3db7;
+  padding: 40px 0px;
+  border-radius: 0% 0% 50% 50%;
 }
 
-.login-box .info-input{
+.title {
+  display: flex; /* Chave 2: Alinha o logo e o texto na mesma linha */
+  align-items: center; /* Centraliza verticalmente o logo e o texto */
+  margin-bottom: 20px; /* Chave 3: Adiciona um espaço abaixo do título, separando-o do formulário */
+}
+
+.logo {
+  width: 70px;
+  margin-right: 15px; /* Adiciona um espaço entre o logo e o texto */
+}
+
+.nome {
+  color: #0a3db7;
+  font-size: 2.5rem; /* Aumenta um pouco o tamanho do título */
+}
+
+.nome span {
+  color: #ffc30f;
+}
+
+/* Esta regra não é mais estritamente necessária com o flex no .title, mas não prejudica */
+.logo,
+.nome {
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
-.login-box small {
+.signup-box h2 {
+  font-size: 30px;
+  color: #ffc30f;
+  font-weight: bold;
+  text-align: center;
+}
+
+.signup-box .info-input {
+  text-align: center;
+}
+
+.signup-box small {
   font-size: 10px;
   color: gray;
   width: 100%;
   text-align: left;
 }
 
-.login-box #signup-message {
+.signup-box #signup-message {
   min-height: 10px;
   text-align: center;
   margin-bottom: 2px;
 }
 
-.login-box p {
+.signup-box p {
+  color: #fff;
   font-size: 14px;
   margin: 3px 0;
+  text-align: center;
 }
 
-.login-box input {
+.signup-box input {
   width: 100%;
   padding: 12px;
   margin: 8px 0;
@@ -73,7 +112,7 @@ body {
   font-size: 14px;
 }
 
-.login-box button {
+.signup-box button {
   width: 120px;
   padding: 10px;
   background: #ffc30f;
@@ -86,72 +125,30 @@ body {
   transition: 0.3s;
 }
 
-.login-box button:hover {
+.signup-box button:hover {
   background: #0a3db7;
   color: #ffc30f;
 }
 
-/* Lado direito - Criar conta */
-.signup-box {
-  flex: 1;
-  background: #0a3db7;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 30px;
-  border-top-left-radius: 120px;
-  border-bottom-left-radius: 120px;
-  height: 100%;
-}
-
-.signup-box h2 {
-  font-size: 28px;
-  font-weight: bold;
-  color: #ffc30f;
-  margin-bottom: 15px;
-}
-
-.signup-box p {
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.signup-box a {
-  display: inline-block;
-  padding: 10px 25px;
-  border: 1px solid #ffc30f;
-  color: #ffc30f;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-
-.signup-box a:hover {
-  background: #ffc30f;
-  color: #0a3db7;
-}
-
-.login-box #signin-message{
+.signup-box #signin-message {
   min-height: 10px;
-  margin-top: 5px;  
+  margin-top: 5px;
   margin-bottom: 10px;
 }
 
+/* O seletor .logo já define a largura, então este é para outras imagens caso existam */
 img {
   width: 100px;
 }
 
-.back-link {
+.login-link {
   font-size: 14px;
   text-decoration: none;
   color: #0a3db7;
   transition: 0.3s;
+  margin-top: 15px; /* Adiciona um espaço acima do link */
 }
 
-.back-link:hover {
+.login-link:hover {
   color: #19053f;
 }

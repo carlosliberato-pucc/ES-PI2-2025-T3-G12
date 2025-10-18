@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato
+ // Desenvolvido por Carlos Liberato
 
 import * as dotenv from 'dotenv';
 dotenv.config(); // Carrega variáveis de ambiente (como a porta) do arquivo .env.

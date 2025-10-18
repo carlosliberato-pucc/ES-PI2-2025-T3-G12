@@ -1,0 +1,149 @@
+/* Estilos básicos para visualização: adaptar para sua stack (Tailwind, Bootstrap, etc.) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg: #f5f7fb;
+    --divider: #fff;
+    --blue-nt: #0a3db7;
+    --accent: #2858c9;
+    --muted: #6b7280
+}
+
+* {
+    box-sizing: border-box;
+    /*font-family: 'Montserrat', sans-serif;*/
+
+}
+
+body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    margin: 0;
+    background: var(--bg);
+    color: #111
+}
+
+header {
+    background: var(--divider);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e6e9ef
+}
+
+.brand {
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.brand h1 {
+    font-size: 18px;
+    margin: 0
+}
+
+header img {
+    width: 50px;
+}
+
+nav.sidebar {
+    width: 220px;
+    background: transparent;
+    padding: 20px;
+    border-right: 1px solid #e6e9ef;
+    min-height: calc(100vh - 66px)
+}
+
+.container {
+    display: flex
+}
+
+main {
+    flex: 1;
+    padding: 24px
+}
+
+.divider {
+    background: var(--divider);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+    padding: 16px;
+    margin-bottom: 16px
+}
+
+.grid {
+    display: grid;
+    gap: 16px
+}
+
+.grid.cols-3 {
+    grid-template-columns: repeat(3, 1fr)
+}
+
+.inline-grid {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: center
+}
+
+.small {
+    font-size: 13px;
+    color: var(--muted)
+}
+
+.btn {
+    background: var(--blue-nt);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block
+}
+
+.btn:hover {
+    background: #facc43;
+    color: #0a3db7;
+    transition: 0.3s;
+
+
+}
+
+.link {
+    color: var(--accent);
+    text-decoration: none
+}
+
+.link:hover {
+  color: #19053f;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse
+}
+
+th,
+td {
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f6
+}
+
+.search {
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ddd;
+    display: inline-block
+}
+
+.muted {
+    color: var(--muted)
+}

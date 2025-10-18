@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
+    <title>Painel do Docente | NotaDez</title>
+</head>
+
+<body>
+    <header>
+        <div class="brand">
+            <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
+            <div>
+                <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">Nota<span style="color: #ffc30f;">Dez</span></h1>
+                <div class="small">Painel do docente</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:center">
+            <div class="inline-grid">
+                <div style="text-align:right">
+                    <div class="small muted">Olá, Professor(a)</div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <img class="avatar" src="img/avatar.jpg" alt="Icone de perfil">
+                        <a href="#" class="link">Sair</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="divider" style="padding:12px;margin-bottom:12px">
+                <div style="font-weight:600">Navegação</div>
+                <ul style="list-style:none;padding:8px 0;margin:0;display:grid;gap:6px">
+                    <li><a href="dashboard.html" class="link">Painel do Docente</a></li>
+                    <li><a href="instituicoes.html" class="link">Instituições</a></li>
+                    <li><a href="cursos.html" class="link">Cursos</a></li>
+                    <li><a href="disciplinas.html" class="link">Disciplinas</a></li>
+                    <li><a href="turmas.html" class="link">Turmas</a></li>
+                </ul>
+            </div>
+
+                        <div class="divider small">
+                <div style="font-weight:600;margin-bottom:8px;">Atalhos rápidos</div>
+                <div style="display:grid;gap:8px">
+                    <a class="btn btn-create-card">+ Nova Instituição</a>
+                    <a class="btn" href="cursos.html">+ Novo Curso</a>
+                    <a class="btn" href="disciplinas.html">+ Nova Disciplina</a>
+                    <a class="btn" href="turmas.html">+ Nova Turma</a>
+                    <a class="btn" href="alunos.html">Importar Alunos</a>
+                </div>
+            </div>
+
+            <div class="divider small">
+                <div style="font-weight:600;margin-bottom:8px">Resumo</div>
+                <div>Instituições: <strong id="number_inst"></strong></div>
+                <div>Cursos: <strong id="number_curs"></strong></div>
+                <div>Disciplinas: <strong id="number_disc"></strong></div>
+                <div>Turmas: <strong id="number_turm"></strong></div>
+                <div>Alunos: <strong id="number_alunos"></strong></div>
+            </div>
+        </nav>
+
+        <main>
+            <section style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px">
+                <div class="divider">
+                    <div class="small muted">Atividades recentes</div>
+                    <div style="font-weight:600;margin:8px 0 12px">Últimas ações no sistema</div>
+                    <ul style="margin:0;padding:0 0 0 16px">
+                        <li class="small" id="atv_rec"></li>
+                    </ul>
+                </div>
+
+                <div class="divider">
+                    <div class="small muted">Auditoria da última turma modificada</div>
+                    <div style="font-weight:600;margin:8px 0 12px">Mensagens de auditoria</div>
+                    <div class="small" id="dash_aud" style="margin-bottom:10px"></div>
+
+                </div>
+            </section>
+
+            <section class="divider">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                    <div>
+                        <div class="small muted">Instituições ativas</div>
+                        <div style="font-weight:600">Minhas instituições</div>
+                    </div>
+                    <div>
+                        <a class="btn" href="instituicoes.html">Gerenciar Instituições</a>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sigla</th>
+                            <th>Cursos</th>
+                            <th>Disciplinas</th>
+                            <th>Turmas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="dash_sigla"></td>
+                            <td id="dash_curs"></td>
+                            <td id="dash_inst"></td>
+                            <td id="dash_num"></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>
