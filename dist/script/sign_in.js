@@ -25,7 +25,7 @@ signinBtn.addEventListener("click", async (e) => {
     messageDiv_SIN.style.fontSize = "12px";
     try {
         // Envia uma requisição POST para o endpoint de login do seu servidor Node.js.
-        const response = await fetch("http://localhost:3000/auth/login", {
+        const response = await fetch("http://192.168.1.72:3000/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             // Envia e-mail e a senha (correta no backend: 'senha') em formato JSON.

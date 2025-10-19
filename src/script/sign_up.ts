@@ -47,7 +47,7 @@ signupBtn.addEventListener("click", async (e) => {
 
     try {
         // Envia uma requisição POST para o endpoint de cadastro (/auth/register).
-        const response = await fetch("http://localhost:3000/auth/register", {
+        const response = await fetch("http://192.168.1.72:3000/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             // Mapeia os dados do frontend para os nomes que o backend espera (nome, telefone, senha).
