@@ -4,6 +4,25 @@
 const signinBtn = document.getElementById("login-btn");
 // Captura o elemento DIV onde as mensagens de status (sucesso/erro) serão exibidas.
 const messageDiv_SIN = document.getElementById("signin-message");
+document.addEventListener('DOMContentLoaded', async () => {
+    // Verifica se já está logado
+    try {
+        const response = await fetch('http://localhost:3000/auth/verificar-sessao', {
+            credentials: 'include',
+            cache: 'no-cache'
+        });
+        const data = await response.json();
+        if (data.logado) {
+            // Já está logado! Redireciona para o dashboard
+            console.log('✅ Usuário já está logado, redirecionando...');
+            window.location.replace('/dashboard.html');
+            return; // Para a execução do resto do código
+        }
+    }
+    catch (error) {
+        console.error('Erro ao verificar sessão:', error);
+    }
+});
 // Adiciona um "ouvinte" para o evento de clique no botão de login.
 signinBtn.addEventListener("click", async (e) => {
     // Impede que o botão execute qualquer ação padrão do navegador (como recarregar a página).
@@ -28,6 +47,7 @@ signinBtn.addEventListener("click", async (e) => {
         const response = await fetch("http://localhost:3000/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             // Envia e-mail e a senha (correta no backend: 'senha') em formato JSON.
             body: JSON.stringify({ email, senha: password }),
         });

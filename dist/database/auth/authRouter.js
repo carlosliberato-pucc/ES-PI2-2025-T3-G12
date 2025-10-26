@@ -12,4 +12,6 @@ router.post('/register', authController_1.register);
 // Quando o servidor recebe uma requisição HTTP do tipo POST para a URL '/login', 
 // ele executa a função 'login' que está no authController.
 router.post('/login', authController_1.login);
+router.post('/logout', authController_1.logout);
+router.get('/verificar-sessao', authController_1.verificarSessao);
 exports.default = router;

@@ -1,7 +1,7 @@
 // Desenvolvido por Carlos Liberato
 import { Router } from 'express';
 // Importa as funções de autenticação (cadastro e login).
-import { register, login } from './authController'; 
+import { register, login, logout, verificarSessao } from './authController'; 
 
 // Esta variável "router" é que agrupa todas as rotas deste módulo.
 const router = Router();
@@ -13,5 +13,9 @@ router.post('/register', register);
 // Quando o servidor recebe uma requisição HTTP do tipo POST para a URL '/login', 
 // ele executa a função 'login' que está no authController.
 router.post('/login', login);
+
+router.post('/logout', logout);
+
+router.get('/verificar-sessao', verificarSessao);
 
 export default router;

@@ -1,8 +1,16 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato e Felipe Miranda
 import type { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 // Importando Conexão com o banco de dados
 import { db } from '../index'; 
+
+// Estende o tipo Session
+declare module 'express-session' {
+    interface SessionData {
+        userEmail: string;
+        userName: string;
+    }
+}
 
 // Função de cadastro
 export const register = async (req: Request, res: Response) => {
@@ -31,6 +39,14 @@ export const register = async (req: Request, res: Response) => {
                     console.error('Erro ao cadastrar usuário: ', err);
                     return res.status(500).send('Erro ao cadastrar usuário');
                 }
+
+                // Cria sessão automaticamente após cadastro
+                req.session.userEmail = email;
+                req.session.userName = nome;
+
+                // No final da função login, antes do res.send:
+                console.log('Sessão criada:', req.session);
+
                 //Se não tiver erros, Cadastro realizado
                 res.send('Cadastro realizado com sucesso!');
             }
@@ -77,6 +93,38 @@ export const login = (req: Request, res: Response) => {
             return res.status(401).send('E-mail ou senha incorretos.');
         }
 
+        // Cria a sessão do usuário
+        req.session.userEmail = user.email;
+        req.session.userName = user.nome;
+
+        // No final da função login, antes do res.send:
+        console.log('Sessão criada:', req.session);
+
         res.send('Login realizado');
     });
+};
+export const logout = (req: Request, res: Response) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Erro ao fazer logout:', err);
+            return res.status(500).send('Erro ao fazer logout');
+        }
+        res.clearCookie('connect.sid'); // Remove o cookie de sessão
+        res.send('Logout realizado com sucesso');
+    });
+};
+
+// Função para verificar se usuário está logado
+export const verificarSessao = (req: Request, res: Response) => {
+    if (req.session.userEmail) {
+        res.json({
+            logado: true,
+            usuario: {
+                email: req.session.userEmail,
+                nome: req.session.userName
+            }
+        });
+    } else {
+        res.json({ logado: false });
+    }
 };
