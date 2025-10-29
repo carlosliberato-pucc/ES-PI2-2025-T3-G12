@@ -1,5 +1,5 @@
 "use strict";
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato e Felipe Miranda
 // Captura o botão de login pelo ID "login-btn"
 const signinBtn = document.getElementById("login-btn");
 // Captura o elemento DIV onde as mensagens de status (sucesso/erro) serão exibidas.
@@ -14,8 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await response.json();
         if (data.logado) {
             // Já está logado! Redireciona para o dashboard
-            console.log('✅ Usuário já está logado, redirecionando...');
-            window.location.replace('/dashboard.html');
+            window.location.replace('/dashboard');
             return; // Para a execução do resto do código
         }
     }
@@ -47,7 +46,7 @@ signinBtn.addEventListener("click", async (e) => {
         const response = await fetch("http://localhost:3000/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: "include",
+            credentials: "include", // faz a resposta enviar cookies para outras rotas
             // Envia e-mail e a senha (correta no backend: 'senha') em formato JSON.
             body: JSON.stringify({ email, senha: password }),
         });
@@ -59,7 +58,7 @@ signinBtn.addEventListener("click", async (e) => {
         if (response.ok) {
             // Se o login for bem-sucedido, redireciona para o dashboard após 1.5 segundos.
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             }, 500);
         }
         else {

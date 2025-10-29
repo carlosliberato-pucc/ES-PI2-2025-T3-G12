@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (data.logado) {
             // Já está logado! Redireciona para o dashboard
             console.log('✅ Usuário já está logado, redirecionando...');
-            window.location.replace('/dashboard.html');
+            window.location.replace('/dashboard');
             return;
         }
     } catch (error) {
@@ -84,7 +84,7 @@ signupBtn.addEventListener("click", async (e) => {
         // 6. Ação em Caso de Falha:
         if (response.ok) {
             setTimeout(() => {
-                window.location.href = "/dashboard.html"
+                window.location.href = "/dashboard"
             }, 500)
         }else{
             // Se o cadastro falhar (e-mail duplicado, erro no servidor), reabilita o botão para nova tentativa.

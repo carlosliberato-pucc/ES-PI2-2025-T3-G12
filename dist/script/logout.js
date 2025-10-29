@@ -1,9 +1,9 @@
 "use strict";
+// Desenvolvido por Felipe Miranda
 const logoutBtn = document.getElementById("logout-btn");
 logoutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     logoutBtn.style.pointerEvents = 'none';
-    console.log('Link was clicked!');
     try {
         const response = await fetch('http://localhost:3000/auth/logout', {
             method: 'POST',

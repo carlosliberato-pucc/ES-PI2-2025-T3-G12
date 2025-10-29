@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (data.logado) {
             // Já está logado! Redireciona para o dashboard
-            window.location.replace('/dashboard.html');
+            window.location.replace('/dashboard');
             return; // Para a execução do resto do código
         }
     } catch (error) {
@@ -70,7 +70,7 @@ signinBtn.addEventListener("click", async (e) => {
         if (response.ok) {
             // Se o login for bem-sucedido, redireciona para o dashboard após 1.5 segundos.
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             }, 500);
         } else {
             // Se houver falha (401, 500), reabilita o botão para permitir nova tentativa.

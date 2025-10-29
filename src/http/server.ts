@@ -9,6 +9,7 @@ import cors from 'cors';
 import path from 'path'; // Módulo nativo do Node.js para trabalhar com caminhos de arquivo.
 import authRoutes from '../database/auth/authRouter'; // Importa as rotas de login/cadastro.
 import session from 'express-session';
+import institutionRoutes from '../database/institutions/institutionRouter';
 
 const app = express(); // Inicializa o aplicativo Express.
 
@@ -55,25 +56,38 @@ app.get('/', (req, res) => {
     res.sendFile('sign_in.html', { root: publicPath });
 });
 
+
 // Rotas PÚBLICAS (sem autenticação)
 app.get('/', (req, res) => {
     // Se já estiver logado, vai direto pro dashboard
     if (req.session && req.session.userEmail) {
-        return res.redirect('/dashboard.html');
+        return res.redirect('/dashboard');
     }
     res.sendFile('sign_in.html', { root: publicPath });
 });
 
-app.get('/sign_in.html', (req, res) => {
+app.get('/recover_password', (req, res) => {
+    res.sendFile('recover_password.html', { root: publicPath });
+});
+
+app.get('/input_new_password', (req, res) => {
+    res.sendFile('input_new_password.html', { root: publicPath });
+});
+
+app.get('/instituicoes', (req, res) => {
+    res.sendFile('instituicoes.html', { root: publicPath });
+});
+
+app.get('/sign_in', (req, res) => {
     if (req.session.userEmail) {
-        return res.redirect('/dashboard.html');
+        return res.redirect('/dashboard');
     }
     res.sendFile('sign_in.html', { root: publicPath });
 });
 
-app.get('/sign_up.html', (req, res) => {
+app.get('/sign_up', (req, res) => {
     if (req.session.userEmail) {
-        return res.redirect('/dashboard.html');
+        return res.redirect('/dashboard');
     }
     res.sendFile('sign_up.html', { root: publicPath });
 });
@@ -82,7 +96,9 @@ app.get('/sign_up.html', (req, res) => {
 // sob o prefixo '/auth' (ex: /auth/login, /auth/register).
 app.use('/auth', authRoutes);
 
-app.get('/dashboard.html', verificarAutenticacao, (req, res) => {
+// rotas protegidas
+app.use('/api/instituicoes', verificarAutenticacao, institutionRoutes);
+app.get('/dashboard', verificarAutenticacao, (req, res) => {
     res.sendFile('dashboard.html', { root: publicPath });
 });
 

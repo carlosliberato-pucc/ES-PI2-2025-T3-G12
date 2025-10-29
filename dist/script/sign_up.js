@@ -1,5 +1,5 @@
 "use strict";
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato e Felipe Miranda
 // Captura o botão de cadastro pelo ID "signup-btn".
 const signupBtn = document.getElementById("signup-btn");
 // Captura o elemento DIV onde as mensagens de status (sucesso/erro) serão exibidas.
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (data.logado) {
             // Já está logado! Redireciona para o dashboard
             console.log('✅ Usuário já está logado, redirecionando...');
-            window.location.replace('/dashboard.html');
+            window.location.replace('/dashboard');
             return;
         }
     }
@@ -72,7 +72,7 @@ signupBtn.addEventListener("click", async (e) => {
         // 6. Ação em Caso de Falha:
         if (response.ok) {
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             }, 500);
         }
         else {
