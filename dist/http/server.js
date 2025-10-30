@@ -45,6 +45,7 @@ const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path")); // Módulo nativo do Node.js para trabalhar com caminhos de arquivo.
 const authRouter_1 = __importDefault(require("../database/auth/authRouter")); // Importa as rotas de login/cadastro.
 const express_session_1 = __importDefault(require("express-session"));
+const institutionRouter_1 = __importDefault(require("../database/institutions/institutionRouter"));
 const app = (0, express_1.default)(); // Inicializa o aplicativo Express.
 // Configuração do express-session
 app.use((0, express_session_1.default)({
@@ -115,6 +116,8 @@ app.get('/sign_up', (req, res) => {
 // Anexa todas as rotas importadas do 'authRouter' (register e login) 
 // sob o prefixo '/auth' (ex: /auth/login, /auth/register).
 app.use('/auth', authRouter_1.default);
+// rotas protegidas
+app.use('/api/instituicoes', verificarAutenticacao, institutionRouter_1.default);
 app.get('/dashboard', verificarAutenticacao, (req, res) => {
     res.sendFile('dashboard.html', { root: publicPath });
 });

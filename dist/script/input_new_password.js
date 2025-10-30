@@ -26,7 +26,7 @@ async function validarToken() {
             <p style="color: #666; margin: 20px 0;">
                 Link de recuperação inválido ou incompleto.
             </p>
-            <a href="/recover_password.html" 
+            <a href="/recover_password" 
                style="color: #667eea; text-decoration: none; font-weight: 600;">
                 Solicitar nova recuperação →
             </a>
@@ -50,7 +50,7 @@ async function validarToken() {
                 <p style="color: #666; margin: 20px 0;">
                     ${data.message || 'Este link de recuperação expirou ou já foi utilizado.'}
                 </p>
-                <a href="/recover_password.html" 
+                <a href="/recover_password" 
                    style="color: #667eea; text-decoration: none; font-weight: 600;">
                     Solicitar nova recuperação →
                 </a>
@@ -94,7 +94,7 @@ passwordForm.addEventListener('submit', async (e) => {
             showMessage('Senha redefinida com sucesso! Redirecionando...', 'success');
             // Redirecionar para login após 2 segundos
             setTimeout(() => {
-                window.location.href = '/sign_in.html';
+                window.location.href = '/sign_in';
             }, 2000);
         }
         else {

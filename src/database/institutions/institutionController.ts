@@ -180,7 +180,7 @@ export const atualizarCorInstituicao = async (req: Request, res: Response) => {
             [id, userEmail],
             (err, results) => {
                 if (err) {
-                    console.error('❌ Erro ao verificar instituição:', err);
+                    console.error('Erro ao verificar instituição:', err);
                     return res.status(500).json({
                         success: false,
                         message: 'Erro ao processar solicitação'
@@ -204,7 +204,7 @@ export const atualizarCorInstituicao = async (req: Request, res: Response) => {
         );
 
     } catch (error) {
-        console.error('❌ Erro ao atualizar cor:', error);
+        console.error('Erro ao atualizar cor:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'

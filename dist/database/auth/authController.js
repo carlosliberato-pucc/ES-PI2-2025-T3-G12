@@ -172,7 +172,7 @@ const solicitarRecuperacaoSenha = async (req, res) => {
                         });
                     }
                     // Criar link de recuperação
-                    const resetLink = `http://localhost:3000/input_new_password.html?token=${token}`;
+                    const resetLink = `http://localhost:3000/input_new_password?token=${token}`;
                     // Enviar email
                     const mailOptions = {
                         from: process.env.EMAIL_USER,

@@ -214,7 +214,7 @@ export const solicitarRecuperacaoSenha = async (req: Request, res: Response) => 
                             }
 
                             // Criar link de recuperação
-                            const resetLink = `http://localhost:3000/input_new_password.html?token=${token}`;
+                            const resetLink = `http://localhost:3000/input_new_password?token=${token}`;
 
                             // Enviar email
                             const mailOptions = {

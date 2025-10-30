@@ -53,7 +53,7 @@ form.addEventListener('submit', async (e) => {
             
             // Opcional: redirecionar após alguns segundos
             setTimeout(() => {
-                window.location.href = '/sign_in.html';
+                window.location.href = '/sign_in';
             }, 5000);
         } else {
             showMessage1(data.message || 'Erro ao processar solicitação', 'error');

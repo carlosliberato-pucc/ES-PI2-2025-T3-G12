@@ -1,48 +1,135 @@
 document.addEventListener('DOMContentLoaded', () => {
     const btnsCard = document.querySelectorAll<HTMLButtonElement>(".btn-card");
     const edicaoCard = document.querySelector<HTMLDivElement>(".edicao-card");
-
     const coresEdit = document.querySelectorAll<HTMLButtonElement>('.cor-btn[data-context="edit"]');
-
     const createCardModal = document.querySelector('.create-card') as HTMLDivElement;
     const nomeInst = document.getElementById("nome") as HTMLInputElement;
-    const abrInst = document.getElementById("abreviacao") as HTMLInputElement
-    const btnCriar = document.getElementById("btn-criar") as HTMLButtonElement
+    const abrInst = document.getElementById("abreviacao") as HTMLInputElement;
+    const btnCriar = document.getElementById("btn-criar") as HTMLButtonElement;
     const coresCreate = document.querySelectorAll<HTMLButtonElement>('.cor-btn[data-context="create"]');
     const btnCreateCard = document.querySelectorAll<HTMLButtonElement>(".btn-create-card");
     const modalOverlay = document.querySelector('.modal-overlay') as HTMLDivElement;
 
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
 
-    //Create Card
-    const criarNovoCard = (nome: string, abreviacao: string, cor: string) => {
-        const section = document.querySelector("main section")
+    // ==================== CARREGAR INSTITUIÇÕES DO BANCO ====================
+    const carregarInstituicoes = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/instituicoes', {
+                method: 'GET',
+                credentials: 'include'
+            });
 
-        const novoCard = document.createElement("div") as HTMLDivElement
-        novoCard.classList.add("card")
-        novoCard.style.backgroundColor = cor
+            if (!response.ok) {
+                console.error('❌ Erro ao carregar instituições:', response.status);
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.success && Array.isArray(result.data)) {
+                // Limpar apenas os cards dinâmicos (opcional)
+                const section = document.querySelector("main section");
+                
+                result.data.forEach((instituicao: any) => {
+                    // Buscar cor salva no localStorage
+                    const corSalva = localStorage.getItem(`cor_instituicao_${instituicao.id_instituicao}`);
+                    const cor = corSalva || 'rgb(10, 61, 183)';
+
+                    // Criar card visual com dados do banco
+                    criarNovoCard(
+                        instituicao.nome,
+                        '', // Abreviação não está sendo salva no banco (pode adicionar depois se quiser)
+                        cor,
+                        instituicao.id_instituicao
+                    );
+                });
+
+                console.log(`✅ ${result.data.length} instituições carregadas`);
+            }
+        } catch (error) {
+            console.error('❌ Erro ao carregar instituições:', error);
+        }
+    };
+
+    // ==================== CREATE CARD (Visual + Backend) ====================
+    const criarNovoCard = (nome: string, abreviacao: string, cor: string, idInstituicao?: number) => {
+        const section = document.querySelector("main section");
+
+        const novoCard = document.createElement("div") as HTMLDivElement;
+        novoCard.classList.add("card");
+        novoCard.style.backgroundColor = cor;
+        
+        // Adicionar ID ao dataset
+        if (idInstituicao) {
+            novoCard.dataset.id = idInstituicao.toString();
+        }
 
         novoCard.innerHTML = `
-                    <button class="btn-card">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                            <path fill="#ffffff"
-                                d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
-                        </svg>
-                    </button>
-                    <div class="descricao">
-                        <h1>${nome}</h1>
-                        <h2>${abreviacao}</h2>
-                    </div>                
-        `
+            <button class="btn-card">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 640">
+                    <path fill="#ffffff"
+                        d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
+                </svg>
+            </button>
+            <div class="descricao">
+                <h1>${nome}</h1>
+                <h2>${abreviacao}</h2>
+            </div>                
+        `;
 
-        section?.appendChild(novoCard)
+        // Adicionar evento de clique no card para navegar aos cursos
+        novoCard.addEventListener('click', (e) => {
+            // Não navegar se clicar no botão de edição
+            const clickedElement = e.target as HTMLElement;
+            if (!clickedElement.closest('.btn-card') && idInstituicao) {
+                window.location.href = `/cursos?id_instituicao=${idInstituicao}`;
+            }
+        });
+
+        section?.appendChild(novoCard);
 
         // Adiciona evento ao botão do novo card
         const btnNovoCard = novoCard.querySelector('.btn-card') as HTMLButtonElement;
         adicionarEventoEdicao(btnNovoCard, novoCard);
-    }
+    };
 
+    // ==================== CRIAR INSTITUIÇÃO NO BANCO ====================
+    const criarInstituicaoNoBanco = async (nome: string, abreviacao: string, cor: string): Promise<boolean> => {
+        try {
+            const response = await fetch('http://localhost:3000/api/instituicoes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ nome, abreviacao, cor })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                console.log('✅ Instituição criada no banco:', result.data);
+                
+                // Salvar cor no localStorage
+                const idInstituicao = result.data.id_instituicao;
+                localStorage.setItem(`cor_instituicao_${idInstituicao}`, cor);
+
+                // Criar card visual com o ID do banco
+                criarNovoCard(nome, abreviacao, cor, idInstituicao);
+
+                return true;
+            } else {
+                alert(result.message || 'Erro ao criar instituição');
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Erro ao criar instituição:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
+            return false;
+        }
+    };
+
+    // ==================== SELEÇÃO DE CORES (Create) ====================
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -51,16 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Feedback visual
             coresCreate.forEach(el => el.style.border = 'none');
-
-            corBtn.style.border = '3px solid #333'
+            corBtn.style.border = '3px solid #333';
         });
     });
 
-    btnCriar.addEventListener('click', (e) => {
-        e.preventDefault()
+    // ==================== BOTÃO CRIAR INSTITUIÇÃO ====================
+    btnCriar.addEventListener('click', async (e) => {
+        e.preventDefault();
 
-        const nome = nomeInst.value.trim()
-        const abreviacao = abrInst.value.trim()
+        const nome = nomeInst.value.trim();
+        const abreviacao = abrInst.value.trim();
 
         if (!nome) {
             alert("Digite o nome da instituição.");
@@ -72,52 +159,63 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        criarNovoCard(nome, abreviacao, corSelecionada);
+        // Desabilitar botão durante a requisição
+        btnCriar.disabled = true;
+        const textoOriginal = btnCriar.textContent;
+        btnCriar.textContent = 'Criando...';
 
-        nomeInst.value = '';
-        abrInst.value = '';
-        corSelecionada = 'rgb(10, 61, 183)';
-        coresCreate.forEach(el => el.style.border = 'none')
+        // Criar no banco de dados
+        const sucesso = await criarInstituicaoNoBanco(nome, abreviacao, corSelecionada);
 
-        createCardModal.style.display = 'none'
-        modalOverlay.classList.remove('ativo')
-        painelCreateAberto = false;
-    })
+        // Reabilitar botão
+        btnCriar.disabled = false;
+        btnCriar.textContent = textoOriginal;
 
-    let painelCreateAberto = false
+        if (sucesso) {
+            // Limpar formulário
+            nomeInst.value = '';
+            abrInst.value = '';
+            corSelecionada = 'rgb(10, 61, 183)';
+            coresCreate.forEach(el => el.style.border = 'none');
+
+            // Fechar modal
+            createCardModal.style.display = 'none';
+            modalOverlay.classList.remove('ativo');
+            painelCreateAberto = false;
+        }
+    });
+
+    let painelCreateAberto = false;
 
     const adicionarEventoBtnCreate = (btnCreate: HTMLButtonElement) => {
         btnCreate.addEventListener('click', (e) => {
-            e.stopPropagation()
+            e.stopPropagation();
 
             if (painelCreateAberto == false) {
-                createCardModal.style.display = 'block'
-                modalOverlay.classList.add('ativo')
-                painelCreateAberto = true
+                createCardModal.style.display = 'block';
+                modalOverlay.classList.add('ativo');
+                painelCreateAberto = true;
             } else {
-                createCardModal.style.display = 'none'
-                modalOverlay.classList.remove('ativo')
-                painelCreateAberto = false
+                createCardModal.style.display = 'none';
+                modalOverlay.classList.remove('ativo');
+                painelCreateAberto = false;
             }
-        })
-    }
+        });
+    };
 
     btnCreateCard.forEach((btnCreate) => {
-        adicionarEventoBtnCreate(btnCreate)
-    })
+        adicionarEventoBtnCreate(btnCreate);
+    });
 
-
-    //Edit Card
+    // ==================== EDIT CARD ====================
     let painelEditAberto = false;
     let cardAtual: HTMLDivElement | null = null;
 
-    // Verifica se o painel existe
     if (!edicaoCard) {
         console.error('Painel de edição não encontrado!');
         return;
     }
 
-    // Adiciona evento de clique em cada botão dos cards
     const adicionarEventoEdicao = (btn: HTMLButtonElement, card: HTMLDivElement) => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -149,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Adiciona evento nos cards existentes
+    // Adiciona evento nos cards existentes (se houver cards estáticos no HTML)
     btnsCard.forEach((btn) => {
         const card = btn.closest('.card') as HTMLDivElement;
         if (card) {
@@ -157,37 +255,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Seleciona a cor ao clicar em uma das opções
+    // ==================== SELEÇÃO DE CORES (Edit) ====================
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
 
             if (!cardAtual) return;
 
-            const corSelecionada = window.getComputedStyle(corElement).backgroundColor;
+            const corSelecionadaEdit = window.getComputedStyle(corElement).backgroundColor;
 
             // Aplica a cor ao card atual
-            cardAtual.style.backgroundColor = corSelecionada;
+            cardAtual.style.backgroundColor = corSelecionadaEdit;
 
             // Feedback visual
             coresEdit.forEach(el => el.style.border = 'none');
 
-            const salvarCor = (cor: string, instituicaoId: string) => {
-                localStorage.setItem(`cor_instituicao_${instituicaoId}`, cor);
-            };
-
-            // Opcional: salvar cor
+            // Salvar cor no localStorage
             const instituicaoId = cardAtual.dataset.id;
             if (instituicaoId) {
-                salvarCor(corSelecionada, instituicaoId);
+                localStorage.setItem(`cor_instituicao_${instituicaoId}`, corSelecionadaEdit);
+                console.log(`💾 Cor salva para instituição ${instituicaoId}`);
             }
         });
     });
 
-    // Fecha o painel ao clicar fora dele
+    // ==================== FECHAR PAINÉIS ====================
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
 
+        // Fechar painel de edição
         if (painelEditAberto &&
             !edicaoCard.contains(target) &&
             !target.closest('.btn-card')) {
@@ -199,10 +295,16 @@ document.addEventListener('DOMContentLoaded', () => {
             cardAtual = null;
         }
 
-        if (painelCreateAberto && !createCardModal.contains(target) && !target.closest('.btn-create-card')) {
-            createCardModal.style.display = 'none'
-            modalOverlay.classList.remove('ativo')
+        // Fechar modal de criação
+        if (painelCreateAberto && 
+            !createCardModal.contains(target) && 
+            !target.closest('.btn-create-card')) {
+            createCardModal.style.display = 'none';
+            modalOverlay.classList.remove('ativo');
             painelCreateAberto = false;
         }
     });
+
+    // ==================== CARREGAR INSTITUIÇÕES AO INICIAR ====================
+    carregarInstituicoes();
 });

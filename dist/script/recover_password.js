@@ -39,7 +39,7 @@ form.addEventListener('submit', async (e) => {
             emailInput.value = '';
             // Opcional: redirecionar após alguns segundos
             setTimeout(() => {
-                window.location.href = '/sign_in.html';
+                window.location.href = '/sign_in';
             }, 5000);
         }
         else {
