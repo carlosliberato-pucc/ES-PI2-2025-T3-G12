@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 credentials: 'include'
             });
             if (!response.ok) {
-                console.error('❌ Erro ao carregar instituições:', response.status);
+                console.error('Erro ao carregar instituições:', response.status);
                 return;
             }
             const result = await response.json();
@@ -31,14 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const corSalva = localStorage.getItem(`cor_instituicao_${instituicao.id_instituicao}`);
                     const cor = corSalva || 'rgb(10, 61, 183)';
                     // Criar card visual com dados do banco
-                    criarNovoCard(instituicao.nome, '', // Abreviação não está sendo salva no banco (pode adicionar depois se quiser)
-                    cor, instituicao.id_instituicao);
+                    criarNovoCard(instituicao.nome, instituicao.abreviacao, cor, instituicao.id_instituicao);
                 });
-                console.log(`✅ ${result.data.length} instituições carregadas`);
+                console.log(`${result.data.length} instituições carregadas`);
             }
         }
         catch (error) {
-            console.error('❌ Erro ao carregar instituições:', error);
+            console.error('Erro ao carregar instituições:', error);
         }
     };
     // ==================== CREATE CARD (Visual + Backend) ====================
@@ -88,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const result = await response.json();
             if (result.success) {
-                console.log('✅ Instituição criada no banco:', result.data);
+                console.log('Instituição criada no banco:', result.data);
                 // Salvar cor no localStorage
                 const idInstituicao = result.data.id_instituicao;
                 localStorage.setItem(`cor_instituicao_${idInstituicao}`, cor);
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         catch (error) {
-            console.error('❌ Erro ao criar instituição:', error);
+            console.error('Erro ao criar instituição:', error);
             alert('Erro ao conectar com o servidor. Tente novamente.');
             return false;
         }

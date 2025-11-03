@@ -20,10 +20,10 @@ const criarInstituicao = async (req, res) => {
                 message: 'Usuário não autenticado'
             });
         }
-        // Buscar ID do usuário pelo email
+        // Busca ID do usuário pelo email
         index_1.db.query('SELECT id_usuario FROM usuario WHERE email = ?', [userEmail], (err, userResults) => {
             if (err) {
-                console.error('❌ Erro ao buscar usuário:', err);
+                console.error('Erro ao buscar usuário:', err);
                 return res.status(500).json({
                     success: false,
                     message: 'Erro ao processar solicitação'
@@ -37,16 +37,16 @@ const criarInstituicao = async (req, res) => {
             }
             const userId = userResults[0].id_usuario;
             // Inserir instituição
-            index_1.db.query('INSERT INTO instituicao (nome, fk_usuario) VALUES (?, ?)', [nome, userId], (insertErr, insertResults) => {
+            index_1.db.query('INSERT INTO instituicao (nome, abreviacao, fk_usuario) VALUES (?, ?, ?)', [nome, abreviacao, userId], (insertErr, insertResults) => {
                 if (insertErr) {
-                    console.error('❌ Erro ao criar instituição:', insertErr);
+                    console.error('Erro ao criar instituição:', insertErr);
                     return res.status(500).json({
                         success: false,
                         message: 'Erro ao criar instituição'
                     });
                 }
                 const instituicaoId = insertResults.insertId;
-                console.log(`✅ Instituição criada: ${nome} (ID: ${instituicaoId})`);
+                console.log(`Instituição criada: ${nome} (ID: ${instituicaoId})`);
                 res.status(201).json({
                     success: true,
                     message: 'Instituição criada com sucesso',
@@ -61,7 +61,7 @@ const criarInstituicao = async (req, res) => {
         });
     }
     catch (error) {
-        console.error('❌ Erro ao criar instituição:', error);
+        console.error('Erro ao criar instituição:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'
@@ -82,7 +82,7 @@ const listarInstituicoes = async (req, res) => {
         // Buscar ID do usuário
         index_1.db.query('SELECT id_usuario FROM usuario WHERE email = ?', [userEmail], (err, userResults) => {
             if (err) {
-                console.error('❌ Erro ao buscar usuário:', err);
+                console.error('Erro ao buscar usuário:', err);
                 return res.status(500).json({
                     success: false,
                     message: 'Erro ao processar solicitação'
@@ -96,9 +96,9 @@ const listarInstituicoes = async (req, res) => {
             }
             const userId = userResults[0].id_usuario;
             // Buscar instituições do usuário
-            index_1.db.query('SELECT id_instituicao, nome FROM instituicao WHERE fk_usuario = ? ORDER BY nome', [userId], (instErr, instituicoes) => {
+            index_1.db.query('SELECT id_instituicao, nome, abreviacao FROM instituicao WHERE fk_usuario = ? ORDER BY nome', [userId], (instErr, instituicoes) => {
                 if (instErr) {
-                    console.error('❌ Erro ao buscar instituições:', instErr);
+                    console.error('Erro ao buscar instituições:', instErr);
                     return res.status(500).json({
                         success: false,
                         message: 'Erro ao buscar instituições'
@@ -112,7 +112,7 @@ const listarInstituicoes = async (req, res) => {
         });
     }
     catch (error) {
-        console.error('❌ Erro ao listar instituições:', error);
+        console.error('Erro ao listar instituições:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'
@@ -189,7 +189,7 @@ const deletarInstituicao = async (req, res) => {
              INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
              WHERE i.id_instituicao = ? AND u.email = ?`, [id, userEmail], (err, results) => {
             if (err) {
-                console.error('❌ Erro ao deletar instituição:', err);
+                console.error('Erro ao deletar instituição:', err);
                 return res.status(500).json({
                     success: false,
                     message: 'Erro ao deletar instituição'
@@ -201,7 +201,7 @@ const deletarInstituicao = async (req, res) => {
                     message: 'Instituição não encontrada ou não pertence ao usuário'
                 });
             }
-            console.log(`✅ Instituição deletada: ID ${id}`);
+            console.log(`Instituição deletada: ID ${id}`);
             res.json({
                 success: true,
                 message: 'Instituição deletada com sucesso'
@@ -209,7 +209,7 @@ const deletarInstituicao = async (req, res) => {
         });
     }
     catch (error) {
-        console.error('❌ Erro ao deletar instituição:', error);
+        console.error('Erro ao deletar instituição:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'

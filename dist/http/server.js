@@ -46,6 +46,9 @@ const path_1 = __importDefault(require("path")); // Módulo nativo do Node.js pa
 const authRouter_1 = __importDefault(require("../database/auth/authRouter")); // Importa as rotas de login/cadastro.
 const express_session_1 = __importDefault(require("express-session"));
 const institutionRouter_1 = __importDefault(require("../database/institutions/institutionRouter"));
+const courseRouter_1 = __importDefault(require("../database/courses/courseRouter"));
+const disciplineRouter_1 = __importDefault(require("../database/disciplines/disciplineRouter"));
+const classRouter_1 = __importDefault(require("../database/classes/classRouter"));
 const app = (0, express_1.default)(); // Inicializa o aplicativo Express.
 // Configuração do express-session
 app.use((0, express_session_1.default)({
@@ -98,9 +101,6 @@ app.get('/recover_password', (req, res) => {
 app.get('/input_new_password', (req, res) => {
     res.sendFile('input_new_password.html', { root: publicPath });
 });
-app.get('/instituicoes', (req, res) => {
-    res.sendFile('instituicoes.html', { root: publicPath });
-});
 app.get('/sign_in', (req, res) => {
     if (req.session.userEmail) {
         return res.redirect('/dashboard');
@@ -118,6 +118,21 @@ app.get('/sign_up', (req, res) => {
 app.use('/auth', authRouter_1.default);
 // rotas protegidas
 app.use('/api/instituicoes', verificarAutenticacao, institutionRouter_1.default);
+app.use('/api/cursos', verificarAutenticacao, courseRouter_1.default);
+app.use('/api/disciplinas', verificarAutenticacao, disciplineRouter_1.default);
+app.use('/api/turmas', verificarAutenticacao, classRouter_1.default);
+app.get('/instituicoes', verificarAutenticacao, (req, res) => {
+    res.sendFile('instituicoes.html', { root: publicPath });
+});
+app.get('/cursos', verificarAutenticacao, (req, res) => {
+    res.sendFile('cursos.html', { root: publicPath });
+});
+app.get('/disciplinas', verificarAutenticacao, (req, res) => {
+    res.sendFile('disciplinas.html', { root: publicPath });
+});
+app.get('/turmas', verificarAutenticacao, (req, res) => {
+    res.sendFile('turmas.html', { root: publicPath });
+});
 app.get('/dashboard', verificarAutenticacao, (req, res) => {
     res.sendFile('dashboard.html', { root: publicPath });
 });

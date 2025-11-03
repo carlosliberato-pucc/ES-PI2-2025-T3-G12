@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
 
-    // ==================== CARREGAR INSTITUIÇÕES DO BANCO ====================
     const carregarInstituicoes = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/instituicoes', {
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                console.error('❌ Erro ao carregar instituições:', response.status);
+                console.error('Erro ao carregar instituições:', response.status);
                 return;
             }
 
@@ -39,20 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Criar card visual com dados do banco
                     criarNovoCard(
                         instituicao.nome,
-                        '', // Abreviação não está sendo salva no banco (pode adicionar depois se quiser)
+                        instituicao.abreviacao,
                         cor,
                         instituicao.id_instituicao
                     );
                 });
 
-                console.log(`✅ ${result.data.length} instituições carregadas`);
+                console.log(`${result.data.length} instituições carregadas`);
             }
         } catch (error) {
-            console.error('❌ Erro ao carregar instituições:', error);
+            console.error('Erro ao carregar instituições:', error);
         }
     };
 
-    // ==================== CREATE CARD (Visual + Backend) ====================
     const criarNovoCard = (nome: string, abreviacao: string, cor: string, idInstituicao?: number) => {
         const section = document.querySelector("main section");
 
@@ -64,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (idInstituicao) {
             novoCard.dataset.id = idInstituicao.toString();
         }
-
         novoCard.innerHTML = `
             <button class="btn-card">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
 
-    // ==================== CRIAR INSTITUIÇÃO NO BANCO ====================
     const criarInstituicaoNoBanco = async (nome: string, abreviacao: string, cor: string): Promise<boolean> => {
         try {
             const response = await fetch('http://localhost:3000/api/instituicoes', {
@@ -108,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.success) {
-                console.log('✅ Instituição criada no banco:', result.data);
+                console.log('Instituição criada no banco:', result.data);
                 
                 // Salvar cor no localStorage
                 const idInstituicao = result.data.id_instituicao;
@@ -123,13 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
         } catch (error) {
-            console.error('❌ Erro ao criar instituição:', error);
+            console.error('Erro ao criar instituição:', error);
             alert('Erro ao conectar com o servidor. Tente novamente.');
             return false;
         }
     };
 
-    // ==================== SELEÇÃO DE CORES (Create) ====================
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -142,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ==================== BOTÃO CRIAR INSTITUIÇÃO ====================
     btnCriar.addEventListener('click', async (e) => {
         e.preventDefault();
 
@@ -255,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==================== SELEÇÃO DE CORES (Edit) ====================
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -274,12 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const instituicaoId = cardAtual.dataset.id;
             if (instituicaoId) {
                 localStorage.setItem(`cor_instituicao_${instituicaoId}`, corSelecionadaEdit);
-                console.log(`💾 Cor salva para instituição ${instituicaoId}`);
+                console.log(`Cor salva para instituição ${instituicaoId}`);
             }
         });
     });
 
-    // ==================== FECHAR PAINÉIS ====================
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
 
@@ -305,6 +297,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ==================== CARREGAR INSTITUIÇÕES AO INICIAR ====================
     carregarInstituicoes();
 });

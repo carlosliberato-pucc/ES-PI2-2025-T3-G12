@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idInstituicao = urlParams.get('id_instituicao');
+    const idCurso = urlParams.get('id_curso');
+
+    if (!idInstituicao || !idCurso) {
+        alert('ID da instituição ou ID curso não encontrado');
+        window.location.href = '/dashboard';
+        return;
+    }
+
     const btnsCard = document.querySelectorAll<HTMLButtonElement>(".btn-card");
     const edicaoCard = document.querySelector<HTMLDivElement>(".edicao-card");
 
@@ -14,8 +24,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
 
+    const carregarDisciplinas = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/disciplinas?id_instituicao=${idInstituicao}&id_curso=${idCurso}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+            console.error('Erro ao carregar disciplinas:', response.status);
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.success && Array.isArray(result.data)) {
+                result.data.forEach((disciplina: any) => {
+                    // Buscar cor salva no localStorage
+                    const corSalva = localStorage.getItem(`cor_disciplina_${disciplina.id_disciplina}`);
+                    const cor = corSalva || 'rgb(10, 61, 183)';
+
+                    // Criar card visual com dados do banco
+                    criarNovoCard(
+                        disciplina.nome,
+                        disciplina.sigla || 'Não informado',
+                        cor,
+                        disciplina.id_disciplina
+                    );
+                });
+
+                console.log(`${result.data.length} disciplinas carregados`);
+            }
+        } catch(erro) {
+            console.error('Erro ao carregar disciplinas: ', erro);
+        }
+    }
+
     //Create Card
-    const criarNovoCard = (nome: string, sigla: string, cor: string) => {
+    const criarNovoCard = (nome: string, sigla: string, cor: string, id_disciplina?: number) => {
         const section = document.querySelector("main section")
 
         const novoCard = document.createElement("div") as HTMLDivElement
@@ -36,12 +82,52 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>                
         `
 
+        novoCard.addEventListener('click', (e) => {
+            const clickedElement = e.target as HTMLElement;
+            if (!clickedElement.closest('.btn-card') && id_disciplina) {
+                window.location.href = `/turmas?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${id_disciplina}`;
+            }
+        });
+
         section?.appendChild(novoCard)
 
         // Adiciona evento ao botão do novo card
         const btnNovoCard = novoCard.querySelector('.btn-card') as HTMLButtonElement;
         adicionarEventoEdicao(btnNovoCard, novoCard);
-    }
+    };
+    //criar disciplina no banco
+    const criarDisciplinaNoBanco = async (nome: string, sigla: string, cor: string): Promise<boolean> => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/disciplinas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ id_instituicao: idInstituicao, id_curso: idCurso, nome, sigla })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                console.log('Curso criado no banco:', result.data);
+                
+                // Salvar cor no localStorage
+                const id_disciplina = result.data.id_disciplina;
+                localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
+
+                // Criar card visual com o ID do banco
+                criarNovoCard(nome, sigla, cor, id_disciplina);
+
+                return true;
+            } else {
+                alert(result.message || 'Erro ao criar curso');
+                return false;
+            }
+        } catch (error) {
+            console.error('Erro ao criar disciplina:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
+            return false;
+        }
+    };
 
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
@@ -56,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    btnCriar.addEventListener('click', (e) => {
+    btnCriar.addEventListener('click', async (e) => {
         e.preventDefault()
 
         const nome = nomeInst.value.trim()
@@ -72,16 +158,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        criarNovoCard(nome, sigla, corSelecionada);
+        btnCriar.disabled = true;
+        const textoOriginal = btnCriar.textContent;
+        btnCriar.textContent = 'Criando...';
 
-        nomeInst.value = '';
-        siglaDisc.value = '';
-        corSelecionada = 'rgb(10, 61, 183)';
-        coresCreate.forEach(el => el.style.border = 'none')
+        const sucesso = await criarDisciplinaNoBanco(nome, sigla, corSelecionada);
 
-        createCardModal.style.display = 'none'
-        modalOverlay.classList.remove('ativo')
-        painelCreateAberto = false;
+        btnCriar.disabled = false;
+        btnCriar.textContent = textoOriginal;
+
+        if(sucesso){
+            nomeInst.value = '';
+            siglaDisc.value = '';
+            corSelecionada = 'rgb(10, 61, 183)';
+            coresCreate.forEach(el => el.style.border = 'none')
+
+            createCardModal.style.display = 'none'
+            modalOverlay.classList.remove('ativo')
+            painelCreateAberto = false;
+        }
     })
 
     let painelCreateAberto = false
@@ -172,8 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Feedback visual
             coresEdit.forEach(el => el.style.border = 'none');
 
-            const salvarCor = (cor: string, instituicaoId: string) => {
-                localStorage.setItem(`cor_instituicao_${instituicaoId}`, cor);
+            const salvarCor = (cor: string, id_disciplina: string) => {
+                localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
             };
 
             // Opcional: salvar cor
@@ -205,4 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
             painelCreateAberto = false;
         }
     });
+
+    carregarDisciplinas();
 });

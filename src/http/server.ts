@@ -10,6 +10,9 @@ import path from 'path'; // Módulo nativo do Node.js para trabalhar com caminho
 import authRoutes from '../database/auth/authRouter'; // Importa as rotas de login/cadastro.
 import session from 'express-session';
 import institutionRoutes from '../database/institutions/institutionRouter';
+import courseRoutes from '../database/courses/courseRouter';
+import disciplinesRoutes from '../database/disciplines/disciplineRouter';
+import classRoutes from '../database/classes/classRouter';
 
 const app = express(); // Inicializa o aplicativo Express.
 
@@ -74,10 +77,6 @@ app.get('/input_new_password', (req, res) => {
     res.sendFile('input_new_password.html', { root: publicPath });
 });
 
-app.get('/instituicoes', (req, res) => {
-    res.sendFile('instituicoes.html', { root: publicPath });
-});
-
 app.get('/sign_in', (req, res) => {
     if (req.session.userEmail) {
         return res.redirect('/dashboard');
@@ -98,6 +97,26 @@ app.use('/auth', authRoutes);
 
 // rotas protegidas
 app.use('/api/instituicoes', verificarAutenticacao, institutionRoutes);
+app.use('/api/cursos', verificarAutenticacao, courseRoutes);
+app.use('/api/disciplinas', verificarAutenticacao, disciplinesRoutes);
+app.use('/api/turmas', verificarAutenticacao, classRoutes);
+
+app.get('/instituicoes', verificarAutenticacao, (req, res) => {
+    res.sendFile('instituicoes.html', { root: publicPath });
+});
+
+app.get('/cursos', verificarAutenticacao, (req, res) => {
+    res.sendFile('cursos.html', { root: publicPath });
+});
+
+app.get('/disciplinas', verificarAutenticacao, (req, res) => {
+    res.sendFile('disciplinas.html', { root: publicPath });
+});
+
+app.get('/turmas', verificarAutenticacao, (req, res) => {
+    res.sendFile('turmas.html', { root: publicPath });
+});
+
 app.get('/dashboard', verificarAutenticacao, (req, res) => {
     res.sendFile('dashboard.html', { root: publicPath });
 });

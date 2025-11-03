@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from '../index';
 
-// ==================== CRIAR INSTITUIÇÃO ====================
 export const criarInstituicao = async (req: Request, res: Response) => {
     try {
         const { nome, abreviacao, cor } = req.body;
@@ -22,13 +21,13 @@ export const criarInstituicao = async (req: Request, res: Response) => {
             });
         }
 
-        // Buscar ID do usuário pelo email
+        // Busca ID do usuário pelo email
         db.query(
             'SELECT id_usuario FROM usuario WHERE email = ?',
             [userEmail],
             (err, userResults) => {
                 if (err) {
-                    console.error('❌ Erro ao buscar usuário:', err);
+                    console.error('Erro ao buscar usuário:', err);
                     return res.status(500).json({
                         success: false,
                         message: 'Erro ao processar solicitação'
@@ -46,11 +45,11 @@ export const criarInstituicao = async (req: Request, res: Response) => {
 
                 // Inserir instituição
                 db.query(
-                    'INSERT INTO instituicao (nome, fk_usuario) VALUES (?, ?)',
-                    [nome, userId],
+                    'INSERT INTO instituicao (nome, abreviacao, fk_usuario) VALUES (?, ?, ?)',
+                    [nome, abreviacao, userId],
                     (insertErr, insertResults: any) => {
                         if (insertErr) {
-                            console.error('❌ Erro ao criar instituição:', insertErr);
+                            console.error('Erro ao criar instituição:', insertErr);
                             return res.status(500).json({
                                 success: false,
                                 message: 'Erro ao criar instituição'
@@ -59,7 +58,7 @@ export const criarInstituicao = async (req: Request, res: Response) => {
 
                         const instituicaoId = insertResults.insertId;
 
-                        console.log(`✅ Instituição criada: ${nome} (ID: ${instituicaoId})`);
+                        console.log(`Instituição criada: ${nome} (ID: ${instituicaoId})`);
 
                         res.status(201).json({
                             success: true,
@@ -77,7 +76,7 @@ export const criarInstituicao = async (req: Request, res: Response) => {
         );
 
     } catch (error) {
-        console.error('❌ Erro ao criar instituição:', error);
+        console.error('Erro ao criar instituição:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'
@@ -85,7 +84,7 @@ export const criarInstituicao = async (req: Request, res: Response) => {
     }
 };
 
-// ==================== LISTAR INSTITUIÇÕES DO USUÁRIO ====================
+// lista as instituições
 export const listarInstituicoes = async (req: Request, res: Response) => {
     try {
         const userEmail = req.session.userEmail;
@@ -103,7 +102,7 @@ export const listarInstituicoes = async (req: Request, res: Response) => {
             [userEmail],
             (err, userResults) => {
                 if (err) {
-                    console.error('❌ Erro ao buscar usuário:', err);
+                    console.error('Erro ao buscar usuário:', err);
                     return res.status(500).json({
                         success: false,
                         message: 'Erro ao processar solicitação'
@@ -121,11 +120,11 @@ export const listarInstituicoes = async (req: Request, res: Response) => {
 
                 // Buscar instituições do usuário
                 db.query(
-                    'SELECT id_instituicao, nome FROM instituicao WHERE fk_usuario = ? ORDER BY nome',
+                    'SELECT id_instituicao, nome, abreviacao FROM instituicao WHERE fk_usuario = ? ORDER BY nome',
                     [userId],
                     (instErr, instituicoes) => {
                         if (instErr) {
-                            console.error('❌ Erro ao buscar instituições:', instErr);
+                            console.error('Erro ao buscar instituições:', instErr);
                             return res.status(500).json({
                                 success: false,
                                 message: 'Erro ao buscar instituições'
@@ -142,7 +141,7 @@ export const listarInstituicoes = async (req: Request, res: Response) => {
         );
 
     } catch (error) {
-        console.error('❌ Erro ao listar instituições:', error);
+        console.error('Erro ao listar instituições:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'
@@ -150,69 +149,7 @@ export const listarInstituicoes = async (req: Request, res: Response) => {
     }
 };
 
-// ==================== ATUALIZAR COR DA INSTITUIÇÃO ====================
-export const atualizarCorInstituicao = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const { cor } = req.body;
-        const userEmail = req.session.userEmail;
-
-        if (!userEmail) {
-            return res.status(401).json({
-                success: false,
-                message: 'Usuário não autenticado'
-            });
-        }
-
-        if (!cor) {
-            return res.status(400).json({
-                success: false,
-                message: 'Cor é obrigatória'
-            });
-        }
-
-        // Verificar se a instituição pertence ao usuário
-        db.query(
-            `SELECT i.id_instituicao 
-             FROM instituicao i
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE i.id_instituicao = ? AND u.email = ?`,
-            [id, userEmail],
-            (err, results) => {
-                if (err) {
-                    console.error('Erro ao verificar instituição:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Erro ao processar solicitação'
-                    });
-                }
-
-                if (!Array.isArray(results) || results.length === 0) {
-                    return res.status(404).json({
-                        success: false,
-                        message: 'Instituição não encontrada ou não pertence ao usuário'
-                    });
-                }
-
-                // Por enquanto, apenas retorna sucesso
-                // A cor será salva no localStorage no frontend
-                res.json({
-                    success: true,
-                    message: 'Cor atualizada com sucesso'
-                });
-            }
-        );
-
-    } catch (error) {
-        console.error('Erro ao atualizar cor:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao processar solicitação'
-        });
-    }
-};
-
-// ==================== DELETAR INSTITUIÇÃO ====================
+// deleta a instituição
 export const deletarInstituicao = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -233,7 +170,7 @@ export const deletarInstituicao = async (req: Request, res: Response) => {
             [id, userEmail],
             (err, results: any) => {
                 if (err) {
-                    console.error('❌ Erro ao deletar instituição:', err);
+                    console.error('Erro ao deletar instituição:', err);
                     return res.status(500).json({
                         success: false,
                         message: 'Erro ao deletar instituição'
@@ -247,7 +184,7 @@ export const deletarInstituicao = async (req: Request, res: Response) => {
                     });
                 }
 
-                console.log(`✅ Instituição deletada: ID ${id}`);
+                console.log(`Instituição deletada: ID ${id}`);
 
                 res.json({
                     success: true,
@@ -257,7 +194,7 @@ export const deletarInstituicao = async (req: Request, res: Response) => {
         );
 
     } catch (error) {
-        console.error('❌ Erro ao deletar instituição:', error);
+        console.error('Erro ao deletar instituição:', error);
         res.status(500).json({
             success: false,
             message: 'Erro ao processar solicitação'
