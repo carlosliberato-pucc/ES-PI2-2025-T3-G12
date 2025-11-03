@@ -11,8 +11,6 @@ const router = express_1.default.Router();
 router.post('/', institutionController_1.criarInstituicao);
 // GET /api/instituicoes - Listar todas as instituições do usuário
 router.get('/', institutionController_1.listarInstituicoes);
-// PATCH /api/instituicoes/:id/cor - Atualizar cor da instituição
-router.patch('/:id/cor', institutionController_1.atualizarCorInstituicao);
 // DELETE /api/instituicoes/:id - Deletar instituição
 router.delete('/:id', institutionController_1.deletarInstituicao);
 exports.default = router;

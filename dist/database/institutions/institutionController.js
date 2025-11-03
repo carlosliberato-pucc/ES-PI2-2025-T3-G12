@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletarInstituicao = exports.atualizarCorInstituicao = exports.listarInstituicoes = exports.criarInstituicao = void 0;
+exports.deletarInstituicao = exports.listarInstituicoes = exports.criarInstituicao = void 0;
 const index_1 = require("../index");
-// ==================== CRIAR INSTITUIÇÃO ====================
 const criarInstituicao = async (req, res) => {
     try {
         const { nome, abreviacao, cor } = req.body;
@@ -69,7 +68,7 @@ const criarInstituicao = async (req, res) => {
     }
 };
 exports.criarInstituicao = criarInstituicao;
-// ==================== LISTAR INSTITUIÇÕES DO USUÁRIO ====================
+// lista as instituições
 const listarInstituicoes = async (req, res) => {
     try {
         const userEmail = req.session.userEmail;
@@ -120,60 +119,7 @@ const listarInstituicoes = async (req, res) => {
     }
 };
 exports.listarInstituicoes = listarInstituicoes;
-// ==================== ATUALIZAR COR DA INSTITUIÇÃO ====================
-const atualizarCorInstituicao = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { cor } = req.body;
-        const userEmail = req.session.userEmail;
-        if (!userEmail) {
-            return res.status(401).json({
-                success: false,
-                message: 'Usuário não autenticado'
-            });
-        }
-        if (!cor) {
-            return res.status(400).json({
-                success: false,
-                message: 'Cor é obrigatória'
-            });
-        }
-        // Verificar se a instituição pertence ao usuário
-        index_1.db.query(`SELECT i.id_instituicao 
-             FROM instituicao i
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE i.id_instituicao = ? AND u.email = ?`, [id, userEmail], (err, results) => {
-            if (err) {
-                console.error('Erro ao verificar instituição:', err);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Erro ao processar solicitação'
-                });
-            }
-            if (!Array.isArray(results) || results.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Instituição não encontrada ou não pertence ao usuário'
-                });
-            }
-            // Por enquanto, apenas retorna sucesso
-            // A cor será salva no localStorage no frontend
-            res.json({
-                success: true,
-                message: 'Cor atualizada com sucesso'
-            });
-        });
-    }
-    catch (error) {
-        console.error('Erro ao atualizar cor:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao processar solicitação'
-        });
-    }
-};
-exports.atualizarCorInstituicao = atualizarCorInstituicao;
-// ==================== DELETAR INSTITUIÇÃO ====================
+// deleta a instituição
 const deletarInstituicao = async (req, res) => {
     try {
         const { id } = req.params;

@@ -70,7 +70,7 @@ const criarTurma = async (req, res) => {
     }
 };
 exports.criarTurma = criarTurma;
-// ==================== LISTAR TURMAS ====================
+// listar turmas
 const listarTurmas = async (req, res) => {
     try {
         const { id_instituicao, id_curso, id_disciplina } = req.query;

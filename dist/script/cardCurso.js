@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
     const modalOverlay = document.querySelector('.modal-overlay');
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
-    // ==================== CARREGAR CURSOS DO BANCO ====================
+    // carregar cursos
     const carregarCursos = async () => {
         try {
             const response = await fetch(`http://localhost:3000/api/cursos?id_instituicao=${idInstituicao}`, {

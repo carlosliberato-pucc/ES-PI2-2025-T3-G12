@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
     const modalOverlay = document.querySelector('.modal-overlay');
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
-    // ==================== CARREGAR TURMAS DO BANCO ====================
     const carregarTurmas = async () => {
         try {
             const response = await fetch(`http://localhost:3000/api/turmas?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}`, {
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 credentials: 'include'
             });
             if (!response.ok) {
-                console.error('❌ Erro ao carregar turmas:', response.status);
+                console.error('Erro ao carregar turmas:', response.status);
                 return;
             }
             const result = await response.json();
@@ -40,14 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Criar card visual com dados do banco
                     criarNovoCard(turma.nome, cor, turma.id_turma);
                 });
-                console.log(`✅ ${result.data.length} turmas carregadas`);
+                console.log(`${result.data.length} turmas carregadas`);
             }
         }
         catch (erro) {
-            console.error('❌ Erro ao carregar turmas:', erro);
+            console.error('Erro ao carregar turmas:', erro);
         }
     };
-    // ==================== CRIAR CARD VISUAL ====================
     const criarNovoCard = (nome, cor, id_turma) => {
         const section = document.querySelector("main section");
         const novoCard = document.createElement("div");
@@ -81,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnNovoCard = novoCard.querySelector('.btn-card');
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
-    // ==================== CRIAR TURMA NO BANCO ====================
     const criarTurmaNoBanco = async (nome, cor) => {
         try {
             const response = await fetch(`http://localhost:3000/api/turmas`, {
@@ -97,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const result = await response.json();
             if (result.success) {
-                console.log('✅ Turma criada no banco:', result.data);
+                console.log('Turma criada no banco:', result.data);
                 // Salvar cor no localStorage
                 const id_turma = result.data.id_turma;
                 localStorage.setItem(`cor_turma_${id_turma}`, cor);
@@ -111,12 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         catch (error) {
-            console.error('❌ Erro ao criar turma:', error);
+            console.error('Erro ao criar turma:', error);
             alert('Erro ao conectar com o servidor. Tente novamente.');
             return false;
         }
     };
-    // ==================== SELEÇÃO DE CORES (Create) ====================
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -126,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
             corBtn.style.border = '3px solid #333';
         });
     });
-    // ==================== BOTÃO CRIAR TURMA ====================
     btnCriar.addEventListener('click', async (e) => {
         e.preventDefault();
         const nome = nomeInst.value.trim();
@@ -173,11 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCreateCard.forEach((btnCreate) => {
         adicionarEventoBtnCreate(btnCreate);
     });
-    // ==================== EDIT CARD ====================
     let painelEditAberto = false;
     let cardAtual = null;
     if (!edicaoCard) {
-        console.error('❌ Painel de edição não encontrado!');
+        console.error('Painel de edição não encontrado!');
         return;
     }
     const adicionarEventoEdicao = (btn, card) => {
@@ -214,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             adicionarEventoEdicao(btn, card);
         }
     });
-    // ==================== SELEÇÃO DE CORES (Edit) ====================
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -233,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    // ==================== FECHAR PAINÉIS ====================
     document.addEventListener('click', (e) => {
         const target = e.target;
         // Fechar painel de edição
@@ -256,6 +248,5 @@ document.addEventListener('DOMContentLoaded', () => {
             painelCreateAberto = false;
         }
     });
-    // ==================== CARREGAR TURMAS AO INICIAR ====================
     carregarTurmas();
 });

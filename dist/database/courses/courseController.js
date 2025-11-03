@@ -65,7 +65,7 @@ const criarCurso = async (req, res) => {
     }
 };
 exports.criarCurso = criarCurso;
-// ==================== LISTAR CURSOS ====================
+// listar cursos
 const listarCursos = async (req, res) => {
     try {
         const { id_instituicao } = req.query;
@@ -125,7 +125,7 @@ const listarCursos = async (req, res) => {
     }
 };
 exports.listarCursos = listarCursos;
-// ==================== DELETAR CURSO ====================
+// deletar curso
 const deletarCurso = async (req, res) => {
     try {
         const { id_curso } = req.params;
