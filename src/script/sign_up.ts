@@ -1,9 +1,30 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato e Felipe Miranda
 
 // Captura o botão de cadastro pelo ID "signup-btn".
 const signupBtn = document.getElementById("signup-btn") as HTMLButtonElement;
 // Captura o elemento DIV onde as mensagens de status (sucesso/erro) serão exibidas.
 const messageDiv_SUP = document.getElementById("signup-message") as HTMLDivElement; 
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Verifica se já está logado
+    try {
+        const response = await fetch('http://localhost:3000/auth/verificar-sessao', {
+            credentials: 'include',
+            cache: 'no-cache'
+        });
+        
+        const data = await response.json();
+        
+        if (data.logado) {
+            // Já está logado! Redireciona para o dashboard
+            console.log('✅ Usuário já está logado, redirecionando...');
+            window.location.replace('/dashboard');
+            return;
+        }
+    } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
+    }
+});
 
 // Adiciona um "ouvinte" para o evento de clique no botão de cadastro.
 signupBtn.addEventListener("click", async (e) => {
@@ -50,6 +71,7 @@ signupBtn.addEventListener("click", async (e) => {
         const response = await fetch("http://192.168.1.72:3000/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             // Mapeia os dados do frontend para os nomes que o backend espera (nome, telefone, senha).
             body: JSON.stringify({ nome: name, email, telefone: phone, senha: password }),
         });
@@ -62,7 +84,7 @@ signupBtn.addEventListener("click", async (e) => {
         // 6. Ação em Caso de Falha:
         if (response.ok) {
             setTimeout(() => {
-                window.location.href = "/dashboard.html"
+                window.location.href = "/dashboard"
             }, 500)
         }else{
             // Se o cadastro falhar (e-mail duplicado, erro no servidor), reabilita o botão para nova tentativa.

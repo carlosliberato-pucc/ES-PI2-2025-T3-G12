@@ -1,9 +1,29 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato e Felipe Miranda
 
 // Captura o botão de login pelo ID "login-btn"
 const signinBtn = document.getElementById("login-btn") as HTMLButtonElement;
 // Captura o elemento DIV onde as mensagens de status (sucesso/erro) serão exibidas.
-const messageDiv_SIN = document.getElementById("signin-message") as HTMLDivElement; 
+const messageDiv_SIN = document.getElementById("signin-message") as HTMLDivElement;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Verifica se já está logado
+    try {
+        const response = await fetch('http://localhost:3000/auth/verificar-sessao', {
+            credentials: 'include',
+            cache: 'no-cache'
+        });
+        
+        const data = await response.json();
+        
+        if (data.logado) {
+            // Já está logado! Redireciona para o dashboard
+            window.location.replace('/dashboard');
+            return; // Para a execução do resto do código
+        }
+    } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
+    }
+});
 
 
 // Adiciona um "ouvinte" para o evento de clique no botão de login.
@@ -36,6 +56,7 @@ signinBtn.addEventListener("click", async (e) => {
         const response = await fetch("http://192.168.1.72:3000/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include", // faz a resposta enviar cookies para outras rotas
             // Envia e-mail e a senha (correta no backend: 'senha') em formato JSON.
             body: JSON.stringify({ email, senha: password }),
         });
@@ -49,7 +70,7 @@ signinBtn.addEventListener("click", async (e) => {
         if (response.ok) {
             // Se o login for bem-sucedido, redireciona para o dashboard após 1.5 segundos.
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             }, 500);
         } else {
             // Se houver falha (401, 500), reabilita o botão para permitir nova tentativa.

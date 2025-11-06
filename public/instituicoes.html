@@ -26,7 +26,7 @@
                     <div class="small muted">Olá, Professor(a)</div>
                     <div style="display:flex;gap:8px;align-items:center">
                         <img class="avatar" src="img/avatar.jpg" alt="Icone de perfil">
-                        <a href="#" class="link">Sair</a>
+                        <a class="link" href="#" id="logout-btn">Sair</a>
                     </div>
                 </div>
             </div>
@@ -38,11 +38,11 @@
             <div class="divider" style="padding:12px;margin-bottom:12px">
                 <div style="font-weight:600">Navegação</div>
                 <ul style="list-style:none;padding:8px 0;margin:0;display:grid;gap:6px">
-                    <li><a href="dashboard.html" class="link">Painel do Docente</a></li>
-                    <li><a href="instituicoes.html" class="link">Instituições</a></li>
-                    <li><a href="cursos.html" class="link">Cursos</a></li>
-                    <li><a href="disciplinas.html" class="link">Disciplinas</a></li>
-                    <li><a href="turmas.html" class="link">Turmas</a></li>
+                    <li><a href="dashboard" class="link">Painel do Docente</a></li>
+                    <li><a href="instituicoes" class="link">Instituições</a></li>
+                    <li><a href="cursos" class="link">Cursos</a></li>
+                    <li><a href="disciplinas" class="link">Disciplinas</a></li>
+                    <li><a href="turmas" class="link">Turmas</a></li>
                 </ul>
             </div>
 
@@ -50,10 +50,10 @@
                 <div style="font-weight:600;margin-bottom:8px;">Atalhos rápidos</div>
                 <div style="display:grid;gap:8px">
                     <a class="btn btn-create-card">+ Nova Instituição</a>
-                    <a class="btn" href="cursos.html">+ Novo Curso</a>
-                    <a class="btn" href="disciplinas.html">+ Nova Disciplina</a>
-                    <a class="btn" href="turmas.html">+ Nova Turma</a>
-                    <a class="btn" href="alunos.html">Importar Alunos</a>
+                    <a class="btn" href="cursos">+ Novo Curso</a>
+                    <a class="btn" href="disciplinas">+ Nova Disciplina</a>
+                    <a class="btn" href="turmas">+ Nova Turma</a>
+                    <a class="btn" href="alunos">Importar Alunos</a>
                 </div>
             </div>
 
@@ -133,6 +133,7 @@
     </div>
 
     <script src="../dist/script/cardInstituicao.js"></script>
+    <script src="/dist/script/logout.js"></script>
 
 </body>
 

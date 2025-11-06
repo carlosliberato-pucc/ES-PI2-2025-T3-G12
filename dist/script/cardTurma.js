@@ -1,5 +1,15 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', () => {
+    // Pegar IDs da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const idInstituicao = urlParams.get('id_instituicao');
+    const idCurso = urlParams.get('id_curso');
+    const idDisciplina = urlParams.get('id_disciplina');
+    if (!idInstituicao || !idCurso || !idDisciplina) {
+        alert('Parâmetros da URL incompletos');
+        window.location.href = '/dashboard';
+        return;
+    }
     const btnsCard = document.querySelectorAll(".btn-card");
     const edicaoCard = document.querySelector(".edicao-card");
     const coresEdit = document.querySelectorAll('.cor-btn[data-context="edit"]');
@@ -10,29 +20,98 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
     const modalOverlay = document.querySelector('.modal-overlay');
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
-    //Create Card
-    const criarNovoCard = (nome, cor) => {
+    const carregarTurmas = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/turmas?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                console.error('Erro ao carregar turmas:', response.status);
+                return;
+            }
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                result.data.forEach((turma) => {
+                    // Buscar cor salva no localStorage
+                    const corSalva = localStorage.getItem(`cor_turma_${turma.id_turma}`);
+                    const cor = corSalva || 'rgb(10, 61, 183)';
+                    // Criar card visual com dados do banco
+                    criarNovoCard(turma.nome, cor, turma.id_turma);
+                });
+                console.log(`${result.data.length} turmas carregadas`);
+            }
+        }
+        catch (erro) {
+            console.error('Erro ao carregar turmas:', erro);
+        }
+    };
+    const criarNovoCard = (nome, cor, id_turma) => {
         const section = document.querySelector("main section");
         const novoCard = document.createElement("div");
         novoCard.classList.add("card");
         novoCard.style.backgroundColor = cor;
+        if (id_turma) {
+            novoCard.dataset.id = id_turma.toString();
+        }
         novoCard.innerHTML = `
-                    <button class="btn-card">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                            <path fill="#ffffff"
-                                d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
-                        </svg>
-                    </button>
-                    <div class="descricao">
-                        <h1 style="font-size:20px;">${nome}</h1>
-                        <h2>${nome}</h2>
-                    </div>                
+            <button class="btn-card">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                    <path fill="#ffffff"
+                        d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
+                </svg>
+            </button>
+            <div class="descricao">
+                <h1 style="font-size:20px;">${nome}</h1>
+                <h2>${nome}</h2>
+            </div>                
         `;
+        // Clicar no card leva para alunos (próxima etapa)
+        novoCard.addEventListener('click', (e) => {
+            const clickedElement = e.target;
+            if (!clickedElement.closest('.btn-card') && id_turma) {
+                // Futura navegação para alunos
+                window.location.href = `/alunos?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}&id_turma=${id_turma}`;
+            }
+        });
         section?.appendChild(novoCard);
         // Adiciona evento ao botão do novo card
         const btnNovoCard = novoCard.querySelector('.btn-card');
         adicionarEventoEdicao(btnNovoCard, novoCard);
+    };
+    const criarTurmaNoBanco = async (nome, cor) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/turmas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    id_instituicao: idInstituicao,
+                    id_curso: idCurso,
+                    id_disciplina: idDisciplina,
+                    nome
+                })
+            });
+            const result = await response.json();
+            if (result.success) {
+                console.log('Turma criada no banco:', result.data);
+                // Salvar cor no localStorage
+                const id_turma = result.data.id_turma;
+                localStorage.setItem(`cor_turma_${id_turma}`, cor);
+                // Criar card visual com o ID do banco
+                criarNovoCard(nome, cor, id_turma);
+                return true;
+            }
+            else {
+                alert(result.message || 'Erro ao criar turma');
+                return false;
+            }
+        }
+        catch (error) {
+            console.error('Erro ao criar turma:', error);
+            alert('Erro ao conectar com o servidor. Tente novamente.');
+            return false;
+        }
     };
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
@@ -43,20 +122,32 @@ document.addEventListener('DOMContentLoaded', () => {
             corBtn.style.border = '3px solid #333';
         });
     });
-    btnCriar.addEventListener('click', (e) => {
+    btnCriar.addEventListener('click', async (e) => {
         e.preventDefault();
         const nome = nomeInst.value.trim();
         if (!nome) {
             alert("Digite o nome da turma.");
             return;
         }
-        criarNovoCard(nome, corSelecionada);
-        nomeInst.value = '';
-        corSelecionada = 'rgb(10, 61, 183)';
-        coresCreate.forEach(el => el.style.border = 'none');
-        createCardModal.style.display = 'none';
-        modalOverlay.classList.remove('ativo');
-        painelCreateAberto = false;
+        // Desabilitar botão durante requisição
+        btnCriar.disabled = true;
+        const textoOriginal = btnCriar.textContent;
+        btnCriar.textContent = 'Criando...';
+        // Criar no banco de dados
+        const sucesso = await criarTurmaNoBanco(nome, corSelecionada);
+        // Reabilitar botão
+        btnCriar.disabled = false;
+        btnCriar.textContent = textoOriginal;
+        if (sucesso) {
+            // Limpar formulário
+            nomeInst.value = '';
+            corSelecionada = 'rgb(10, 61, 183)';
+            coresCreate.forEach(el => el.style.border = 'none');
+            // Fechar modal
+            createCardModal.style.display = 'none';
+            modalOverlay.classList.remove('ativo');
+            painelCreateAberto = false;
+        }
     });
     let painelCreateAberto = false;
     const adicionarEventoBtnCreate = (btnCreate) => {
@@ -77,15 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCreateCard.forEach((btnCreate) => {
         adicionarEventoBtnCreate(btnCreate);
     });
-    //Edit Card
     let painelEditAberto = false;
     let cardAtual = null;
-    // Verifica se o painel existe
     if (!edicaoCard) {
         console.error('Painel de edição não encontrado!');
         return;
     }
-    // Adiciona evento de clique em cada botão dos cards
     const adicionarEventoEdicao = (btn, card) => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -120,30 +208,27 @@ document.addEventListener('DOMContentLoaded', () => {
             adicionarEventoEdicao(btn, card);
         }
     });
-    // Seleciona a cor ao clicar em uma das opções
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!cardAtual)
                 return;
-            const corSelecionada = window.getComputedStyle(corElement).backgroundColor;
+            const corSelecionadaEdit = window.getComputedStyle(corElement).backgroundColor;
             // Aplica a cor ao card atual
-            cardAtual.style.backgroundColor = corSelecionada;
+            cardAtual.style.backgroundColor = corSelecionadaEdit;
             // Feedback visual
             coresEdit.forEach(el => el.style.border = 'none');
-            const salvarCor = (cor, instituicaoId) => {
-                localStorage.setItem(`cor_instituicao_${instituicaoId}`, cor);
-            };
-            // Opcional: salvar cor
-            const instituicaoId = cardAtual.dataset.id;
-            if (instituicaoId) {
-                salvarCor(corSelecionada, instituicaoId);
+            // Salvar cor no localStorage
+            const turmaId = cardAtual.dataset.id;
+            if (turmaId) {
+                localStorage.setItem(`cor_turma_${turmaId}`, corSelecionadaEdit);
+                console.log(`💾 Cor salva para turma ${turmaId}`);
             }
         });
     });
-    // Fecha o painel ao clicar fora dele
     document.addEventListener('click', (e) => {
         const target = e.target;
+        // Fechar painel de edição
         if (painelEditAberto &&
             !edicaoCard.contains(target) &&
             !target.closest('.btn-card')) {
@@ -154,10 +239,14 @@ document.addEventListener('DOMContentLoaded', () => {
             painelEditAberto = false;
             cardAtual = null;
         }
-        if (painelCreateAberto && !createCardModal.contains(target) && !target.closest('.btn-create-card')) {
+        // Fechar modal de criação
+        if (painelCreateAberto &&
+            !createCardModal.contains(target) &&
+            !target.closest('.btn-create-card')) {
             createCardModal.style.display = 'none';
             modalOverlay.classList.remove('ativo');
             painelCreateAberto = false;
         }
     });
+    carregarTurmas();
 });
