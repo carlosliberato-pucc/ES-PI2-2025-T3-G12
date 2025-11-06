@@ -54,6 +54,65 @@ nav.sidebar {
     min-height: calc(100vh - 66px);
 }
 
+div.sidebar {
+    width: 220px;
+    background: transparent;
+    padding: 20px;
+    border-right: 1px solid #e6e9ef;
+    min-height: calc(100vh - 66px);
+}
+
+.btn {
+    background: var(--blue-nt);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn:hover {
+    background: #facc43;
+    color: #0a3db7;
+    transition: 0.3s;
+}
+
+.btn.secondary {
+    background-color: white;
+    color: var(--blue-nt);
+    border: 1px solid var(--blue-nt);
+    padding: 7px 11px; /* Ajuste para compensar a borda */
+}
+
+.btn.secondary:hover {
+    background-color: rgb(228, 228, 228);
+    color: #19053f;
+}
+
+.info-formula{
+    width: 100%;
+    font-size: 14px;
+    background-color: #f0f0f0;
+    color: #a0a0a0;
+    border-radius: 5px;
+    padding: 8px;
+    
+}
+
+.info-componentes{
+    width: 100%;
+    font-size: 14px;
+    background-color: #f0f0f0;
+    color: #a0a0a0;
+    border-radius: 5px;
+    padding: 8px; 
+    margin-bottom: 5px;
+}
+
+
 .container {
     display: flex;
 }
@@ -369,11 +428,11 @@ main {
     align-items: center;
 }
 
-.create-card button[type="submit"] {
+.create-card button[type="submit"], .modal-content button {
     width: 120px;
     padding: 10px;
     background: var(--blue-nt);
-    color: var(--yellow-nt);
+    color: white;
     border: none;
     border-radius: 8px;
     font-size: 16px;
@@ -386,4 +445,167 @@ main {
 .create-card button[type="submit"]:hover {
     background: var(--yellow-nt);
     color: var(--blue-nt);
+}
+
+/* --- */
+/* Estilos Adicionais para Modais Genéricos (Gerenciar Fórmula e Componentes) */
+
+/* Contêiner principal do modal (usado por Gerenciar Fórmula e Componentes) */
+.modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* Começa oculto no HTML, mas aqui está a estilização de posicionamento */
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 550px;
+    max-height: 90vh;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    padding: 20px;
+    display: block; /* Garante que, quando ativado via JS, use esta aparência */
+}
+
+/* Cabeçalho do Modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6e9ef;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-family: 'Montserrat', 'sans-serif';
+    margin: 0;
+    font-weight: 600;
+
+}
+
+.modal-header .secondary {
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 30px;
+    height: 30px;
+    box-shadow: none;
+}
+/* Corpo do Modal */
+.modal-body {
+    padding-top: 5px;
+}
+
+.modal-body .status-message {
+    text-align: center;
+    font-size: 15px;
+    font-family: 'Montserrat', 'sans-serif';
+    color: var(--muted);
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+/* Agrupamento de Formulário */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-family: 'Montserrat', 'sans-serif';
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 5px;
+    padding-left: 0;
+}
+
+.modal-header .btn {
+  background: none;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+}
+
+.modal-header .btn {
+  background: none;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+}
+
+.modal-header .btn:hover {
+  color: var(--error-color);
+  background: none;
+}
+
+/* Inputs e Selects dentro dos modais de gerenciamento */
+.form-group input[type="text"],
+.form-group select {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 6px;
+    background: #f2f2f2;
+    font-size: 15px;
+    padding-left: 10px;
+    margin-top: 10px;
+}
+
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.41 0L6 4.59 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+}
+
+.form-group input[disabled] {
+    background: #f0f0f0;
+    color: var(--muted);
+    cursor: not-allowed;
+    border: 1px dashed #ddd;
+}
+
+/* Lista de Componentes (dentro do modal de componentes) */
+#componentes_lista {
+    padding: 10px;
+    border: 1px solid #e6e9ef;
+    border-radius: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+    background-color: #fcfcfc;
+}
+
+/* Sobrescreve o info-componentes para ter um visual mais 'ativo' no modal */
+.modal-body #componentes_lista .info-componentes {
+    background-color: #fff;
+    color: #333;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+/* Botão de excluir componente */
+.modal-body #componentes_lista .btn.secondary {
+    background: none;
+    color: #dc3545;
+    padding: 5px 8px;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-body #componentes_lista .btn.secondary:hover {
+    background: #dc3545;
+    color: white;
 }

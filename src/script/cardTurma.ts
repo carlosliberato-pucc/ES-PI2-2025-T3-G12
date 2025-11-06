@@ -1,16 +1,52 @@
+
+
+// ============================================
+// INTERFACES E TIPOS
+// ============================================
+
+interface FormulaData {
+    tipo: string;
+    formula: string;
+}
+
+interface ComponenteNota {
+    id: string;
+    nome: string;
+    sigla: string;
+    descricao: string;
+}
+
+
+
+// ============================================
+// VARIÁVEIS GLOBAIS (com prefixo para evitar conflito)
+// ============================================
+
+let turmasFormulaAtual: FormulaData | null = null;
+let turmasComponentesNota: ComponenteNota[] = [];
+let turmasComponenteParaExcluir: string | null = null;
+
+// ============================================
+// DOCUMENT READY
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Pegar IDs da URL
+
     const urlParams = new URLSearchParams(window.location.search);
     const idInstituicao = urlParams.get('id_instituicao');
     const idCurso = urlParams.get('id_curso');
     const idDisciplina = urlParams.get('id_disciplina');
 
+    //aquii
     if (!idInstituicao || !idCurso || !idDisciplina) {
         alert('Parâmetros da URL incompletos');
         window.location.href = '/dashboard';
         return;
     }
 
+
+
+    // ========== ELEMENTOS DO DOM ==========
     const btnsCard = document.querySelectorAll<HTMLButtonElement>(".btn-card");
     const edicaoCard = document.querySelector<HTMLDivElement>(".edicao-card");
     const coresEdit = document.querySelectorAll<HTMLButtonElement>('.cor-btn[data-context="edit"]');
@@ -22,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOverlay = document.querySelector('.modal-overlay') as HTMLDivElement;
 
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
+    let painelCreateAberto = false;
+    let painelEditAberto = false;
+    let cardAtual: HTMLDivElement | null = null;
 
     const carregarTurmas = async () => {
         try {
@@ -54,13 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ========================================
+    // FUNÇÕES DE CARDS - CRIAR
+    // ========================================
+
     const criarNovoCard = (nome: string, cor: string, id_turma?: number) => {
         const section = document.querySelector("main section");
 
         const novoCard = document.createElement("div") as HTMLDivElement;
         novoCard.classList.add("card");
         novoCard.style.backgroundColor = cor;
-        
+
         if (id_turma) {
             novoCard.dataset.id = id_turma.toString();
         }
@@ -83,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const clickedElement = e.target as HTMLElement;
             if (!clickedElement.closest('.btn-card') && id_turma) {
                 // Futura navegação para alunos
-                window.location.href = `/alunos?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}&id_turma=${id_turma}`;
+                window.location.href = `/turma_dashboard?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}&id_turma=${id_turma}`;
             }
         });
 
@@ -100,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     id_instituicao: idInstituicao,
                     id_curso: idCurso,
                     id_disciplina: idDisciplina,
@@ -112,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 console.log('Turma criada no banco:', result.data);
-                
+
                 // Salvar cor no localStorage
                 const id_turma = result.data.id_turma;
                 localStorage.setItem(`cor_turma_${id_turma}`, cor);
@@ -132,13 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-
             corSelecionada = window.getComputedStyle(corBtn).backgroundColor;
-
-            // Feedback visual
             coresCreate.forEach(el => el.style.border = 'none');
             corBtn.style.border = '3px solid #333';
         });
@@ -179,13 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    let painelCreateAberto = false;
-
     const adicionarEventoBtnCreate = (btnCreate: HTMLButtonElement) => {
         btnCreate.addEventListener('click', (e) => {
             e.stopPropagation();
 
-            if (painelCreateAberto == false) {
+            if (!painelCreateAberto) {
                 createCardModal.style.display = 'block';
                 modalOverlay.classList.add('ativo');
                 painelCreateAberto = true;
@@ -201,8 +240,19 @@ document.addEventListener('DOMContentLoaded', () => {
         adicionarEventoBtnCreate(btnCreate);
     });
 
-    let painelEditAberto = false;
-    let cardAtual: HTMLDivElement | null = null;
+    // Botão de fechar no modal de criar turma
+    const btnFecharCriar = document.getElementById('btn-fechar-criar');
+    btnFecharCriar?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        createCardModal.style.display = 'none';
+        modalOverlay.classList.remove('ativo');
+        painelCreateAberto = false;
+    });
+
+    // ========================================
+    // FUNÇÕES DE CARDS - EDITAR
+    // ========================================
 
     if (!edicaoCard) {
         console.error('Painel de edição não encontrado!');
@@ -240,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Adiciona evento nos cards existentes
     btnsCard.forEach((btn) => {
         const card = btn.closest('.card') as HTMLDivElement;
         if (card) {
@@ -254,27 +303,331 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!cardAtual) return;
 
-            const corSelecionadaEdit = window.getComputedStyle(corElement).backgroundColor;
-
-            // Aplica a cor ao card atual
-            cardAtual.style.backgroundColor = corSelecionadaEdit;
-
-            // Feedback visual
+            const corSelecionada = window.getComputedStyle(corElement).backgroundColor;
+            cardAtual.style.backgroundColor = corSelecionada;
             coresEdit.forEach(el => el.style.border = 'none');
 
-            // Salvar cor no localStorage
-            const turmaId = cardAtual.dataset.id;
-            if (turmaId) {
-                localStorage.setItem(`cor_turma_${turmaId}`, corSelecionadaEdit);
-                console.log(`💾 Cor salva para turma ${turmaId}`);
+            const salvarCor = (cor: string, instituicaoId: string) => {
+                localStorage.setItem(`cor_instituicao_${instituicaoId}`, cor);
+            };
+
+            const instituicaoId = cardAtual.dataset.id;
+            if (instituicaoId) {
+                salvarCor(corSelecionada, instituicaoId);
             }
         });
+    });
+
+    // ========================================
+    // MODAL DE FÓRMULA DE MÉDIA
+    // ========================================
+
+    const initModalFormula = () => {
+        const btnGerenciar = document.getElementById('manage_formula_btn');
+        const modalFormula = document.getElementById('modal_formula');
+        const btnFecharArray = modalFormula?.querySelectorAll('.btn.secondary');
+        const btnFechar = btnFecharArray?.[0];
+        const btnCancelar = btnFecharArray?.[1];
+        const btnSalvar = document.getElementById('save_formula_btn');
+        const selectTipo = document.getElementById('formula_type') as HTMLSelectElement;
+        const inputFormula = document.querySelector('#formula_display input[type="text"]') as HTMLInputElement;
+
+        btnGerenciar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (createCardModal) createCardModal.style.display = 'none';
+            modalOverlay?.classList.add('ativo');
+            if (modalFormula) modalFormula.style.display = 'block';
+
+            if (turmasFormulaAtual) {
+                if (selectTipo) selectTipo.value = turmasFormulaAtual.tipo;
+                if (inputFormula) inputFormula.value = turmasFormulaAtual.formula;
+            } else {
+                if (selectTipo) selectTipo.value = 'selecione';
+                if (inputFormula) inputFormula.value = '';
+            }
+        });
+
+        const fecharModalFormula = () => {
+            if (modalFormula) modalFormula.style.display = 'none';
+
+            const modalComponentes = document.getElementById('modal_componentes');
+            const modalConfirmacao = document.getElementById('modal_confirmacao');
+
+            const outrosModaisAbertos =
+                (modalComponentes?.style.display === 'block') ||
+                (modalConfirmacao?.style.display === 'block');
+
+            if (!outrosModaisAbertos) {
+                modalOverlay?.classList.remove('ativo');
+            }
+        };
+
+        btnFechar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fecharModalFormula();
+        });
+
+        btnCancelar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fecharModalFormula();
+        });
+
+        btnSalvar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (selectTipo && inputFormula && inputFormula.value.trim()) {
+                turmasFormulaAtual = {
+                    tipo: selectTipo.value,
+                    formula: inputFormula.value.trim()
+                };
+
+                atualizarSidebarFormula();
+                // TODO: await salvarFormulaNoBanco(turmasFormulaAtual);
+                fecharModalFormula();
+            }
+        });
+    };
+
+    const atualizarSidebarFormula = () => {
+        const divsFormula = document.querySelectorAll('.info-formula');
+
+        if (divsFormula.length >= 2) {
+            if (turmasFormulaAtual) {
+                const tipoTexto = turmasFormulaAtual.tipo === 'aritmetica' ? 'Média Aritmética' : 'Média Ponderada';
+                divsFormula[0].textContent = tipoTexto;
+                divsFormula[1].textContent = turmasFormulaAtual.formula;
+            } else {
+                divsFormula[0].textContent = 'Nenhuma fórmula configurada';
+                divsFormula[1].textContent = '';
+            }
+        }
+    };
+
+    // ========================================
+    // MODAL DE COMPONENTES DE NOTA
+    // ========================================
+
+    const initModalComponentes = () => {
+        const btnGerenciar = document.getElementById('add_component_btn');
+        const modalComponentes = document.getElementById('modal_componentes');
+        const btnFecharArray = modalComponentes?.querySelectorAll('.btn.secondary');
+        const btnFechar = btnFecharArray?.[0];
+        const btnAdicionar = document.getElementById('add_component_btn_modal');
+
+        btnGerenciar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (createCardModal) createCardModal.style.display = 'none';
+            modalOverlay?.classList.add('ativo');
+            if (modalComponentes) modalComponentes.style.display = 'block';
+
+            atualizarListaComponentesModal();
+        });
+
+        const fecharModalComponentes = () => {
+            if (modalComponentes) modalComponentes.style.display = 'none';
+
+            const modalFormula = document.getElementById('modal_formula');
+            const modalConfirmacao = document.getElementById('modal_confirmacao');
+
+            const outrosModaisAbertos =
+                (modalFormula?.style.display === 'block') ||
+                (modalConfirmacao?.style.display === 'block');
+
+            if (!outrosModaisAbertos) {
+                modalOverlay?.classList.remove('ativo');
+            }
+        };
+
+        btnFechar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fecharModalComponentes();
+        });
+
+        btnAdicionar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const inputNome = document.getElementById('new_component_nome') as HTMLInputElement;
+            const inputSigla = document.getElementById('new_component_sigla') as HTMLInputElement;
+            const inputDescricao = document.getElementById('new_component_descricao') as HTMLInputElement;
+
+            if (inputNome?.value.trim() && inputSigla?.value.trim() && inputDescricao?.value.trim()) {
+                const novoComponente: ComponenteNota = {
+                    id: Date.now().toString(),
+                    nome: inputNome.value.trim(),
+                    sigla: inputSigla.value.trim(),
+                    descricao: inputDescricao.value.trim()
+                };
+
+                turmasComponentesNota.push(novoComponente);
+                // TODO: await salvarComponenteNoBanco(novoComponente);
+
+                atualizarSidebarComponentes();
+                atualizarListaComponentesModal();
+
+                inputNome.value = '';
+                inputSigla.value = '';
+                inputDescricao.value = '';
+            }
+        });
+
+        initModalConfirmacao();
+    };
+
+    const atualizarSidebarComponentes = () => {
+        const containerSidebar = document.querySelector('.componentes-nota');
+        const componentesAntigos = containerSidebar?.querySelectorAll('.info-componentes');
+        componentesAntigos?.forEach(el => el.remove());
+
+        if (turmasComponentesNota.length === 0) {
+            const div = document.createElement('div');
+            div.className = 'info-componentes';
+            div.textContent = 'Nenhum componente adicionado';
+            div.style.color = '#6c757d';
+            div.style.fontStyle = 'italic';
+            containerSidebar?.appendChild(div);
+        } else {
+            turmasComponentesNota.forEach(comp => {
+                const div = document.createElement('div');
+                div.className = 'info-componentes';
+                div.textContent = comp.nome;
+                containerSidebar?.appendChild(div);
+            });
+        }
+    };
+
+    const atualizarListaComponentesModal = () => {
+        const listaContainer = document.getElementById('componentes_lista');
+        if (!listaContainer) return;
+
+        listaContainer.innerHTML = '';
+
+        if (turmasComponentesNota.length === 0) {
+            const p = document.createElement('p');
+            p.textContent = 'Nenhum componente adicionado ainda.';
+            p.style.color = '#6c757d';
+            p.style.fontStyle = 'italic';
+            p.style.textAlign = 'center';
+            p.style.padding = '20px';
+            listaContainer.appendChild(p);
+        } else {
+            turmasComponentesNota.forEach(comp => {
+                const div = document.createElement('div');
+                div.className = 'info-componentes';
+                div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
+
+                const span = document.createElement('span');
+                span.textContent = `${comp.sigla} - ${comp.nome}`;
+
+                const btnRemover = document.createElement('button');
+                btnRemover.className = 'btn secondary';
+                btnRemover.style.cssText = 'background: none; color: #dc3545; padding: 5px 10px; border: none; cursor: pointer;';
+                btnRemover.textContent = 'X';
+                btnRemover.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removerComponente(comp.id);
+                });
+
+                div.appendChild(span);
+                div.appendChild(btnRemover);
+                listaContainer.appendChild(div);
+            });
+        }
+    };
+
+    const removerComponente = (id: string) => {
+        const componente = turmasComponentesNota.find(comp => comp.id === id);
+        if (!componente) return;
+
+        turmasComponenteParaExcluir = id;
+
+        const nomeElemento = document.getElementById('confirmacao_nome');
+        if (nomeElemento) nomeElemento.textContent = componente.nome;
+
+        abrirModalConfirmacao();
+    };
+
+    // ========================================
+    // MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+    // ========================================
+
+    const initModalConfirmacao = () => {
+        const btnCancelar = document.getElementById('btn_cancelar_exclusao');
+        const btnConfirmar = document.getElementById('btn_confirmar_exclusao');
+
+        btnCancelar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fecharModalConfirmacao();
+            turmasComponenteParaExcluir = null;
+        });
+
+        btnConfirmar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (turmasComponenteParaExcluir) {
+                turmasComponentesNota = turmasComponentesNota.filter(comp => comp.id !== turmasComponenteParaExcluir);
+                // TODO: await removerComponenteNoBanco(turmasComponenteParaExcluir);
+
+                atualizarSidebarComponentes();
+                atualizarListaComponentesModal();
+
+                fecharModalConfirmacao();
+                turmasComponenteParaExcluir = null;
+            }
+        });
+    };
+
+    const abrirModalConfirmacao = () => {
+        const modalConfirmacao = document.getElementById('modal_confirmacao');
+        if (modalConfirmacao) {
+            modalConfirmacao.style.display = 'block';
+            // Garante que o modal fique centralizado
+            modalConfirmacao.style.position = 'fixed';
+            modalConfirmacao.style.top = '50%';
+            modalConfirmacao.style.left = '50%';
+            modalConfirmacao.style.transform = 'translate(-50%, -50%)';
+            modalConfirmacao.style.zIndex = '1001'; // Acima do overlay
+        }
+    };
+
+    const fecharModalConfirmacao = () => {
+        const modalConfirmacao = document.getElementById('modal_confirmacao');
+        if (modalConfirmacao) modalConfirmacao.style.display = 'none';
+    };
+
+    // ========================================
+    // EVENTO GLOBAL - FECHAR AO CLICAR FORA E NO OVERLAY
+    // ========================================
+
+    // Fechar ao clicar no overlay
+    modalOverlay?.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            // Fecha o modal de criar card se estiver aberto
+            if (painelCreateAberto) {
+                createCardModal.style.display = 'none';
+                modalOverlay.classList.remove('ativo');
+                painelCreateAberto = false;
+            }
+
+            // Fecha o modal de fórmula se estiver aberto
+            const modalFormula = document.getElementById('modal_formula');
+            if (modalFormula?.style.display === 'block') {
+                modalFormula.style.display = 'none';
+                modalOverlay.classList.remove('ativo');
+            }
+
+            // Fecha o modal de componentes se estiver aberto
+            const modalComponentes = document.getElementById('modal_componentes');
+            if (modalComponentes?.style.display === 'block') {
+                modalComponentes.style.display = 'none';
+                modalOverlay.classList.remove('ativo');
+            }
+
+            // Não fecha o modal de confirmação ao clicar fora (por segurança)
+        }
     });
 
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
 
-        // Fechar painel de edição
         if (painelEditAberto &&
             !edicaoCard.contains(target) &&
             !target.closest('.btn-card')) {
@@ -285,16 +638,29 @@ document.addEventListener('DOMContentLoaded', () => {
             painelEditAberto = false;
             cardAtual = null;
         }
-
-        // Fechar modal de criação
-        if (painelCreateAberto && 
-            !createCardModal.contains(target) && 
-            !target.closest('.btn-create-card')) {
-            createCardModal.style.display = 'none';
-            modalOverlay.classList.remove('ativo');
-            painelCreateAberto = false;
-        }
     });
 
+    // ========================================
+    // INICIALIZAÇÃO DOS MODAIS DE CONFIG
+    // ========================================
+
+    const modalFormula = document.getElementById('modal_formula');
+    const modalComponentes = document.getElementById('modal_componentes');
+    const modalConfirmacao = document.getElementById('modal_confirmacao');
+
+    if (modalFormula) modalFormula.style.display = 'none';
+    if (modalComponentes) modalComponentes.style.display = 'none';
+    if (modalConfirmacao) modalConfirmacao.style.display = 'none';
+
+    // TODO: turmasFormulaAtual = await carregarFormulaDoBanco();
+    // TODO: turmasComponentesNota = await carregarComponentesDoBanco();
+
+    initModalFormula();
+    initModalComponentes();
+
+    atualizarSidebarFormula();
+    atualizarSidebarComponentes();
+
     carregarTurmas();
+
 });

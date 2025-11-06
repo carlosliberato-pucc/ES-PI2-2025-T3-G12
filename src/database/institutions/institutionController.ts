@@ -71,6 +71,7 @@ export const criarInstituicao = async (req: Request, res: Response) => {
                             }
                         });
                     }
+                    
                 );
             }
         );

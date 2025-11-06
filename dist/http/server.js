@@ -133,6 +133,9 @@ app.get('/disciplinas', verificarAutenticacao, (req, res) => {
 app.get('/turmas', verificarAutenticacao, (req, res) => {
     res.sendFile('turmas.html', { root: publicPath });
 });
+app.get('/turma_dashboard', verificarAutenticacao, (req, res) => {
+    res.sendFile('turma_dashboard.html', { root: publicPath });
+});
 app.get('/dashboard', verificarAutenticacao, (req, res) => {
     res.sendFile('dashboard.html', { root: publicPath });
 });

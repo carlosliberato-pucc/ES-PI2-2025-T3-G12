@@ -1,0 +1,478 @@
+/*
+======================================================
+DASHBOARD.CSS - ARQUIVO UNIFICADO
+Contém estilos gerais e específicos para o Dashboard da Turma.
+======================================================
+*/
+
+/* Estilos básicos para visualização: adaptar para sua stack (Tailwind, Bootstrap, etc.) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #f5f7fb;
+  --divider: #fff;
+  --blue-nt: #0a3db7;
+  --accent: #2858c9;
+  --muted: #6b7280;
+
+  /* VARIÁVEIS DO DASHBOARD DA TURMA */
+  --accent-yellow: #ffc30f;
+  --success-color: #009b77;
+  --error-color: #c41e3a;
+  --final-grade-bg: #f7f7f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  margin: 0;
+  background: var(--bg);
+  color: #111;
+}
+
+/* ================== ESTILOS GERAIS ================== */
+
+header {
+  background: var(--divider);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e6e9ef;
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.brand h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+header img {
+  width: 50px;
+}
+
+.container {
+  display: flex;
+}
+
+main {
+  flex: 1;
+  padding: 24px;
+}
+
+.divider {
+  background: var(--divider);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.inline-grid {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.btn {
+  background: var(--blue-nt);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background: #facc43;
+  color: #0a3db7;
+  transition: 0.3s;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #19053f;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ddd;
+  display: inline-block;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ================== ESTILOS ESPECÍFICOS: DASHBOARD DA TURMA ================== */
+
+/* 1. Barra de Ferramentas e Botões de Ação */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Botão Secundário (Ex: Gerenciar Alunos, Gerenciar Fórmula) */
+.btn.secondary {
+  background-color: white;
+  color: var(--blue-nt);
+  border: 1px solid var(--blue-nt);
+  padding: 7px 11px;
+}
+
+.btn.secondary:hover {
+  background-color: var(--bg);
+}
+
+/* Botão de Download/Exportar (Amarelo/Accent) */
+.btn.download {
+  background-color: var(--accent-yellow);
+  color: var(--blue-nt);
+  font-weight: 600;
+  border: 1px solid var(--accent-yellow);
+}
+
+.btn.download:hover {
+  background-color: #facc43;
+  filter: brightness(0.9);
+  color: var(--blue-nt);
+}
+
+/* 2. Tabela de Notas */
+
+/* Título */
+#table_title {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding: 0 16px;
+}
+
+/* Container Responsivo */
+.responsive-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+#grade_table {
+  min-width: 900px;
+}
+
+#grade_table thead th {
+  background-color: var(--blue-nt);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  border-bottom: 2px solid var(--accent-yellow);
+}
+
+
+#grade_table tr td input {
+  width: 50px;
+  height: 100%;
+  padding: 5px;
+  border: none;
+  font-size: 16px;
+
+}
+
+/* Colunas de Notas de Componente */
+.component-col {
+  cursor: pointer;
+  text-align: center;
+  width: 120px;
+}
+
+.component-col .small-info {
+  font-weight: 400;
+  font-size: 0.7em;
+  color: #e0e0e0;
+  display: block;
+  margin-top: 2px;
+}
+
+th,
+td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eef2f6;
+}
+
+#grade_table th:nth-child(1),
+#grade_table td:nth-child(1) {
+  width: 200px;
+  /* matrícula */
+}
+
+#grade_table th:nth-child(2),
+#grade_table td:nth-child(2) {
+  width: 300px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+/* Estilos de Célula em Edição */
+.editing {
+  background-color: #fffbe6;
+  border: 1px solid var(--accent-yellow);
+}
+
+/* Coluna de Resultado Final (Calculado) */
+.final-grade-col {
+  background-color: var(--accent-yellow);
+  font-weight: 700;
+  text-align: center !important;
+  width: 160px;
+  color: var(--blue-nt);
+}
+
+.final-grade-value {
+  background-color: var(--final-grade-bg);
+  text-align: center !important;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  cursor: pointer;
+}
+
+
+
+/* ================== ESTILOS DOS MODAIS (CORRIGIDO) ================== */
+
+/* 3. Estilos de Modais */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  /* CORREÇÃO 1: Começa escondido para não aparecer ao carregar a página */
+  display: none;
+
+  /* Centralização imediata (quando display: flex) */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#modal_alunos,
+#modal_componentes,
+#modal_formula {
+  display: none;
+  position: relative;
+}
+
+/* Modal de confirmação fica acima dos outros - CORRIGIDO */
+#modal_confirmacao {
+  display: none;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 1100 !important;
+  margin: 0 !important;
+}
+
+/* Estrutura Principal do Conteúdo Modal */
+.modal-content {
+  background-color: var(--divider);
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 600px;
+  animation: fadeInOnly 0.2s ease-out;
+}
+
+/* Cabeçalho do Modal */
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e6e9ef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+/* Botão de Fechar */
+.modal-header .btn {
+  background: none;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+}
+
+.modal-header .btn {
+  background: none;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+}
+
+.modal-content button[type="submit"] {
+    width: 120px;
+    padding: 10px;
+    background: var(--blue-nt);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 15px auto 0;
+    display: block;
+    transition: 0.3s;
+}
+
+.modal-header .btn:hover {
+  color: var(--error-color);
+  background: none;
+}
+
+/* Corpo do Modal */
+.modal-body {
+  padding: 20px;
+}
+
+/* Estilos de Formulários */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.modal-body input[type="text"][disabled] {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 6px;
+  background: #f2f2f2;
+  font-size: 15px;
+  padding-left: 10px;
+  margin-top: 10px;
+}
+
+/* Tabs */
+.tab-buttons {
+  display: flex;
+  border-bottom: 2px solid #eef2f6;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.tab-buttons .btn {
+  background: none;
+  color: var(--muted);
+  padding: 10px 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tab-buttons .btn.active {
+  color: var(--blue-nt);
+  border-bottom-color: var(--accent-yellow);
+  font-weight: 700;
+}
+
+.tab-panel {
+  padding: 10px 0 0;
+}
+
+.status-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f0f4f9;
+  color: var(--blue-nt);
+  border: 1px solid #cceeff;
+}
+
+/* Alertas */
+.alert-message {
+  background-color: #f8d7da;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+/* Lista de Componentes */
+#lista-componentes {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0;
+}
+
+#lista-componentes li {
+  border-bottom: 1px solid #eef2f6;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#lista-componentes li:last-child {
+  border-bottom: none;
+}
+
+/* Animação para Modais - CORRIGIDA (apenas fade, sem movimento) */
+@keyframes fadeInOnly {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
