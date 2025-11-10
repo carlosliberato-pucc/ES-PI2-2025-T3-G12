@@ -16,14 +16,21 @@ import classRoutes from '../database/classes/classRouter';
 
 const app = express(); // Inicializa o aplicativo Express.
 
+// Validar variável de ambiente necessária
+if (!process.env.SESSION_SECRET) {
+    console.error('FATAL: variável SESSION_SECRET não definida. Defina-a no arquivo .env antes de iniciar o servidor.');
+    process.exit(1);
+}
+
 // Configuração do express-session
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'abc1234segredo',
+    secret: process.env.SESSION_SECRET,
     resave: false, // só salva o cookie quando modificado
     saveUninitialized: false, // evita a criação de sessões vazias
     cookie: {
-        secure: false, // além de https pode usar http
+        secure: process.env.NODE_ENV === 'production', // usar secure em produção (HTTPS exigido)
         httpOnly: true, // faz o cookie inacessivel via javascript
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 30 // 30 min
     }
 }));

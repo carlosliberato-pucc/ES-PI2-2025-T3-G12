@@ -32,7 +32,8 @@ CREATE TABLE cursos (
 CREATE TABLE formula (
     id_formula INT AUTO_INCREMENT PRIMARY KEY,
     expressao TEXT NOT NULL,
-    descricao VARCHAR(255)
+    descricao VARCHAR(255),
+    tipo VARCHAR(20) NOT NULL DEFAULT 'aritmetica' -- 'aritmetica' or 'ponderada'
 );
 
 CREATE TABLE nota_final (
@@ -97,3 +98,4 @@ CREATE TABLE password_reset_tokens (
     used BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+

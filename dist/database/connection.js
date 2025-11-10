@@ -52,16 +52,16 @@ const dbConfig = {
     // Tenta usar a variável DB_NAME do .env; se não existir, usa 'notadez'.
     database: process.env.DB_NAME || 'notadez',
 };
-//Cria um objeto de conexão usando as credenciais definidas acima.
-const connection = mysql2_1.default.createConnection(dbConfig);
-connection.connect((err) => {
-    //Tratamento de Erro: Se houver um erro (ex: credenciais incorretas, MySQL offline).
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados:', err.stack);
-        //Interrompe a execução, pois o aplicativo não pode funcionar sem o banco.
-        return;
-    }
-    // Se a conexão for estabelecida.
-    console.log('Conectado ao banco de dados MySQL com sucesso!');
+// Cria um pool de conexões (mais resiliente que single connection)
+const pool = mysql2_1.default.createPool({
+    ...dbConfig,
+    waitForConnections: true,
+    connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+    queueLimit: 0,
+    namedPlaceholders: false
 });
-exports.default = connection;
+// Log simples para desenvolvimento
+if (process.env.NODE_ENV !== 'production') {
+    console.log('MySQL pool criado (connectionLimit:', (process.env.DB_CONNECTION_LIMIT || 10) + ')');
+}
+exports.default = pool;
