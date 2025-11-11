@@ -17,8 +17,7 @@ const transporter = nodemailer_1.default.createTransport({
         pass: process.env.EMAIL_PASS // senha de app do Gmail
     }
 });
-console.log('EMAIL_USER:', process.env.EMAIL_USER);
-console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? '***existe***' : '❌ VAZIO');
+// Não logar variáveis sensíveis em ambiente real
 // Função de cadastro
 const register = async (req, res) => {
     //Extraindo os dados dos inputs

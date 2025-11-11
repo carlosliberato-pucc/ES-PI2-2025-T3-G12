@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletarInstituicao = exports.listarInstituicoes = exports.criarInstituicao = void 0;
+exports.listarResumoInstituicoes = exports.deletarInstituicao = exports.listarInstituicoes = exports.criarInstituicao = void 0;
 const index_1 = require("../index");
 const criarInstituicao = async (req, res) => {
     try {
@@ -163,3 +163,46 @@ const deletarInstituicao = async (req, res) => {
     }
 };
 exports.deletarInstituicao = deletarInstituicao;
+// Lista um resumo por instituição contendo sigla, nomes dos cursos, total de disciplinas e total de turmas
+const listarResumoInstituicoes = async (req, res) => {
+    try {
+        const userEmail = req.session.userEmail;
+        if (!userEmail) {
+            return res.status(401).json({
+                success: false,
+                message: 'Usuário não autenticado'
+            });
+        }
+        // A query retorna uma linha por (instituição, curso) com contagens de disciplinas e turmas
+        const sql = `
+            SELECT
+                i.id_instituicao,
+                i.nome,
+                i.abreviacao,
+                c.id_curso,
+                c.nome AS curso,
+                COUNT(DISTINCT d.id_disciplina) AS total_disciplinas,
+                COUNT(DISTINCT t.id_turma) AS total_turmas
+            FROM instituicao i
+            INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+            LEFT JOIN cursos c ON c.fk_instituicao = i.id_instituicao
+            LEFT JOIN disciplinas d ON d.fk_curso = c.id_curso
+            LEFT JOIN turmas t ON t.fk_disciplina = d.id_disciplina
+            WHERE u.email = ?
+            GROUP BY i.id_instituicao, c.id_curso
+            ORDER BY i.nome, c.nome
+        `;
+        index_1.db.query(sql, [userEmail], (err, results) => {
+            if (err) {
+                console.error('Erro ao buscar resumo das instituições:', err);
+                return res.status(500).json({ success: false, message: 'Erro ao buscar resumo' });
+            }
+            res.json({ success: true, data: results });
+        });
+    }
+    catch (error) {
+        console.error('Erro ao listar resumo das instituições:', error);
+        res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+    }
+};
+exports.listarResumoInstituicoes = listarResumoInstituicoes;

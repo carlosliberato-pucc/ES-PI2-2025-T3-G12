@@ -25,6 +25,147 @@ interface ComponenteNota {
 let turmasFormulaAtual: FormulaData | null = null;
 let turmasComponentesNota: ComponenteNota[] = [];
 let turmasComponenteParaExcluir: string | null = null;
+let temTurmasExistentes = false;
+
+// ============================================
+// FUNÇÕES DE INTEGRAÇÃO COM BACKEND
+// ============================================
+
+const API_BASE = 'http://localhost:3000/api';
+
+const carregarFormulaDoBanco = async (idDisciplina: string): Promise<FormulaData | null> => {
+    try {
+        const response = await fetch(`${API_BASE}/disciplinas/${idDisciplina}/formula`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            console.error('Erro ao carregar fórmula:', response.status);
+            return null;
+        }
+
+        const result = await response.json();
+        if (result.success && result.data && result.data.formula) {
+            // O backend atualmente retorna expressao; tipo pode ser salvo/extendido pelo backend
+            return {
+                tipo: result.data.formula.tipo || 'aritmetica',
+                formula: result.data.formula.expressao
+            };
+        }
+        return null;
+    } catch (erro) {
+        console.error('Erro ao carregar fórmula:', erro);
+        return null;
+    }
+};
+
+const salvarFormulaNoBanco = async (idDisciplina: string, formula: FormulaData): Promise<boolean> => {
+    try {
+        const response = await fetch(`${API_BASE}/disciplinas/${idDisciplina}/formula`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                tipo: formula.tipo,
+                expressao: formula.formula,
+                descricao: `Fórmula ${formula.tipo} para cálculo da nota final`
+            })
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+            alert(result.message || 'Erro ao salvar fórmula');
+            return false;
+        }
+        return true;
+    } catch (erro) {
+        console.error('Erro ao salvar fórmula:', erro);
+        alert('Erro ao conectar com o servidor');
+        return false;
+    }
+};
+
+const carregarComponentesDoBanco = async (idDisciplina: string): Promise<ComponenteNota[]> => {
+    try {
+        const response = await fetch(`${API_BASE}/disciplinas/${idDisciplina}/componentes`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            console.error('Erro ao carregar componentes:', response.status);
+            return [];
+        }
+
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+            return result.data.map((comp: any) => ({
+                id: String(comp.id_compNota),
+                nome: comp.nome,
+                sigla: comp.sigla,
+                descricao: comp.descricao || ''
+            }));
+        }
+        return [];
+    } catch (erro) {
+        console.error('Erro ao carregar componentes:', erro);
+        return [];
+    }
+};
+
+const salvarComponenteNoBanco = async (idDisciplina: string, componente: Omit<ComponenteNota, 'id'>): Promise<boolean> => {
+    try {
+        const response = await fetch(`${API_BASE}/disciplinas/${idDisciplina}/componentes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                nome: componente.nome,
+                sigla: componente.sigla,
+                descricao: componente.descricao
+            })
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+            alert(result.message || 'Erro ao criar componente');
+            return false;
+        }
+
+        // Atualizar o ID local com o retornado do servidor
+        turmasComponentesNota.push({
+            ...componente,
+            id: String(result.data.id_compNota)
+        });
+
+        return true;
+    } catch (erro) {
+        console.error('Erro ao criar componente:', erro);
+        alert('Erro ao conectar com o servidor');
+        return false;
+    }
+};
+
+const removerComponenteNoBanco = async (idDisciplina: string, idComponente: string): Promise<boolean> => {
+    try {
+        const response = await fetch(`${API_BASE}/disciplinas/${idDisciplina}/componentes/${idComponente}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+            alert(result.message || 'Erro ao remover componente');
+            return false;
+        }
+        return true;
+    } catch (erro) {
+        console.error('Erro ao remover componente:', erro);
+        alert('Erro ao conectar com o servidor');
+        return false;
+    }
+};
 
 // ============================================
 // DOCUMENT READY
@@ -87,12 +228,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 console.log(`${result.data.length} turmas carregadas`);
+                // atualizar flag de existência de turmas
+                verificarTurmasExistentes();
             }
         } catch (erro) {
             console.error('Erro ao carregar turmas:', erro);
         }
     };
 
+    const updateGerenciarButtons = (tem: boolean) => {
+        const btnFormula = document.getElementById('manage_formula_btn') as HTMLButtonElement | null;
+        const btnComponentes = document.getElementById('add_component_btn') as HTMLButtonElement | null;
+
+        if (!btnFormula || !btnComponentes) return;
+
+        if (!tem) {
+            btnFormula.classList.add('disabled');
+            btnComponentes.classList.add('disabled');
+            btnFormula.title = 'Adicione uma turma primeiro';
+            btnComponentes.title = 'Adicione uma turma primeiro';
+            btnFormula.style.opacity = '0.6';
+            btnComponentes.style.opacity = '0.6';
+            btnFormula.style.cursor = 'not-allowed';
+            btnComponentes.style.cursor = 'not-allowed';
+        } else {
+            btnFormula.classList.remove('disabled');
+            btnComponentes.classList.remove('disabled');
+            btnFormula.title = 'Gerenciar fórmula de média';
+            btnComponentes.title = 'Gerenciar componentes de nota';
+            btnFormula.style.opacity = '';
+            btnComponentes.style.opacity = '';
+            btnFormula.style.cursor = '';
+            btnComponentes.style.cursor = '';
+        }
+    };
+
+    const verificarTurmasExistentes = async () => {
+        try {
+            const response = await fetch(`${API_BASE}/turmas?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                console.error('Erro ao verificar turmas:', response.status);
+                temTurmasExistentes = false;
+                updateGerenciarButtons(false);
+                return false;
+            }
+
+            const result = await response.json();
+            const temTurmas = result.success && Array.isArray(result.data) && result.data.length > 0;
+            temTurmasExistentes = temTurmas;
+            updateGerenciarButtons(temTurmas);
+            return temTurmas;
+        } catch (erro) {
+            console.error('Erro ao verificar turmas:', erro);
+            temTurmasExistentes = false;
+            updateGerenciarButtons(false);
+            return false;
+        }
+    };
     // ========================================
     // FUNÇÕES DE CARDS - CRIAR
     // ========================================
@@ -162,6 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Criar card visual com o ID do banco
                 criarNovoCard(nome, cor, id_turma);
+
+                // Atualiza estado de botões (agora existe pelo menos uma turma)
+                verificarTurmasExistentes();
 
                 return true;
             } else {
@@ -335,6 +534,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnGerenciar?.addEventListener('click', (e) => {
             e.stopPropagation();
 
+            if (!temTurmasExistentes) {
+                alert('Você precisa criar pelo menos uma turma antes de gerenciar a fórmula.');
+                return;
+            }
+
             if (createCardModal) createCardModal.style.display = 'none';
             modalOverlay?.classList.add('ativo');
             if (modalFormula) modalFormula.style.display = 'block';
@@ -376,14 +580,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSalvar?.addEventListener('click', (e) => {
             e.stopPropagation();
             if (selectTipo && inputFormula && inputFormula.value.trim()) {
-                turmasFormulaAtual = {
+                const novaFormula: FormulaData = {
                     tipo: selectTipo.value,
                     formula: inputFormula.value.trim()
                 };
 
-                atualizarSidebarFormula();
-                // TODO: await salvarFormulaNoBanco(turmasFormulaAtual);
-                fecharModalFormula();
+                // Salvar no backend e atualizar UI apenas se sucesso
+                if (idDisciplina) {
+                    salvarFormulaNoBanco(idDisciplina, novaFormula).then(sucesso => {
+                        if (sucesso) {
+                            turmasFormulaAtual = novaFormula;
+                            atualizarSidebarFormula();
+                            fecharModalFormula();
+                        }
+                    });
+                } else {
+                    // fallback local
+                    turmasFormulaAtual = novaFormula;
+                    atualizarSidebarFormula();
+                    fecharModalFormula();
+                }
             }
         });
     };
@@ -416,6 +632,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnGerenciar?.addEventListener('click', (e) => {
             e.stopPropagation();
+
+            if (!temTurmasExistentes) {
+                alert('Você precisa criar pelo menos uma turma antes de gerenciar os componentes de nota.');
+                return;
+            }
 
             if (createCardModal) createCardModal.style.display = 'none';
             modalOverlay?.classList.add('ativo');
@@ -451,22 +672,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const inputDescricao = document.getElementById('new_component_descricao') as HTMLInputElement;
 
             if (inputNome?.value.trim() && inputSigla?.value.trim() && inputDescricao?.value.trim()) {
-                const novoComponente: ComponenteNota = {
-                    id: Date.now().toString(),
+                const novoComponente = {
                     nome: inputNome.value.trim(),
                     sigla: inputSigla.value.trim(),
                     descricao: inputDescricao.value.trim()
                 };
 
-                turmasComponentesNota.push(novoComponente);
-                // TODO: await salvarComponenteNoBanco(novoComponente);
+                if (idDisciplina) {
+                    salvarComponenteNoBanco(idDisciplina, novoComponente).then(sucesso => {
+                        if (sucesso) {
+                            atualizarSidebarComponentes();
+                            atualizarListaComponentesModal();
 
-                atualizarSidebarComponentes();
-                atualizarListaComponentesModal();
+                            inputNome.value = '';
+                            inputSigla.value = '';
+                            inputDescricao.value = '';
+                        }
+                    });
+                } else {
+                    // fallback local
+                    const tempId = Date.now().toString();
+                    turmasComponentesNota.push({ id: tempId, ...novoComponente });
+                    atualizarSidebarComponentes();
+                    atualizarListaComponentesModal();
 
-                inputNome.value = '';
-                inputSigla.value = '';
-                inputDescricao.value = '';
+                    inputNome.value = '';
+                    inputSigla.value = '';
+                    inputDescricao.value = '';
+                }
             }
         });
 
@@ -563,14 +796,23 @@ document.addEventListener('DOMContentLoaded', () => {
         btnConfirmar?.addEventListener('click', (e) => {
             e.stopPropagation();
             if (turmasComponenteParaExcluir) {
-                turmasComponentesNota = turmasComponentesNota.filter(comp => comp.id !== turmasComponenteParaExcluir);
-                // TODO: await removerComponenteNoBanco(turmasComponenteParaExcluir);
-
-                atualizarSidebarComponentes();
-                atualizarListaComponentesModal();
-
-                fecharModalConfirmacao();
-                turmasComponenteParaExcluir = null;
+                if (idDisciplina) {
+                    removerComponenteNoBanco(idDisciplina, turmasComponenteParaExcluir).then(sucesso => {
+                        if (sucesso) {
+                            turmasComponentesNota = turmasComponentesNota.filter(comp => comp.id !== turmasComponenteParaExcluir);
+                            atualizarSidebarComponentes();
+                            atualizarListaComponentesModal();
+                            fecharModalConfirmacao();
+                            turmasComponenteParaExcluir = null;
+                        }
+                    });
+                } else {
+                    turmasComponentesNota = turmasComponentesNota.filter(comp => comp.id !== turmasComponenteParaExcluir);
+                    atualizarSidebarComponentes();
+                    atualizarListaComponentesModal();
+                    fecharModalConfirmacao();
+                    turmasComponenteParaExcluir = null;
+                }
             }
         });
     };
@@ -652,8 +894,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalComponentes) modalComponentes.style.display = 'none';
     if (modalConfirmacao) modalConfirmacao.style.display = 'none';
 
-    // TODO: turmasFormulaAtual = await carregarFormulaDoBanco();
-    // TODO: turmasComponentesNota = await carregarComponentesDoBanco();
+    // Carregar dados iniciais da disciplina
+    if (idDisciplina) {
+        carregarFormulaDoBanco(idDisciplina).then(formula => {
+            turmasFormulaAtual = formula;
+            atualizarSidebarFormula();
+        });
+
+        carregarComponentesDoBanco(idDisciplina).then(componentes => {
+            turmasComponentesNota = componentes;
+            atualizarSidebarComponentes();
+        });
+    }
 
     initModalFormula();
     initModalComponentes();

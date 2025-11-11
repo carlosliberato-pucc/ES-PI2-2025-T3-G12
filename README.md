@@ -78,3 +78,40 @@ O projeto é **100% web**, focado na praticidade do docente, sem necessidade de 
 
 ## 💡 Objetivo
 Entregar uma ferramenta que transforme o **controle de notas** em algo mais seguro, confiável e acessível, respeitando a propriedade intelectual do docente e promovendo maior integração entre **professor, estudante e instituição**.
+
+---
+
+## 🚀 Como rodar localmente (rápido)
+
+1. Copie o arquivo `.env.example` para `.env` e preencha as variáveis (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, SESSION_SECRET, EMAIL_USER, EMAIL_PASS).
+2. Crie o banco de dados executando o script `NotaDez.sql` no seu MySQL.
+3. No Windows PowerShell, se `npm install` for bloqueado por política, execute uma das alternativas:
+
+   - Usar o wrapper do npm para evitar bloqueio:
+     ```powershell
+     npm.cmd install
+     npm.cmd run build
+     ```
+
+   - Ou executar via CMD:
+     ```powershell
+     cmd /c "npm install"
+     cmd /c "npm run build"
+     ```
+
+   - (Opcional) Caso realmente queira habilitar execução de scripts no PowerShell:
+     ```powershell
+     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+     npm install
+     npm run build
+     ```
+
+4. Rodar em modo dev:
+   ```powershell
+   npm run dev
+   ```
+
+5. Abra http://localhost:3000 e faça login; acesse `/dashboard` para ver o resumo por instituição.
+
+Observação: Em produção use um session store (Redis ou store MySQL) e habilite HTTPS para cookies seguros.
+ 
