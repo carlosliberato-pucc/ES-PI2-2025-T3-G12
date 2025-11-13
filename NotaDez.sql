@@ -79,8 +79,12 @@ CREATE TABLE componentes_notas (
 CREATE TABLE auditoria (
     id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
     data_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    acao VARCHAR(255) NOT NULL
+    acao VARCHAR(255) NOT NULL,
+    fk_usuario INT NOT NULL,
+    FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
+
+SELECT * FROM auditoria;
 
 CREATE TABLE registra (
     fk_compNota INT NOT NULL,
@@ -90,6 +94,95 @@ CREATE TABLE registra (
     FOREIGN KEY (fk_auditoria) REFERENCES auditoria(id_auditoria)
 );
 
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_instituicoes
+AFTER INSERT ON INSTITUICAO
+FOR EACH ROW
+BEGIN
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT('O usuário de ID = ', NEW.fk_usuario, ' criou a INSTITUICAO', NEW.nome),
+        NEW.fk_usuario
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_cursos
+AFTER INSERT ON CURSOS
+FOR EACH ROW
+BEGIN
+    DECLARE v_usuario_instituicao INT;
+    DECLARE v_nome_instituicao VARCHAR(100);
+
+    SELECT fk_usuario, nome
+    INTO v_usuario_instituicao, v_nome_instituicao
+    FROM INSTITUICAO
+    WHERE ID_INSTITUICAO = NEW.fk_instituicao;
+
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT(
+            'O usuário de ID = ', v_usuario_instituicao,
+            ' criou o CURSO ', NEW.nome,
+            ' na INSTITUIÇÃO ', v_nome_instituicao
+        ),
+        v_usuario_instituicao
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_disciplinas
+AFTER INSERT ON DISCIPLINAS
+FOR EACH ROW
+BEGIN
+    DECLARE v_usuario_instituicao INT;
+    DECLARE v_nome_instituicao VARCHAR(100);
+
+    SELECT i.fk_usuario, i.nome
+    INTO v_usuario_instituicao, v_nome_instituicao
+    FROM INSTITUICAO i
+    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
+    WHERE c.ID_CURSO = NEW.fk_curso;
+
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT(
+            'O usuário de ID = ', v_usuario_instituicao,
+            ' criou a DISCIPLINA ', NEW.nome,
+            ' na INSTITUIÇÃO ', v_nome_instituicao
+        ),
+        v_usuario_instituicao
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_turmas
+AFTER INSERT ON TURMAS
+FOR EACH ROW
+BEGIN
+    DECLARE v_usuario_instituicao INT;
+    DECLARE v_nome_instituicao VARCHAR(100);
+
+    SELECT i.fk_usuario, i.nome
+    INTO v_usuario_instituicao, v_nome_instituicao
+    FROM INSTITUICAO i
+    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
+    INNER JOIN DISCIPLINAS d ON d.fk_curso = c.ID_CURSO
+    WHERE d.ID_DISCIPLINA = NEW.fk_disciplina;
+
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT(
+            'O usuário de ID = ', v_usuario_instituicao,
+            ' criou a TURMA ', NEW.nome,
+            ' na INSTITUIÇÃO ', v_nome_instituicao
+        ),
+        v_usuario_instituicao
+    );
+END $$
+
+DELIMITER ;
+
 CREATE TABLE password_reset_tokens (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_email VARCHAR(255) NOT NULL,
@@ -98,4 +191,3 @@ CREATE TABLE password_reset_tokens (
     used BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-

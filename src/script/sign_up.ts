@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (data.logado) {
             // Já está logado! Redireciona para o dashboard
-            console.log('✅ Usuário já está logado, redirecionando...');
+            console.log('Usuário já está logado, redirecionando...');
             window.location.replace('/dashboard');
             return;
         }
