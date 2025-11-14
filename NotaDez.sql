@@ -1,5 +1,6 @@
 create database notadez;
 use notadez;
+drop database notadez;
 
 CREATE TABLE usuario
 (
@@ -45,6 +46,8 @@ CREATE TABLE disciplinas (
     id_disciplina INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     sigla VARCHAR(20),
+    codigo VARCHAR(20),
+    periodo VARCHAR(20) NOT NULL DEFAULT '1º semestre',
     fk_curso INT NOT NULL,
     fk_formula INT,
     fk_notaFinal INT,
@@ -52,6 +55,7 @@ CREATE TABLE disciplinas (
     FOREIGN KEY (fk_formula) REFERENCES formula(id_formula),
     FOREIGN KEY (fk_notaFinal) REFERENCES nota_final(id_notaFinal)
 );
+select * from disciplinas;
 
 CREATE TABLE turmas (
     id_turma INT AUTO_INCREMENT PRIMARY KEY,

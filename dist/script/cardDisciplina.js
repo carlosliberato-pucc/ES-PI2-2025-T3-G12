@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const createCardModal = document.querySelector('.create-card');
     const nomeInst = document.getElementById("nome");
     const siglaDisc = document.getElementById("sigla");
+    const periodoSelect = document.getElementById("periodo");
+    const codigoDisc = document.getElementById("codigo");
     const btnCriar = document.getElementById("btn-criar");
     const coresCreate = document.querySelectorAll('.cor-btn[data-context="create"]');
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
@@ -36,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const corSalva = localStorage.getItem(`cor_disciplina_${disciplina.id_disciplina}`);
                     const cor = corSalva || 'rgb(10, 61, 183)';
                     // Criar card visual com dados do banco
-                    criarNovoCard(disciplina.nome, disciplina.sigla || 'Não informado', cor, disciplina.id_disciplina);
+                    criarNovoCard(disciplina.nome, disciplina.sigla || 'Não informado', disciplina.codigo, disciplina.periodo, cor, disciplina.id_disciplina);
                 });
                 console.log(`${result.data.length} disciplinas carregados`);
             }
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     //Create Card
-    const criarNovoCard = (nome, sigla, cor, id_disciplina) => {
+    const criarNovoCard = (nome, sigla, periodo, codigo, cor, id_disciplina) => {
         const section = document.querySelector("main section");
         const novoCard = document.createElement("div");
         novoCard.classList.add("card");
@@ -62,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="descricao">
                         <h1>${nome}</h1>
                         <h2>${sigla}</h2>
+                        <h2>${periodo}</h2>
+                        <h2>${codigo}</h2>
                     </div>                
         `;
         novoCard.addEventListener('click', (e) => {
@@ -76,13 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
     //criar disciplina no banco
-    const criarDisciplinaNoBanco = async (nome, sigla, cor) => {
+    const criarDisciplinaNoBanco = async (nome, sigla, cor, periodo, codigo) => {
         try {
             const response = await fetch(`http://localhost:3000/api/disciplinas`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ id_instituicao: idInstituicao, id_curso: idCurso, nome, sigla })
+                body: JSON.stringify({ id_instituicao: idInstituicao, id_curso: idCurso, nome, sigla, codigo, periodo })
             });
             const result = await response.json();
             if (result.success) {
@@ -91,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const id_disciplina = result.data.id_disciplina;
                 localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
                 // Criar card visual com o ID do banco
-                criarNovoCard(nome, sigla, cor, id_disciplina);
+                criarNovoCard(nome, sigla, periodo, codigo, cor, id_disciplina);
                 return true;
             }
             else {
@@ -118,6 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const nome = nomeInst.value.trim();
         const sigla = siglaDisc.value.trim();
+        const periodo = periodoSelect.options[periodoSelect.selectedIndex].text;
+        const codigo = codigoDisc.value.trim();
         if (!nome) {
             alert("Digite o nome da instituição.");
             return;
@@ -129,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCriar.disabled = true;
         const textoOriginal = btnCriar.textContent;
         btnCriar.textContent = 'Criando...';
-        const sucesso = await criarDisciplinaNoBanco(nome, sigla, corSelecionada);
+        const sucesso = await criarDisciplinaNoBanco(nome, sigla, corSelecionada, periodo, codigo);
         btnCriar.disabled = false;
         btnCriar.textContent = textoOriginal;
         if (sucesso) {

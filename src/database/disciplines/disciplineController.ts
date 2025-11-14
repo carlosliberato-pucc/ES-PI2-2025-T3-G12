@@ -3,10 +3,10 @@ import { db } from '../index';
 
 export const criarDisciplina = async (req: Request, res: Response) => {
     try {
-        const { id_instituicao, id_curso, nome, sigla } = req.body;
+        const { id_instituicao, id_curso, nome, sigla, codigo, periodo } = req.body;
         const userEmail = req.session.userEmail;
 
-        if(!nome || !id_instituicao || !sigla || !id_curso) {
+        if(!nome || !id_instituicao || !sigla || !id_curso || !codigo || !periodo) {
             return res.status(400).json({
                 success: false,
                 message: 'Preencher todos os campos é obrigatório é obrigatório'
@@ -36,8 +36,8 @@ export const criarDisciplina = async (req: Request, res: Response) => {
                 }
 
                 db.query(
-                    'INSERT INTO disciplinas (nome, sigla, fk_curso) VALUES (?, ?, ?)',
-                    [nome, sigla || null, id_curso],
+                    'INSERT INTO disciplinas (nome, sigla, codigo, periodo, fk_curso) VALUES (?, ?, ?, ?, ?)',
+                    [nome, sigla || null, codigo, periodo, id_curso],
                     (insertErr, insertResults: any) => {
                         if (insertErr) {
                             console.error('Erro ao criar disciplina:', insertErr);
@@ -58,6 +58,8 @@ export const criarDisciplina = async (req: Request, res: Response) => {
                                 id_disciplina: disciplinasId,
                                 nome,
                                 sigla,
+                                codigo,
+                                periodo,
                                 fk_curso: id_curso
                             }
                         });

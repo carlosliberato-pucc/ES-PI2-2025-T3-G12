@@ -4,9 +4,9 @@ exports.deletarComponente = exports.criarComponente = exports.listarComponentes 
 const index_1 = require("../index");
 const criarDisciplina = async (req, res) => {
     try {
-        const { id_instituicao, id_curso, nome, sigla } = req.body;
+        const { id_instituicao, id_curso, nome, sigla, codigo, periodo } = req.body;
         const userEmail = req.session.userEmail;
-        if (!nome || !id_instituicao || !sigla || !id_curso) {
+        if (!nome || !id_instituicao || !sigla || !id_curso || !codigo || !periodo) {
             return res.status(400).json({
                 success: false,
                 message: 'Preencher todos os campos é obrigatório é obrigatório'
@@ -29,7 +29,7 @@ const criarDisciplina = async (req, res) => {
                     message: 'Instituição não encontrada ou não pertence ao usuário'
                 });
             }
-            index_1.db.query('INSERT INTO disciplinas (nome, sigla, fk_curso) VALUES (?, ?, ?)', [nome, sigla || null, id_curso], (insertErr, insertResults) => {
+            index_1.db.query('INSERT INTO disciplinas (nome, sigla, codigo, periodo, fk_curso) VALUES (?, ?, ?, ?, ?)', [nome, sigla || null, codigo, periodo, id_curso], (insertErr, insertResults) => {
                 if (insertErr) {
                     console.error('Erro ao criar disciplina:', insertErr);
                     return res.status(500).json({
@@ -46,6 +46,8 @@ const criarDisciplina = async (req, res) => {
                         id_disciplina: disciplinasId,
                         nome,
                         sigla,
+                        codigo,
+                        periodo,
                         fk_curso: id_curso
                     }
                 });
