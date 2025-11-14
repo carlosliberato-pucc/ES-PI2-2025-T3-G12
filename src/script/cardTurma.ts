@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
                 </svg>
             </button>
-            <div class="descricao">
+            <div class="descricao" style="cursor:pointer">
                 <h1 style="font-size:20px;">${nome}</h1>
                 <h2>${nome}</h2>
             </div>                
@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
 
                 const span = document.createElement('span');
-                span.textContent = `${comp.sigla} - ${comp.nome}`;
+                span.textContent = `${comp.nome} - ${comp.sigla} - ${comp.descricao}`;
 
                 const btnRemover = document.createElement('button');
                 btnRemover.className = 'btn secondary';

@@ -13,12 +13,19 @@
 <body>
     <header>
         <div class="brand">
+            <button id="btn_voltar"
+                style="padding: 8px 12px; border-style: none; background-color: transparent; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20">
+                    <path fill="#0a3db7" d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2
+                         394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6
+                          150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
+                </svg>
+            </button>
             <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
             <div>
                 <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">Nota<span
                         style="color: #ffc30f;">Dez</span></h1>
-                <div class="small" id="nav_current">Turma: <span id="nome_disciplina">{disciplina}</span> - Turma
-                    {turma}<span id=""></span></div>
+                <div class="small">Turma</div>
             </div>
         </div>
 
@@ -39,9 +46,8 @@
         <main>
             <section class="divider toolbar">
                 <div class="action-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button id="add_component_btn" class="btn primary">+ Componente de Nota</button>
-                    <button id="manage_formula_btn" class="btn secondary">Gerenciar Fórmula</button>
-                    <button id="manage_students_btn" class="btn secondary">Gerenciar Alunos</button>
+                    <button id="manage_students_btn" class="btn primary">Gerenciar Alunos</button>
+                    <button id="manage_students_btn" class="btn secondary">Calcular Notas Finais</button>
                     <button id="export_grades_btn" class="btn download">↓ Exportar Notas (CSV)</button>
                 </div>
             </section>
@@ -160,92 +166,6 @@
                     </div>
                 </div>
 
-                <!-- Componentes de Nota -->
-                <div id="modal_componentes" class="modal-content" style="display: none;">
-                    <div class="modal-header">
-                        <h2>Gerenciar Componentes de Nota</h2>
-                        <button class="btn" style="background: none; color: var(--muted)">X</button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="status-message">Adicione ou remova os componentes que compõem a nota.</p>
-
-                        <div id="componentes_lista">
-                            <div class="info-componentes"
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span>P1 - Prova 1</span>
-                                <button class="btn secondary"
-                                    style="background: none; color: #dc3545; padding: 5px 10px; border: none;">X</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group"
-                            style="margin-top: 20px; border-top: 1px solid #e6e9ef; padding-top: 15px;">
-                            <label for="new_component_nome">Nome do Componente</label>
-                            <input type="text" id="new_component_nome" placeholder="Ex: Prova 3">
-                            <label for="new_component_sigla">Sigla do Componente</label>
-                            <input type="text" id="new_component_sigla" placeholder="Ex: P3">
-                            <label for="new_component_descricao">Descrição do Componente</label>
-                            <input type="text" id="new_component_descricao" placeholder="Ex: Prova Teórica de Python">
-                        </div>
-
-                        <div style="text-align: right; margin-top: 10px;">
-                            <button type="submit" class="btn" id="add_component_btn_modal">Adicionar</button>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <!-- Modal de Confirmação de Exclusão -->
-                <div id="modal_confirmacao" class="modal-content" style="display: none; max-width: 400px;">
-                    <div class="modal-header">
-                        <h2>Excluir Componente</h2>
-                    </div>
-                    <div class="modal-body">
-                        <p class="status-message" id="confirmacao_mensagem">
-                            Tem certeza que deseja excluir o componente "<strong id="confirmacao_nome"></strong>"?
-                        </p>
-                        <p style="color: #dc3545; font-size: 14px; margin-top: 10px;">
-                            Esta ação não pode ser desfeita.
-                        </p>
-
-                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                            <button type="submit" class="btn secondary" id="btn_cancelar_exclusao">Cancelar</button>
-                            <button type="submit" class="btn" id="btn_confirmar_exclusao"
-                                style="background: #dc3545;">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div id="modal_formula" class="modal-content" style="display: none;">
-                    <div class="modal-header">
-                        <h2>Gerenciar Fórmula de Média</h2>
-                        <button class="btn secondary">X</button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="status-message">A alteração dos campos afetará todas as turmas dessa disciplina
-                        </p>
-
-                        <div class="form-group">
-                            <label for="formula_type">Tipo de Cálculo</label>
-                            <select id="formula_type">
-                                <option value="selecione" disabled>Selecione...</option>
-                                <option value="aritmetica">Média Aritmética</option>
-                                <option value="ponderada">Média Ponderada</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="formula_display">
-                            <label>Fórmula Atual</label>
-                            <input type="text" placeholder="Exemplo: (Nota1*2 + Nota2*3) / 5">
-                        </div>
-
-                        <div style="text-align: right; margin-top: 20px;">
-                            <button type="submit" class="btn" id="save_formula_btn">Salvar</button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
 
@@ -254,6 +174,7 @@
     </div>
 
     <script src="../dist/script/turma_dashboard.js"></script>
+    <script src="../dist/script/btn_back.js"></script>
 </body>
 
 </html>

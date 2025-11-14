@@ -2,7 +2,8 @@ import express from "express";
 
 import {
     criarDisciplina,
-    listarDisciplinas
+    listarDisciplinas,
+    
 } from './disciplineController';
 
 import {

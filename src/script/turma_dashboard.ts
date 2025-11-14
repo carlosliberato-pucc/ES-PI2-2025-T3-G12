@@ -1,132 +1,3 @@
-// Interface para armazenar os dados de uma fórmula
-interface FormulaData {
-  tipo: string;      // Tipo da fórmula (ex: 'aritmética', 'ponderada')
-  formula: string;   // Fórmula em si
-}
-
-// Variável que guarda a fórmula atual selecionada pelo usuário
-// Inicialmente nula porque nenhuma fórmula foi configurada ainda
-let formulaAtual: FormulaData | null = null;
-
-function initModalFormula(): void {
-  // Seleciona elementos do DOM necessários para o modal
-  const btnGerenciarFormula = document.getElementById('manage_formula_btn');
-  const modalOverlay = document.getElementById('modal_container');
-  const modalFormula = document.getElementById('modal_formula');
-  const btnFechar = modalFormula?.querySelectorAll('.btn.secondary');
-  const btnSalvar = document.getElementById('save_formula_btn');
-  const selectTipo = document.getElementById('formula_type') as HTMLSelectElement;
-  const inputFormula = modalFormula?.querySelector('input[type="text"]') as HTMLInputElement;
-
-  // ========================
-  // Abrir modal
-  // ========================
-  btnGerenciarFormula?.addEventListener('click', () => {
-    const modalComponentes = document.getElementById('modal_componentes');
-    const modalAlunos = document.getElementById('modal_alunos');
-
-    // Fecha os outros modais antes de abrir este
-    modalComponentes?.style.setProperty('display', 'none');
-    modalAlunos?.style.setProperty('display', 'none');
-
-    // Mostra o overlay e o modal da fórmula
-    modalOverlay?.style.setProperty('display', 'flex');
-    modalFormula?.style.setProperty('display', 'block');
-
-    // Carrega dados atuais no modal, se houver
-    if (formulaAtual) {
-      if (selectTipo) selectTipo.value = formulaAtual.tipo;
-      if (inputFormula) inputFormula.value = formulaAtual.formula;
-    } else {
-      // Caso não haja fórmula atual, limpa os campos
-      if (selectTipo) selectTipo.value = 'selecione';
-      if (inputFormula) inputFormula.value = '';
-    }
-  });
-
-  // ========================
-  // Fechar modal
-  // ========================
-  btnFechar?.forEach(btn => {
-    btn.addEventListener('click', () => {
-      fecharModalFormula();
-    });
-  });
-
-  // ========================
-  // Salvar fórmula
-  // ========================
-  btnSalvar?.addEventListener('click', () => {
-    if (selectTipo && inputFormula && inputFormula.value.trim()) {
-      // Atualiza a fórmula atual
-      formulaAtual = {
-        tipo: selectTipo.value,
-        formula: inputFormula.value.trim()
-      };
-
-      // Atualiza a sidebar com a nova fórmula
-      atualizarSidebarFormula();
-
-      // TODO: adicionar chamada para salvar no banco de dados
-      // Ex: await salvarFormulaNoBanco(formulaAtual);
-
-      // Fecha o modal
-      fecharModalFormula();
-    }
-  });
-
-  // ========================
-  // Fechar modal ao clicar fora
-  // ========================
-  modalOverlay?.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) {
-      fecharModalFormula();
-      fecharModalComponentes(); // Também fecha outro modal se estiver aberto
-    }
-  });
-}
-
-// ========================
-// Função para fechar modal de fórmula
-// ========================
-function fecharModalFormula(): void {
-  const modalOverlay = document.getElementById('modal_container');
-  const modalFormula = document.getElementById('modal_formula');
-
-  // Oculta o modal
-  modalFormula?.style.setProperty('display', 'none');
-
-  // Só fecha o overlay se outro modal também estiver fechado
-  const modalComponentes = document.getElementById('modal_componentes');
-  if (modalComponentes?.style.display === 'none') {
-    modalOverlay?.style.setProperty('display', 'none');
-  }
-}
-
-// ========================
-// Atualiza a sidebar com informações da fórmula
-// ========================
-function atualizarSidebarFormula(): void {
-  const divsFormula = document.querySelectorAll('.info-formula');
-
-  if (divsFormula.length >= 2) {
-    if (formulaAtual) {
-      // Exibe tipo de fórmula e conteúdo
-      const tipoTexto = formulaAtual.tipo === 'selecione' ? 'Média Aritmética' : 'Média Ponderada';
-      divsFormula[0].textContent = tipoTexto;
-      divsFormula[1].textContent = formulaAtual.formula;
-    } else {
-      // Caso não haja fórmula, exibe mensagem padrão
-      divsFormula[0].textContent = 'Nenhuma fórmula configurada';
-      divsFormula[1].textContent = '';
-    }
-  }
-}
-
-/* ============================================
-   MODAL DE ALUNOS — FUNCIONAL COMPLETO
-============================================ */
-
 // Array para armazenar alunos da turma
 let alunosTurma: { matricula: string; nome: string }[] = [];
 
@@ -179,6 +50,26 @@ function initModalAlunos(): void {
       if (tabId) ativarAba(tabId);
     });
   });
+
+  if (!modalOverlay || !modalAlunos) return;
+
+  // ========================
+  // Adiciona o listener para fechar ao clicar no overlay
+  // ========================
+  modalOverlay.addEventListener('click', (e) => {
+    // Verifica se o clique foi diretamente no overlay (e não em um elemento filho)
+    if (e.target === modalOverlay) {
+      // Fecha o modal de alunos se estiver aberto
+      if (modalAlunos.style.display === 'block') {
+        modalAlunos.style.display = 'none';
+        modalOverlay.style.display = 'none';
+      }
+      // Se houver outros modais que usam este mesmo overlay,
+      // você pode adicioná-los aqui, seguindo o padrão anterior.
+    }
+  });
+
+  
 
   /* ======================
      ADICIONAR MANUALMENTE
@@ -325,9 +216,9 @@ function initModalAlunos(): void {
     alunosTurma.forEach(aluno => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-      <td>${aluno.matricula}</td>
-      <td>${aluno.nome}</td>
-    `;
+        <td>${aluno.matricula}</td>
+        <td>${aluno.nome}</td>
+      `;
 
       // Adiciona inputs para cada componente existente
       const componentes = document.querySelectorAll('#grade_table thead th');
@@ -338,7 +229,7 @@ function initModalAlunos(): void {
           input.type = 'number';
           input.min = '0';
           input.max = '10';
-          input.step = '0.1'
+          input.step = '0.1';
           td.appendChild(input);
           tr.appendChild(td);
         }
@@ -351,294 +242,6 @@ function initModalAlunos(): void {
       tbody.appendChild(tr);
     });
   }
-
-}
-
-// ========================
-// Fecha modal de alunos
-// ========================
-function fecharModalAlunos(): void {
-  const modalOverlay = document.getElementById('modal_container');
-  const modalAlunos = document.getElementById('modal_alunos');
-
-  modalAlunos?.style.setProperty('display', 'none');
-
-  // Só fecha o overlay se todos os outros modais estiverem fechados
-  const modalComponentes = document.getElementById('modal_componentes');
-  const modalFormula = document.getElementById('modal_formula');
-
-  if (
-    modalComponentes?.style.display === 'none' &&
-    modalFormula?.style.display === 'none'
-  ) {
-    modalOverlay?.style.setProperty('display', 'none');
-  }
-}
-
-// ========================
-// MODAL DE COMPONENTES DE NOTA
-// ========================
-
-// Interface que representa um componente de nota
-interface ComponenteNota {
-  id: string;        // Identificador único
-  nome: string;      // Nome do componente
-  sigla: string;     // Sigla para exibir na tabela
-  descricao: string; // Descrição do componente
-}
-
-// Array que armazena os componentes de nota
-let componentesNota: ComponenteNota[] = [];
-
-// Armazena temporariamente o ID do componente a ser excluído
-let componenteParaExcluir: string | null = null;
-
-function initModalComponentes(): void {
-  const btnGerenciar = document.getElementById('add_component_btn');
-  const modalOverlay = document.getElementById('modal_container');
-  const modalComponentes = document.getElementById('modal_componentes');
-  const btnFechar = modalComponentes?.querySelector('.modal-header .btn');
-  const btnAdicionar = document.getElementById('add_component_btn_modal');
-
-  // ========================
-  // Abrir modal de componentes
-  // ========================
-  btnGerenciar?.addEventListener('click', () => {
-    const modalFormula = document.getElementById('modal_formula');
-    const modalAlunos = document.getElementById('modal_alunos');
-
-    // Fecha outros modais antes de abrir este
-    modalFormula?.style.setProperty('display', 'none');
-    modalAlunos?.style.setProperty('display', 'none');
-
-    modalOverlay?.style.setProperty('display', 'flex');
-    modalComponentes?.style.setProperty('display', 'block');
-
-    // Atualiza lista de componentes no modal
-    atualizarListaComponentesModal();
-  });
-
-  // ========================
-  // Fechar modal de componentes
-  // ========================
-  btnFechar?.addEventListener('click', () => {
-    fecharModalComponentes();
-  });
-
-  // ========================
-  // Adicionar novo componente
-  // ========================
-  btnAdicionar?.addEventListener('click', () => {
-    const inputNome = document.getElementById('new_component_nome') as HTMLInputElement;
-    const inputSigla = document.getElementById('new_component_sigla') as HTMLInputElement;
-    const inputDescricao = document.getElementById('new_component_descricao') as HTMLInputElement;
-
-    if (inputNome?.value.trim() && inputSigla?.value.trim() && inputDescricao?.value.trim()) {
-      const novoComponente: ComponenteNota = {
-        id: Date.now().toString(), // Gera ID único baseado no timestamp
-        nome: inputNome.value.trim(),
-        sigla: inputSigla.value.trim(),
-        descricao: inputDescricao.value.trim()
-      };
-
-      // Adiciona componente ao array
-      componentesNota.push(novoComponente);
-
-      // ========================
-      // Atualiza tabela principal
-      // ========================
-      const tabela = document.getElementById('grade_table') as HTMLTableElement | null;
-      if (tabela) {
-        const theadRow = tabela.querySelector('thead tr');
-        const thFinal = tabela.querySelector('thead th.final-grade-col');
-
-        // Adiciona novo cabeçalho na tabela
-        const novoTh = document.createElement('th');
-        novoTh.textContent = novoComponente.sigla;
-        novoTh.style.textAlign = "center !important"
-        theadRow?.insertBefore(novoTh, thFinal || null);
-
-        const linhas = tabela.querySelectorAll('tbody tr');
-        const haAlunos = alunosTurma.length > 0;
-
-        // Adiciona input para cada aluno existente
-        if (haAlunos && linhas.length > 0) {
-          linhas.forEach(linha => {
-            const tdFinal = linha.querySelector('td.final-grade-col');
-            const novaTd = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.min = '0';
-            input.max = '10';
-            input.disabled = true; // <- importante
-            novaTd.appendChild(input);
-            linha.insertBefore(novaTd, tdFinal || null);
-          });
-        }
-      }
-
-      // Atualiza sidebar e lista do modal
-      atualizarSidebarComponentes();
-      atualizarListaComponentesModal();
-
-      // Limpa campos do formulário
-      inputNome.value = '';
-      inputSigla.value = '';
-      inputDescricao.value = '';
-    }
-  });
-
-  // Inicializa modal de confirmação para exclusão de componente
-  initModalConfirmacao();
-}
-
-// ========================
-// Fecha modal de componentes
-// ========================
-function fecharModalComponentes(): void {
-  const modalOverlay = document.getElementById('modal_container');
-  const modalComponentes = document.getElementById('modal_componentes');
-
-  modalComponentes?.style.setProperty('display', 'none');
-
-  // Só fecha overlay se outro modal também estiver fechado
-  const modalFormula = document.getElementById('modal_formula');
-  if (modalFormula?.style.display === 'none') {
-    modalOverlay?.style.setProperty('display', 'none');
-  }
-}
-
-// ========================
-// Atualiza sidebar com componentes
-// ========================
-function atualizarSidebarComponentes(): void {
-  const containerSidebar = document.querySelector('.componentes-nota');
-
-  // Remove componentes antigos
-  const componentesAntigos = containerSidebar?.querySelectorAll('.info-componentes');
-  componentesAntigos?.forEach(el => el.remove());
-
-  if (componentesNota.length === 0) {
-    // Mostra mensagem caso não haja componentes
-    const div = document.createElement('div');
-    div.className = 'info-componentes';
-    div.textContent = 'Nenhum componente adicionado';
-    div.style.color = '#6c757d';
-    div.style.fontStyle = 'italic';
-    containerSidebar?.appendChild(div);
-  } else {
-    // Adiciona cada componente na sidebar
-    componentesNota.forEach(comp => {
-      const div = document.createElement('div');
-      div.className = 'info-componentes';
-      div.textContent = comp.nome;
-      containerSidebar?.appendChild(div);
-    });
-  }
-}
-
-// ========================
-// Atualiza lista de componentes no modal
-// ========================
-function atualizarListaComponentesModal(): void {
-  const listaContainer = document.getElementById('componentes_lista');
-  if (!listaContainer) return;
-
-  listaContainer.innerHTML = '';
-
-  if (componentesNota.length === 0) {
-    const p = document.createElement('p');
-    p.textContent = 'Nenhum componente adicionado ainda.';
-    p.style.cssText = 'color: #6c757d; font-style: italic; text-align: center; padding: 20px;';
-    listaContainer.appendChild(p);
-  } else {
-    // Adiciona cada componente com botão de remover
-    componentesNota.forEach(comp => {
-      const div = document.createElement('div');
-      div.className = 'info-componentes';
-      div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
-
-      const span = document.createElement('span');
-      span.textContent = `${comp.sigla} - ${comp.nome}`;
-
-      const btnRemover = document.createElement('button');
-      btnRemover.className = 'btn secondary';
-      btnRemover.style.cssText = 'background: none; color: #dc3545; padding: 5px 10px; border: none; cursor: pointer;';
-      btnRemover.textContent = 'X';
-      btnRemover.addEventListener('click', () => removerComponente(comp.id));
-
-      div.appendChild(span);
-      div.appendChild(btnRemover);
-      listaContainer.appendChild(div);
-    });
-  }
-}
-
-// ========================
-// Remove componente (chama modal de confirmação)
-// ========================
-function removerComponente(id: string): void {
-  const componente = componentesNota.find(comp => comp.id === id);
-  if (!componente) return;
-
-  componenteParaExcluir = id;
-
-  const nomeElemento = document.getElementById('confirmacao_nome');
-  if (nomeElemento) {
-    nomeElemento.textContent = componente.nome;
-  }
-
-  abrirModalConfirmacao();
-}
-
-// ========================
-// Inicializa modal de confirmação
-// ========================
-function initModalConfirmacao(): void {
-  const btnCancelar = document.getElementById('btn_cancelar_exclusao');
-  const btnConfirmar = document.getElementById('btn_confirmar_exclusao');
-
-  btnCancelar?.addEventListener('click', () => {
-    fecharModalConfirmacao();
-    componenteParaExcluir = null;
-  });
-
-  btnConfirmar?.addEventListener('click', () => {
-    if (componenteParaExcluir) {
-      // Remove componente do array
-      componentesNota = componentesNota.filter(comp => comp.id !== componenteParaExcluir);
-
-      atualizarSidebarComponentes();
-      atualizarListaComponentesModal();
-
-      fecharModalConfirmacao();
-      componenteParaExcluir = null;
-    }
-  });
-}
-
-function abrirModalConfirmacao(): void {
-  const modalConfirmacao = document.getElementById('modal_confirmacao');
-  const modalOverlay = document.getElementById('modal_container');
-  
-  // Escurece mais o fundo quando o modal de confirmação abre
-  if (modalOverlay) {
-    modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-  }
-  
-  modalConfirmacao?.style.setProperty('display', 'block');
-}
-
-function fecharModalConfirmacao(): void {
-  const modalConfirmacao = document.getElementById('modal_confirmacao');
-  const modalOverlay = document.getElementById('modal_container');
-  
-  // Restaura a opacidade original do overlay
-  if (modalOverlay) {
-    modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-  }
-  
-  modalConfirmacao?.style.setProperty('display', 'none');
 }
 
 // ========================
@@ -679,17 +282,11 @@ document.addEventListener("DOMContentLoaded", () => {
       th.dataset.ativa = "false";
     }
   });
-
 });
 
 // ========================
-// NO FINAL DO ARQUIVO: Inicializa todos os modais e atualiza sidebars
+// Inicialização
 // ========================
 document.addEventListener('DOMContentLoaded', () => {
-  initModalFormula();       // Inicializa modal de fórmulas
-  initModalComponentes();   // Inicializa modal de componentes
-  initModalAlunos();        // Inicializa modal de alunos
-
-  atualizarSidebarFormula();      // Atualiza sidebar com fórmulas
-  atualizarSidebarComponentes();  // Atualiza sidebar com componentes
+  initModalAlunos(); // Inicializa modal de alunos
 });

@@ -1,0 +1,115 @@
+(1) disciplinas.html snippet:
+
+<div class="edicao-card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Editar Cor</h2>
+        <button id="btn-excluir-modal" style="border:none;background:none;cursor:pointer;" title="Excluir Disciplina">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" height="20"><path fill="#c41e3a" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zm229.4 476.3L424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zM424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zm-22.6 18.2L358.5 463.1C352.1 490.9 327.7 512 300 512h-152c-27.7 0-52.1-21.1-58.5-48.9L44.8 193.8c-.8-3.3-.8-6.6 0-9.9c.7-3.1 1.7-6.1 2.9-8.9L49.4 175.7c2.3-5.2 5.5-9.8 9.5-13.8L62 160h324l3.1 2.2c4.1 4 7.2 8.6 9.5 13.8L398.7 183.9c1.2 2.8 2.2 5.8 2.9 8.9c.8 3.3 .8 6.6 0 9.9zM256 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zm-64 0a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zM320 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32z"/></svg>
+        </button>
+    </div>
+
+    <h3>Escolha uma cor para a Disciplina</h3>
+    <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+        <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+    </div>
+</div>
+
+<div id="confirmacao-exclusao" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; text-align: center;">
+    <h4>Tem certeza que deseja excluir?</h4>
+    <div style="display:flex; gap: 10px; margin-top: 15px;">
+        <button id="btn-confirmar-exclusao" style="background-color:#c41e3a; color:white; border:none; padding:8px 15px; cursor:pointer;">Sim, Excluir</button>
+        <button id="btn-cancelar-exclusao" style="background-color:#ccc; color:#333; border:none; padding:8px 15px; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
+(2) cursos.html snippet:
+
+<div class="edicao-card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Editar Cor</h2>
+        <button id="btn-excluir-modal" style="border:none;background:none;cursor:pointer;" title="Excluir Curso">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" height="20"><path fill="#c41e3a" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zm229.4 476.3L424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zM424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zm-22.6 18.2L358.5 463.1C352.1 490.9 327.7 512 300 512h-152c-27.7 0-52.1-21.1-58.5-48.9L44.8 193.8c-.8-3.3-.8-6.6 0-9.9c.7-3.1 1.7-6.1 2.9-8.9L49.4 175.7c2.3-5.2 5.5-9.8 9.5-13.8L62 160h324l3.1 2.2c4.1 4 7.2 8.6 9.5 13.8L398.7 183.9c1.2 2.8 2.2 5.8 2.9 8.9c.8 3.3 .8 6.6 0 9.9zM256 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zm-64 0a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zM320 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32z"/></svg>
+        </button>
+    </div>
+
+    <h3>Escolha uma cor para o curso</h3>
+    <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+        <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+    </div>
+</div>
+
+<div id="confirmacao-exclusao" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; padding:10px; box-sizing:border-box; text-align:center;">
+    <h4>Tem certeza que deseja excluir?</h4>
+    <div style="display:flex; gap:10px; margin-top:15px;">
+        <button id="btn-confirmar-exclusao" style="background-color:#c41e3a; color:white; border:none; padding:8px 15px; cursor:pointer;">Sim, Excluir</button>
+        <button id="btn-cancelar-exclusao" style="background-color:#ccc; color:#333; border:none; padding:8px 15px; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
+(3) instituicoes.html snippet:
+
+<div class="edicao-card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Editar Cor</h2>
+        <button id="btn-excluir-modal" style="border:none;background:none;cursor:pointer;" title="Excluir Instituição">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" height="20"><path fill="#c41e3a" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zm229.4 476.3L424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zM424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zm-22.6 18.2L358.5 463.1C352.1 490.9 327.7 512 300 512h-152c-27.7 0-52.1-21.1-58.5-48.9L44.8 193.8c-.8-3.3-.8-6.6 0-9.9c.7-3.1 1.7-6.1 2.9-8.9L49.4 175.7c2.3-5.2 5.5-9.8 9.5-13.8L62 160h324l3.1 2.2c4.1 4 7.2 8.6 9.5 13.8L398.7 183.9c1.2 2.8 2.2 5.8 2.9 8.9c.8 3.3 .8 6.6 0 9.9zM256 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zm-64 0a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zM320 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32z"/></svg>
+        </button>
+    </div>
+
+    <h3>Escolha uma cor para a Instituição</h3>
+    <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+        <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+    </div>
+</div>
+
+<div id="confirmacao-exclusao" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; padding:10px; box-sizing:border-box; text-align:center;">
+    <h4>Tem certeza que deseja excluir?</h4>
+    <div style="display:flex; gap:10px; margin-top:15px;">
+        <button id="btn-confirmar-exclusao" style="background-color:#c41e3a; color:white; border:none; padding:8px 15px; cursor:pointer;">Sim, Excluir</button>
+        <button id="btn-cancelar-exclusao" style="background-color:#ccc; color:#333; border:none; padding:8px 15px; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
+(4) turmas.html snippet:
+
+<div class="edicao-card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Editar Cor</h2>
+        <button id="btn-excluir-modal" style="border:none;background:none;cursor:pointer;" title="Excluir Turma">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="20" height="20"><path fill="#c41e3a" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zm229.4 476.3L424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zM424 192H24c-1.8 0-3.5 .2-5.1 .5L18.4 192l.8 .4c-1.6 .3-3.3 .5-5.1 .5zm-22.6 18.2L358.5 463.1C352.1 490.9 327.7 512 300 512h-152c-27.7 0-52.1-21.1-58.5-48.9L44.8 193.8c-.8-3.3-.8-6.6 0-9.9c.7-3.1 1.7-6.1 2.9-8.9L49.4 175.7c2.3-5.2 5.5-9.8 9.5-13.8L62 160h324l3.1 2.2c4.1 4 7.2 8.6 9.5 13.8L398.7 183.9c1.2 2.8 2.2 5.8 2.9 8.9c.8 3.3 .8 6.6 0 9.9zM256 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zm-64 0a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32zM320 192a16 16 0 1 1 0 32v224a16 16 0 1 1 0 32a16 16 0 1 1 0-32V224a16 16 0 0 1 0-32z"/></svg>
+        </button>
+    </div>
+
+    <h3>Escolha uma cor para a Turma</h3>
+    <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+        <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+    </div>
+</div>
+
+<div id="confirmacao-exclusao" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; padding:10px; box-sizing:border-box; text-align:center;">
+    <h4>Tem certeza que deseja excluir?</h4>
+    <div style="display:flex; gap:10px; margin-top:15px;">
+        <button id="btn-confirmar-exclusao" style="background-color:#c41e3a; color:white; border:none; padding:8px 15px; cursor:pointer;">Sim, Excluir</button>
+        <button id="btn-cancelar-exclusao" style="background-color:#ccc; color:#333; border:none; padding:8px 15px; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
