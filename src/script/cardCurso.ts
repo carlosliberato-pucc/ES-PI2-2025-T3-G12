@@ -319,4 +319,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     carregarCursos();
+
+    const btnDeleteCurso = edicaoCard?.querySelector('.btn-open-delete') as HTMLButtonElement;
+
+    btnDeleteCurso?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        
+        const cursoId = btnDeleteCurso.getAttribute('data-id');
+        
+        if (!cursoId) {
+            alert('ID do curso não encontrado');
+            return;
+        }
+        
+        const confirmacao = confirm('Tem certeza que deseja deletar este curso?\n\nATENÇÃO: Só é possível excluir cursos sem disciplinas vinculadas.');
+        
+        if (!confirmacao) return;
+        
+        try {
+            btnDeleteCurso.disabled = true;
+            
+            const response = await fetch(`http://localhost:3000/api/cursos/${cursoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                alert(data.message);
+                
+                // Remove o card da tela com animação
+                const cardParaDeletar = document.querySelector(`.card[data-id="${cursoId}"]`) as HTMLDivElement;
+                if (cardParaDeletar) {
+                    cardParaDeletar.style.opacity = '0';
+                    cardParaDeletar.style.transition = 'opacity 0.3s';
+                    setTimeout(() => cardParaDeletar.remove(), 300);
+                }
+                
+                // Remove cor do localStorage
+                localStorage.removeItem(`cor_curso_${cursoId}`);
+                
+                // Fecha o painel de edição
+                if (edicaoCard) {
+                    edicaoCard.classList.remove('aberto');
+                    edicaoCard.style.display = 'none';
+                }
+                
+            } else {
+                // Mensagem de erro do servidor (incluindo validação de hierarquia)
+                alert(data.message || 'Erro ao deletar curso');
+                btnDeleteCurso.disabled = false;
+            }
+            
+        } catch (error) {
+            console.error('Erro ao deletar curso:', error);
+            alert('Erro ao processar a solicitação');
+            btnDeleteCurso.disabled = false;
+        }
+    });
 });

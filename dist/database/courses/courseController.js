@@ -136,28 +136,45 @@ const deletarCurso = async (req, res) => {
                 message: 'Usuário não autenticado'
             });
         }
-        // Verificar se o curso pertence ao usuário e deletar
-        index_1.db.query(`DELETE c FROM cursos c
-             INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE c.id_curso = ? AND u.email = ?`, [id_curso, userEmail], (err, results) => {
-            if (err) {
-                console.error('Erro ao deletar curso:', err);
+        // Verificar se o curso tem disciplinas vinculadas
+        index_1.db.query(`SELECT COUNT(*) as total FROM disciplinas WHERE fk_curso = ?`, [id_curso], (countErr, countResults) => {
+            if (countErr) {
+                console.error('Erro ao verificar disciplinas:', countErr);
                 return res.status(500).json({
                     success: false,
-                    message: 'Erro ao deletar curso'
+                    message: 'Erro ao processar solicitação'
                 });
             }
-            if (results.affectedRows === 0) {
-                return res.status(404).json({
+            const totalDisciplinas = countResults[0].total;
+            if (totalDisciplinas > 0) {
+                return res.status(400).json({
                     success: false,
-                    message: 'Curso não encontrado ou não pertence ao usuário'
+                    message: `Não é possível deletar este curso. Existem ${totalDisciplinas} disciplina(s) vinculada(s). Exclua as disciplinas primeiro.`
                 });
             }
-            console.log(`Curso deletado: ID ${id_curso}`);
-            res.json({
-                success: true,
-                message: 'Curso deletado com sucesso'
+            // Verificar se o curso pertence ao usuário e deletar
+            index_1.db.query(`DELETE c FROM cursos c
+                     INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+                     INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+                     WHERE c.id_curso = ? AND u.email = ?`, [id_curso, userEmail], (err, results) => {
+                if (err) {
+                    console.error('Erro ao deletar curso:', err);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Erro ao deletar curso'
+                    });
+                }
+                if (results.affectedRows === 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Curso não encontrado ou não pertence ao usuário'
+                    });
+                }
+                console.log(`Curso deletado: ID ${id_curso}`);
+                res.json({
+                    success: true,
+                    message: 'Curso deletado com sucesso'
+                });
             });
         });
     }

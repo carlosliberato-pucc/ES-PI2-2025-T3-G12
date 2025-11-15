@@ -3,7 +3,7 @@ import express from "express";
 import {
     criarDisciplina,
     listarDisciplinas,
-    
+    deletarDisciplina
 } from './disciplineController';
 
 import {
@@ -19,6 +19,8 @@ const router = express.Router();
 router.post('/', criarDisciplina);
 
 router.get('/', listarDisciplinas);
+
+router.delete('/:id', deletarDisciplina);
 
 // Rotas para fórmula e componentes (por disciplina)
 router.get('/:id/formula', listarFormulaEComponentes);

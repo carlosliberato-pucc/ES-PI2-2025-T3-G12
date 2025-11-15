@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const novoCard = document.createElement("div");
         novoCard.classList.add("card");
         novoCard.style.backgroundColor = cor;
+        if (id_disciplina) {
+            novoCard.dataset.id = id_disciplina.toString();
+        }
         novoCard.innerHTML = `
                     <button class="btn-card">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -199,6 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
             edicaoCard.classList.add('aberto');
             painelEditAberto = true;
             cardAtual = card;
+            const btnDelete = edicaoCard.querySelector('.btn-open-delete');
+            if (btnDelete && card.dataset.id) {
+                btnDelete.setAttribute('data-id', card.dataset.id);
+                btnDelete.disabled = false;
+            }
         });
     };
     // Adiciona evento nos cards existentes
@@ -249,4 +257,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     carregarDisciplinas();
+    const btnDeleteDisciplina = edicaoCard?.querySelector('.btn-open-delete');
+    btnDeleteDisciplina?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const disciplinaId = btnDeleteDisciplina.getAttribute('data-id');
+        if (!disciplinaId) {
+            alert('ID da disciplina não encontrado');
+            return;
+        }
+        const confirmacao = confirm('Tem certeza que deseja deletar esta disciplina?\n\nATENÇÃO: Só é possível excluir disciplinas sem turmas vinculadas.');
+        if (!confirmacao)
+            return;
+        try {
+            btnDeleteDisciplina.disabled = true;
+            const response = await fetch(`http://localhost:3000/api/disciplinas/${disciplinaId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                // Remove o card da tela com animação
+                const cardParaDeletar = document.querySelector(`.card[data-id="${disciplinaId}"]`);
+                if (cardParaDeletar) {
+                    cardParaDeletar.style.opacity = '0';
+                    cardParaDeletar.style.transition = 'opacity 0.3s';
+                    setTimeout(() => cardParaDeletar.remove(), 300);
+                }
+                // Remove cor do localStorage
+                localStorage.removeItem(`cor_disciplina_${disciplinaId}`);
+                // Fecha o painel de edição
+                if (edicaoCard) {
+                    edicaoCard.classList.remove('aberto');
+                    edicaoCard.style.display = 'none';
+                }
+            }
+            else {
+                // Mensagem de erro do servidor (incluindo validação de hierarquia)
+                alert(data.message || 'Erro ao deletar disciplina');
+                btnDeleteDisciplina.disabled = false;
+            }
+        }
+        catch (error) {
+            console.error('Erro ao deletar disciplina:', error);
+            alert('Erro ao processar a solicitação');
+            btnDeleteDisciplina.disabled = false;
+        }
+    });
 });

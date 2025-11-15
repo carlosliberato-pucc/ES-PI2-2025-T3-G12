@@ -11,4 +11,5 @@ const router = express_1.default.Router();
 router.post('/', classController_1.criarTurma);
 // GET /api/turmas?id_instituicao=X&id_curso=Y&id_disciplina=Z - Listar turmas
 router.get('/', classController_1.listarTurmas);
+router.delete('/:id', classController_1.deletarTurma);
 exports.default = router;

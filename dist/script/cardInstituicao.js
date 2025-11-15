@@ -255,4 +255,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     carregarInstituicoes();
+    const btnDeleteInst = edicaoCard?.querySelector('.btn-open-delete');
+    btnDeleteInst?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const instituicaoId = btnDeleteInst.getAttribute('data-id');
+        if (!instituicaoId) {
+            alert('ID da instituição não encontrado');
+            return;
+        }
+        const confirmacao = confirm('Tem certeza que deseja deletar esta instituição?\n\nATENÇÃO: Só é possível excluir instituições sem cursos vinculados.');
+        if (!confirmacao)
+            return;
+        try {
+            btnDeleteInst.disabled = true;
+            const response = await fetch(`http://localhost:3000/api/instituicoes/${instituicaoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.message);
+                // Remove o card da tela
+                const cardParaDeletar = document.querySelector(`.card[data-id="${instituicaoId}"]`);
+                if (cardParaDeletar) {
+                    cardParaDeletar.style.opacity = '0';
+                    cardParaDeletar.style.transition = 'opacity 0.3s';
+                    setTimeout(() => cardParaDeletar.remove(), 300);
+                }
+                // Remove cor do localStorage
+                localStorage.removeItem(`cor_instituicao_${instituicaoId}`);
+                // Fecha o painel de edição
+                if (edicaoCard) {
+                    edicaoCard.classList.remove('aberto');
+                    edicaoCard.style.display = 'none';
+                }
+            }
+            else {
+                // Mensagem de erro do servidor (incluindo validação de hierarquia)
+                alert(data.message || 'Erro ao deletar instituição');
+                btnDeleteInst.disabled = false;
+            }
+        }
+        catch (error) {
+            console.error('Erro ao deletar instituição:', error);
+            alert('Erro ao processar a solicitação');
+            btnDeleteInst.disabled = false;
+        }
+    });
 });

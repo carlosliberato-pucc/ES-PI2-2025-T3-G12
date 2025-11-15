@@ -525,6 +525,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const btnDeleteTurma = edicaoCard?.querySelector('.btn-open-delete') as HTMLButtonElement;
+
+    btnDeleteTurma?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        
+        const turmaId = btnDeleteTurma.getAttribute('data-id');
+        
+        if (!turmaId) {
+            alert('ID da turma não encontrado');
+            return;
+        }
+        
+        const confirmacao = confirm('Tem certeza que deseja deletar esta turma?\n\nEsta ação não pode ser desfeita.');
+        
+        if (!confirmacao) return;
+        
+        try {
+            btnDeleteTurma.disabled = true;
+            
+            const response = await fetch(`http://localhost:3000/api/turmas/${turmaId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                alert(data.message);
+                
+                // Remove o card da tela com animação
+                const cardParaDeletar = document.querySelector(`.card[data-id="${turmaId}"]`) as HTMLDivElement;
+                if (cardParaDeletar) {
+                    cardParaDeletar.style.opacity = '0';
+                    cardParaDeletar.style.transition = 'opacity 0.3s';
+                    setTimeout(() => cardParaDeletar.remove(), 300);
+                }
+                
+                // Remove cor do localStorage (se aplicável)
+                localStorage.removeItem(`cor_turma_${turmaId}`);
+                
+                // Fecha o painel de edição
+                if (edicaoCard) {
+                    edicaoCard.classList.remove('aberto');
+                    edicaoCard.style.display = 'none';
+                }
+                
+            } else {
+                alert(data.message || 'Erro ao deletar turma');
+                btnDeleteTurma.disabled = false;
+            }
+            
+        } catch (error) {
+            console.error('Erro ao deletar turma:', error);
+            alert('Erro ao processar a solicitação');
+            btnDeleteTurma.disabled = false;
+        }
+    });
+
     // ========================================
     // MODAL DE FÓRMULA DE MÉDIA
     // ========================================

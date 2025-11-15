@@ -9,6 +9,7 @@ const disciplineController_2 = require("./disciplineController");
 const router = express_1.default.Router();
 router.post('/', disciplineController_1.criarDisciplina);
 router.get('/', disciplineController_1.listarDisciplinas);
+router.delete('/:id', disciplineController_1.deletarDisciplina);
 // Rotas para fórmula e componentes (por disciplina)
 router.get('/:id/formula', disciplineController_2.listarFormulaEComponentes);
 router.post('/:id/formula', disciplineController_2.salvarFormula);

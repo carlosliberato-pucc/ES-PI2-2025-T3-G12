@@ -130,27 +130,44 @@ const deletarInstituicao = async (req, res) => {
                 message: 'Usuário não autenticado'
             });
         }
-        // Verificar se a instituição pertence ao usuário e deletar
-        index_1.db.query(`DELETE i FROM instituicao i
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE i.id_instituicao = ? AND u.email = ?`, [id, userEmail], (err, results) => {
-            if (err) {
-                console.error('Erro ao deletar instituição:', err);
+        // Verificar se a instituição tem cursos vinculados
+        index_1.db.query(`SELECT COUNT(*) as total FROM cursos WHERE fk_instituicao = ?`, [id], (countErr, countResults) => {
+            if (countErr) {
+                console.error('Erro ao verificar cursos:', countErr);
                 return res.status(500).json({
                     success: false,
-                    message: 'Erro ao deletar instituição'
+                    message: 'Erro ao processar solicitação'
                 });
             }
-            if (results.affectedRows === 0) {
-                return res.status(404).json({
+            const totalCursos = countResults[0].total;
+            if (totalCursos > 0) {
+                return res.status(400).json({
                     success: false,
-                    message: 'Instituição não encontrada ou não pertence ao usuário'
+                    message: `Não é possível deletar esta instituição. Existem ${totalCursos} curso(s) vinculado(s). Exclua os cursos primeiro.`
                 });
             }
-            console.log(`Instituição deletada: ID ${id}`);
-            res.json({
-                success: true,
-                message: 'Instituição deletada com sucesso'
+            // Verificar se a instituição pertence ao usuário e deletar
+            index_1.db.query(`DELETE i FROM instituicao i
+                     INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+                     WHERE i.id_instituicao = ? AND u.email = ?`, [id, userEmail], (err, results) => {
+                if (err) {
+                    console.error('Erro ao deletar instituição:', err);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Erro ao deletar instituição'
+                    });
+                }
+                if (results.affectedRows === 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Instituição não encontrada ou não pertence ao usuário'
+                    });
+                }
+                console.log(`Instituição deletada: ID ${id}`);
+                res.json({
+                    success: true,
+                    message: 'Instituição deletada com sucesso'
+                });
             });
         });
     }

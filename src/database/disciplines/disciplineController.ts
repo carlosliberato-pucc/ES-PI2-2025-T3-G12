@@ -450,3 +450,81 @@ export const deletarComponente = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
     }
 };
+
+export const deletarDisciplina = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const userEmail = req.session.userEmail;
+
+        if (!userEmail) {
+            return res.status(401).json({
+                success: false,
+                message: 'Usuário não autenticado'
+            });
+        }
+
+        // Verificar se a disciplina tem turmas vinculadas
+        db.query(
+            `SELECT COUNT(*) as total FROM turmas WHERE fk_disciplina = ?`,
+            [id],
+            (countErr, countResults: any) => {
+                if (countErr) {
+                    console.error('Erro ao verificar turmas:', countErr);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Erro ao processar solicitação'
+                    });
+                }
+
+                const totalTurmas = countResults[0].total;
+
+                if (totalTurmas > 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Não é possível deletar esta disciplina. Existem ${totalTurmas} turma(s) vinculada(s). Exclua as turmas primeiro.`
+                    });
+                }
+
+                // Verificar se a disciplina pertence ao usuário e deletar
+                db.query(
+                    `DELETE d FROM disciplinas d
+                     INNER JOIN cursos c ON d.fk_curso = c.id_curso
+                     INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+                     INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+                     WHERE d.id_disciplina = ? AND u.email = ?`,
+                    [id, userEmail],
+                    (err, results: any) => {
+                        if (err) {
+                            console.error('Erro ao deletar disciplina:', err);
+                            return res.status(500).json({
+                                success: false,
+                                message: 'Erro ao deletar disciplina'
+                            });
+                        }
+
+                        if (results.affectedRows === 0) {
+                            return res.status(404).json({
+                                success: false,
+                                message: 'Disciplina não encontrada ou não pertence ao usuário'
+                            });
+                        }
+
+                        console.log(`Disciplina deletada: ID ${id}`);
+
+                        res.json({
+                            success: true,
+                            message: 'Disciplina deletada com sucesso'
+                        });
+                    }
+                );
+            }
+        );
+
+    } catch (error) {
+        console.error('Erro ao deletar disciplina:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao processar solicitação'
+        });
+    }
+};

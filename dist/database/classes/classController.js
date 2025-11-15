@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listarTurmas = exports.criarTurma = void 0;
+exports.deletarTurma = exports.listarTurmas = exports.criarTurma = void 0;
 const index_1 = require("../index");
 // ==================== CRIAR TURMA ====================
 const criarTurma = async (req, res) => {
@@ -130,3 +130,50 @@ const listarTurmas = async (req, res) => {
     }
 };
 exports.listarTurmas = listarTurmas;
+const deletarTurma = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userEmail = req.session.userEmail;
+        if (!userEmail) {
+            return res.status(401).json({
+                success: false,
+                message: 'Usuário não autenticado'
+            });
+        }
+        // Turmas não têm dependências, pode deletar diretamente
+        // Verificar se a turma pertence ao usuário e deletar
+        index_1.db.query(`DELETE t FROM turmas t
+             INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
+             INNER JOIN cursos c ON d.fk_curso = c.id_curso
+             INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+             WHERE t.id_turma = ? AND u.email = ?`, [id, userEmail], (err, results) => {
+            if (err) {
+                console.error('Erro ao deletar turma:', err);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Erro ao deletar turma'
+                });
+            }
+            if (results.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Turma não encontrada ou não pertence ao usuário'
+                });
+            }
+            console.log(`Turma deletada: ID ${id}`);
+            res.json({
+                success: true,
+                message: 'Turma deletada com sucesso'
+            });
+        });
+    }
+    catch (error) {
+        console.error('Erro ao deletar turma:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao processar solicitação'
+        });
+    }
+};
+exports.deletarTurma = deletarTurma;
