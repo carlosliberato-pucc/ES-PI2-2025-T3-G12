@@ -411,6 +411,15 @@ document.addEventListener('DOMContentLoaded', () => {
             edicaoCard.classList.add('aberto');
             painelEditAberto = true;
             cardAtual = card;
+            // Atualiza atributo data-id do botão de excluir no painel compartilhado
+            const btnDelete = edicaoCard.querySelector('.btn-open-delete');
+            if (btnDelete) {
+                if (card.dataset.id)
+                    btnDelete.setAttribute('data-id', card.dataset.id);
+                else
+                    btnDelete.removeAttribute('data-id');
+                btnDelete.disabled = false;
+            }
         });
     };
     btnsCard.forEach((btn) => {

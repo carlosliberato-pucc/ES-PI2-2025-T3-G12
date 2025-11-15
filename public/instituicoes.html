@@ -91,8 +91,35 @@
         </div>
 
 
+        <!-- Modal de confirmação de exclusão (padronizado) -->
+        <div id="modal_delete_confirm" class="modal-content" style="display: none; max-width: 420px;">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <button type="button" class="btn secondary" id="btn_close_delete_modal">X</button>
+            </div>
+            <div class="modal-body">
+                <p class="status-message">Tem certeza que deseja excluir?</p>
+                <p style="font-size:14px;color:#555;margin-top:6px;">Observação: a exclusão deve seguir a ordem hierárquica: Todas as Turmas &gt; Todas as Disciplinas &gt; Todos os Cursos &gt; Instituição.</p>
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+                    <button class="btn secondary" id="btn_cancel_delete">Cancelar</button>
+                    <button class="btn" id="btn_confirm_delete" style="background:#dc3545">Excluir</button>
+                </div>
+            </div>
+        </div>
+
         <div class="edicao-card">
-            <h2>Editar Cor</h2>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <h2 style="margin:0">Editar Cor</h2>
+                <button class="btn-open-delete" title="Excluir" style="background:transparent;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
             <h3>Escolha uma cor para a Instituição</h3>
             <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
                 <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
@@ -106,6 +133,7 @@
 
     </div>
 
+    <!-- Script de exclusão removido conforme solicitado -->
     <script src="../dist/script/cardInstituicao.js"></script>
     <script src="/dist/script/logout.js"></script>
     <script src="../dist/script/btn_back.js"></script>
