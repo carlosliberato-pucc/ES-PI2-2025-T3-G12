@@ -9,7 +9,6 @@ CREATE TABLE usuario
 	telefone varchar(20),
 	senha varchar(255)
 );
-select * from usuario;
 
 CREATE TABLE instituicao (
     id_instituicao INT AUTO_INCREMENT PRIMARY KEY,
@@ -18,8 +17,6 @@ CREATE TABLE instituicao (
     fk_usuario INT NOT NULL,
     FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
-
-select * from instituicao;
 
 CREATE TABLE cursos (
     id_curso INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,6 +42,8 @@ CREATE TABLE disciplinas (
     id_disciplina INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     sigla VARCHAR(20),
+    codigo VARCHAR(20),
+    periodo VARCHAR(20) NOT NULL DEFAULT '1º semestre',
     fk_curso INT NOT NULL,
     fk_formula INT,
     fk_notaFinal INT,
@@ -83,8 +82,6 @@ CREATE TABLE auditoria (
     fk_usuario INT NOT NULL,
     FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
-
-SELECT * FROM auditoria;
 
 CREATE TABLE registra (
     fk_compNota INT NOT NULL,
@@ -176,6 +173,97 @@ BEGIN
             'O usuário de ID = ', v_usuario_instituicao,
             ' criou a TURMA ', NEW.nome,
             ' na INSTITUIÇÃO ', v_nome_instituicao
+        ),
+        v_usuario_instituicao
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_delete_instituicoes
+AFTER DELETE ON INSTITUICAO
+FOR EACH ROW
+BEGIN
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT('O usuário de ID = ', OLD.fk_usuario, ' deletou a INSTITUIÇÃO ', OLD.nome),
+        OLD.fk_usuario
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_delete_cursos
+AFTER DELETE ON CURSOS
+FOR EACH ROW
+BEGIN
+    DECLARE v_usuario_instituicao INT;
+    DECLARE v_nome_instituicao VARCHAR(100);
+    
+    SELECT fk_usuario, nome
+    INTO v_usuario_instituicao, v_nome_instituicao
+    FROM INSTITUICAO
+    WHERE ID_INSTITUICAO = OLD.fk_instituicao;
+    
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT(
+            'O usuário de ID = ', v_usuario_instituicao,
+            ' deletou o CURSO ', OLD.nome,
+            ' da INSTITUIÇÃO ', v_nome_instituicao
+        ),
+        v_usuario_instituicao
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_delete_disciplinas
+AFTER DELETE ON DISCIPLINAS
+FOR EACH ROW
+BEGIN
+    DECLARE v_usuario_instituicao INT;
+    DECLARE v_nome_instituicao VARCHAR(100);
+    DECLARE v_nome_curso VARCHAR(100);
+    
+    SELECT i.fk_usuario, i.nome, c.nome
+    INTO v_usuario_instituicao, v_nome_instituicao, v_nome_curso
+    FROM INSTITUICAO i
+    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
+    WHERE c.ID_CURSO = OLD.fk_curso;
+    
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT(
+            'O usuário de ID = ', v_usuario_instituicao,
+            ' deletou a DISCIPLINA ', OLD.nome,
+            ' do CURSO ', v_nome_curso,
+            ' da INSTITUIÇÃO ', v_nome_instituicao
+        ),
+        v_usuario_instituicao
+    );
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_delete_turmas
+AFTER DELETE ON TURMAS
+FOR EACH ROW
+BEGIN
+    DECLARE v_usuario_instituicao INT;
+    DECLARE v_nome_instituicao VARCHAR(100);
+    DECLARE v_nome_disciplina VARCHAR(100);
+    
+    SELECT i.fk_usuario, i.nome, d.nome
+    INTO v_usuario_instituicao, v_nome_instituicao, v_nome_disciplina
+    FROM INSTITUICAO i
+    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
+    INNER JOIN DISCIPLINAS d ON d.fk_curso = c.ID_CURSO
+    WHERE d.ID_DISCIPLINA = OLD.fk_disciplina;
+    
+    INSERT INTO auditoria(acao, fk_usuario)
+    VALUES (
+        CONCAT(
+            'O usuário de ID = ', v_usuario_instituicao,
+            ' deletou a TURMA ', OLD.nome,
+            ' da DISCIPLINA ', v_nome_disciplina,
+            ' da INSTITUIÇÃO ', v_nome_instituicao
         ),
         v_usuario_instituicao
     );
