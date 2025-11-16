@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const studentController_1 = require("./studentController");
 const router = express_1.default.Router();
-// Rota para criar aluno na turma
-router.post('/:id/alunos', studentController_1.criarAluno);
-// Rota para listar alunos da turma
-router.get('/:id/alunos', studentController_1.listarAlunos);
+router.post('/:id/alunos', studentController_1.criarAluno); // criar
+router.get('/:id/alunos', studentController_1.listarAlunos); // listar
+router.put('/:id/alunos/:matricula', studentController_1.editarAluno); // editar
+router.delete('/:id/alunos/:matricula', studentController_1.deletarAluno); // excluir
 exports.default = router;

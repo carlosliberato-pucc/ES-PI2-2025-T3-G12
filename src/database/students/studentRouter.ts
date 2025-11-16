@@ -1,12 +1,11 @@
-import express from "express";
-import { criarAluno, listarAlunos } from './studentController';
+import express from 'express';
+import { criarAluno, listarAlunos, editarAluno, deletarAluno } from './studentController';
 
 const router = express.Router();
 
-// Rota para criar aluno na turma
-router.post('/:id/alunos', criarAluno);
-
-// Rota para listar alunos da turma
-router.get('/:id/alunos', listarAlunos);
+router.post('/:id/alunos', criarAluno);                 // criar
+router.get('/:id/alunos', listarAlunos);                // listar
+router.put('/:id/alunos/:matricula', editarAluno);      // editar
+router.delete('/:id/alunos/:matricula', deletarAluno);  // excluir
 
 export default router;
