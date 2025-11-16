@@ -1,9 +1,45 @@
 "use strict";
-// Array para armazenar alunos da turma
+// =======================
+// ARRAYS GLOBAIS
+// =======================
 let alunosTurma = [];
-// ======================
-// ATUALIZAR TABELA (GLOBAL)
-// ======================
+let componentesNotas = [];
+// =======================
+// CARREGAR COMPONENTES DA DISCIPLINA
+// =======================
+async function carregarComponentes(disciplinaId) {
+    const resp = await fetch('/api/componentes/' + disciplinaId, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+    if (!resp.ok) {
+        console.error('Erro ao carregar componentes:', resp.statusText);
+        return [];
+    }
+    const json = await resp.json();
+    return (json.success && Array.isArray(json.data)) ? json.data : [];
+}
+// =======================
+// MONTAR CABEÇALHO DINÂMICO DA TABELA
+// =======================
+async function montarGradeTable(disciplinaId) {
+    componentesNotas = await carregarComponentes(disciplinaId);
+    const tabela = document.getElementById("grade_table");
+    if (!tabela)
+        return;
+    let thead = tabela.querySelector('thead');
+    if (!thead) {
+        thead = document.createElement('thead');
+        tabela.appendChild(thead);
+    }
+    thead.innerHTML = '<tr><th>Matrícula</th><th>Nome</th>' +
+        componentesNotas.map(c => `<th>${c.sigla}</th>`).join('') +
+        '<th class="final-grade-col">Final</th></tr>';
+}
+// =======================
+// ATUALIZAR TABELA DE ALUNOS
+// =======================
 function atualizarTabelaAlunos() {
     const tabela = document.getElementById('grade_table');
     if (!tabela)
@@ -11,28 +47,22 @@ function atualizarTabelaAlunos() {
     const tbody = tabela.querySelector('tbody');
     if (!tbody)
         return;
-    // Limpa tabela
     tbody.innerHTML = '';
-    // Para cada aluno, cria uma linha na tabela
     alunosTurma.forEach(aluno => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-      <td>${aluno.matricula}</td>
-      <td>${aluno.nome}</td>
-    `;
-        // Adiciona inputs para cada componente existente
-        const componentes = document.querySelectorAll('#grade_table thead th');
-        componentes.forEach((th, i) => {
-            if (i > 1 && !th.classList.contains('final-grade-col')) {
-                const td = document.createElement('td');
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.min = '0';
-                input.max = '10';
-                input.step = '0.1';
-                td.appendChild(input);
-                tr.appendChild(td);
-            }
+        tr.innerHTML = `<td>${aluno.matricula}</td><td>${aluno.nome}</td>`;
+        // Inputs de nota para cada componente
+        componentesNotas.forEach(comp => {
+            const td = document.createElement('td');
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '0';
+            input.max = '10';
+            input.step = '0.1';
+            input.dataset.componente = String(comp.id_compNota);
+            input.disabled = true;
+            td.appendChild(input);
+            tr.appendChild(td);
         });
         const tdFinal = document.createElement('td');
         tdFinal.className = 'final-grade-col';
@@ -41,10 +71,9 @@ function atualizarTabelaAlunos() {
         tbody.appendChild(tr);
     });
 }
-// ======================
-// BACKEND HELPERS
-// ======================
-// Salvar aluno no backend
+// =======================
+// BACKEND HELPERS (ALUNOS)
+// =======================
 async function salvarAlunoBackend(matricula, nome, fk_turma) {
     await fetch('/api/turma_dashboard/' + fk_turma + '/alunos', {
         method: 'POST',
@@ -53,7 +82,6 @@ async function salvarAlunoBackend(matricula, nome, fk_turma) {
         body: JSON.stringify({ matricula, nome })
     });
 }
-// Carregar alunos da turma a partir do backend
 async function carregarAlunosDaTurma(fk_turma) {
     const resp = await fetch('/api/turma_dashboard/' + fk_turma + '/alunos', {
         method: 'GET',
@@ -73,9 +101,9 @@ async function carregarAlunosDaTurma(fk_turma) {
         atualizarTabelaAlunos();
     }
 }
-// ======================
+// =======================
 // MODAL DE ALUNOS
-// ======================
+// =======================
 function initModalAlunos() {
     const btnGerenciar = document.getElementById('manage_students_btn');
     const modalOverlay = document.getElementById('modal_container');
@@ -113,7 +141,7 @@ function initModalAlunos() {
                 ativarAba(tabId);
         });
     });
-    // Fechar clicando no overlay
+    // Fechar no overlay
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) {
             if (modalAlunos.style.display === 'block') {
@@ -122,9 +150,7 @@ function initModalAlunos() {
             }
         }
     });
-    /* ======================
-       ADICIONAR MANUALMENTE
-    ======================= */
+    // Adicionar manualmente
     const formManual = document.getElementById('form-aluno-manual');
     formManual?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -146,9 +172,7 @@ function initModalAlunos() {
         matInput.value = '';
         nomeInput.value = '';
     });
-    /* ======================
-       IMPORTAR CSV
-    ======================= */
+    // Importar CSV
     const formImport = document.getElementById('form-aluno-import');
     const statusImport = document.getElementById('import-status');
     formImport?.addEventListener('submit', e => {
@@ -178,9 +202,7 @@ function initModalAlunos() {
         };
         reader.readAsText(file);
     });
-    /* ======================
-       EDITAR ALUNO (apenas na tabela/array por enquanto)
-    ======================= */
+    // Editar aluno
     const formEdit = document.querySelector('#tab-edit-aluno form');
     const btnEditar = modalAlunos.querySelector('#tab-edit-aluno .btn');
     const inputsEdit = formEdit.querySelectorAll('input');
@@ -214,7 +236,7 @@ function initModalAlunos() {
             alert('Aluno não encontrado!');
             return;
         }
-        // Faz a chamada ao backend!
+        // Backend PUT
         const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matAntiga}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -225,7 +247,6 @@ function initModalAlunos() {
             alert('Falha ao editar aluno!');
             return;
         }
-        // Atualiza o array local e a tabela (opcional, use GET após editar se quiser garantir sincronismo com banco)
         if (novaMat)
             aluno.matricula = novaMat;
         if (novoNome)
@@ -234,9 +255,7 @@ function initModalAlunos() {
         formEdit.reset();
         alert('Aluno atualizado com sucesso!');
     });
-    /* ======================
-       EXCLUIR ALUNO (apenas na tabela/array por enquanto)
-    ======================= */
+    // Excluir aluno
     const formDel = document.querySelector('#tab-delete-aluno form');
     const btnDeletar = modalAlunos.querySelector('#tab-delete-aluno .btn');
     btnDeletar?.addEventListener('click', async (e) => {
@@ -258,31 +277,30 @@ function initModalAlunos() {
             alert('Aluno não encontrado!');
             return;
         }
-        // Obtém id da turma
+        // id da turma
         const fk_turmaInput = document.getElementById('id-turma');
         const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
-        // Chama o DELETE no backend
+        // Backend DELETE
         const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matricula}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ nome: nomeConfirm }) // só se backend exigir o nome para validar
+            body: JSON.stringify({ nome: nomeConfirm })
         });
         if (!resp.ok) {
             const data = await resp.json().catch(() => null);
             alert(`Falha ao excluir aluno: ${data?.message || resp.statusText}`);
             return;
         }
-        // Se sucesso, atualiza array e tabela local
         alunosTurma.splice(indexMatricula, 1);
         atualizarTabelaAlunos();
         formDel.reset();
         alert('Aluno deletado com sucesso!');
     });
 }
-// ========================
-// FUNCIONALIDADES DA PLANILHA DE NOTAS
-// ========================
+// =======================
+// FUNCIONALIDADES DA PLANILHA DE NOTAS (opcional e ajustável)
+// =======================
 document.addEventListener("DOMContentLoaded", () => {
     const tabela = document.getElementById("grade_table");
     const thead = tabela?.querySelector("thead");
@@ -319,12 +337,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-// ========================
-// Inicialização
-// ========================
+// =======================
+// INICIALIZAÇÃO COMPLETA
+// =======================
 document.addEventListener('DOMContentLoaded', async () => {
     const fk_turmaInput = document.getElementById('id-turma');
+    const disciplinaInput = document.getElementById('id-disciplina');
     const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
+    const disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : 1;
+    await montarGradeTable(disciplinaId);
     await carregarAlunosDaTurma(fk_turma);
     initModalAlunos();
 });
