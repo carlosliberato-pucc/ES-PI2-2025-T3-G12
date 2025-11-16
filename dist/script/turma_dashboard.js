@@ -202,16 +202,30 @@ function initModalAlunos() {
             alert('Aluno não encontrado!');
         }
     });
-    btnEditar?.addEventListener('click', e => {
+    btnEditar?.addEventListener('click', async (e) => {
         e.preventDefault();
         const matAntiga = inputMatriculaBusca.value.trim();
         const novaMat = inputNovaMatricula.value.trim();
         const novoNome = inputNovoNome.value.trim();
+        const fk_turmaInput = document.getElementById('id-turma');
+        const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
         const aluno = alunosTurma.find(a => a.matricula === matAntiga);
         if (!aluno) {
             alert('Aluno não encontrado!');
             return;
         }
+        // Faz a chamada ao backend!
+        const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matAntiga}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ novaMatricula: novaMat, novoNome })
+        });
+        if (!resp.ok) {
+            alert('Falha ao editar aluno!');
+            return;
+        }
+        // Atualiza o array local e a tabela (opcional, use GET após editar se quiser garantir sincronismo com banco)
         if (novaMat)
             aluno.matricula = novaMat;
         if (novoNome)
@@ -225,24 +239,45 @@ function initModalAlunos() {
     ======================= */
     const formDel = document.querySelector('#tab-delete-aluno form');
     const btnDeletar = modalAlunos.querySelector('#tab-delete-aluno .btn');
-    btnDeletar?.addEventListener('click', e => {
+    btnDeletar?.addEventListener('click', async (e) => {
         e.preventDefault();
         const inputs = formDel.querySelectorAll('input');
         const matricula = inputs[0].value.trim();
         const matriculaConfirm = inputs[1].value.trim();
         const nomeConfirm = inputs[2].value.trim();
-        const indexMatricula = alunosTurma.findIndex(_a => _a.matricula === matricula && _a.nome === nomeConfirm);
-        if (indexMatricula === -1) {
-            alert('Aluno não encontrado!');
-            return;
-        }
         if (!matricula || !matriculaConfirm || !nomeConfirm) {
             alert('Erro: Campos vazios!');
             return;
         }
+        if (matricula !== matriculaConfirm) {
+            alert('Erro: Matrículas não coincidem!');
+            return;
+        }
+        const indexMatricula = alunosTurma.findIndex(a => a.matricula === matricula && a.nome === nomeConfirm);
+        if (indexMatricula === -1) {
+            alert('Aluno não encontrado!');
+            return;
+        }
+        // Obtém id da turma
+        const fk_turmaInput = document.getElementById('id-turma');
+        const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
+        // Chama o DELETE no backend
+        const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matricula}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ nome: nomeConfirm }) // só se backend exigir o nome para validar
+        });
+        if (!resp.ok) {
+            const data = await resp.json().catch(() => null);
+            alert(`Falha ao excluir aluno: ${data?.message || resp.statusText}`);
+            return;
+        }
+        // Se sucesso, atualiza array e tabela local
         alunosTurma.splice(indexMatricula, 1);
         atualizarTabelaAlunos();
         formDel.reset();
+        alert('Aluno deletado com sucesso!');
     });
 }
 // ========================

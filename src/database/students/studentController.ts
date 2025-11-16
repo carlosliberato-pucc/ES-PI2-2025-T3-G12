@@ -107,10 +107,11 @@ export const deletarAluno = (req: Request, res: Response) => {
   try {
     const fk_turma = Number(req.params.id);   // id da turma
     const matricula = req.params.matricula;   // matrícula do aluno
+    const nome = req.params.nome;  // nome do aluno
 
     db.query(
-      'DELETE FROM alunos WHERE matricula = ? AND fk_turma = ?',
-      [matricula, fk_turma],
+      'DELETE FROM alunos WHERE matricula = ? AND nome = ? AND fk_turma = ?',
+      [matricula, nome, fk_turma],
       (err, result: any) => {
         if (err) {
           console.error('Erro ao deletar aluno:', err);
