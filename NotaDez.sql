@@ -80,6 +80,16 @@ CREATE TABLE componentes_notas (
     fk_disciplina INT NOT NULL,
     FOREIGN KEY (fk_disciplina) REFERENCES disciplinas(id_disciplina)
 );
+select * from componentes_notas;
+
+CREATE TABLE notas (
+    id_nota INT AUTO_INCREMENT PRIMARY KEY,
+    valor DECIMAL(5,2) NOT NULL,
+    fk_matricula INT NOT NULL,
+    fk_compNota INT NOT NULL,
+    FOREIGN KEY (fk_matricula) REFERENCES alunos(matricula),
+    FOREIGN KEY (fk_compNota) REFERENCES componentes_notas(id_compNota)
+);
 
 CREATE TABLE auditoria (
     id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
@@ -196,4 +206,3 @@ CREATE TABLE password_reset_tokens (
     used BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-

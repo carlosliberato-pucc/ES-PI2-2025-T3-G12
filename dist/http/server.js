@@ -51,6 +51,7 @@ const disciplineRouter_1 = __importDefault(require("../database/disciplines/disc
 const classRouter_1 = __importDefault(require("../database/classes/classRouter"));
 const studentRouter_1 = __importDefault(require("../database/students/studentRouter"));
 const componentesRouter_1 = __importDefault(require("../database/components/componentesRouter"));
+const notasRouter_1 = __importDefault(require("../database/notas/notasRouter"));
 // ...
 const app = (0, express_1.default)(); // Inicializa o aplicativo Express.
 // Validar variável de ambiente necessária
@@ -132,6 +133,7 @@ app.use('/api/disciplinas', verificarAutenticacao, disciplineRouter_1.default);
 app.use('/api/turmas', verificarAutenticacao, classRouter_1.default);
 app.use('/api/turma_dashboard', verificarAutenticacao, studentRouter_1.default);
 app.use('/api/componentes', verificarAutenticacao, componentesRouter_1.default);
+app.use('/api/notas', verificarAutenticacao, notasRouter_1.default);
 app.get('/instituicoes', verificarAutenticacao, (req, res) => {
     res.sendFile('instituicoes.html', { root: publicPath });
 });

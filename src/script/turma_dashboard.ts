@@ -3,6 +3,8 @@
 // =======================
 let alunosTurma: { matricula: string; nome: string }[] = [];
 let componentesNotas: { id_compNota: number; nome: string; sigla: string }[] = [];
+let notasTurma: Record<string, number> = {}; // chave: `${matricula}_${id_compNota}`
+
 
 // =======================
 // CARREGAR COMPONENTES DA DISCIPLINA
@@ -20,6 +22,28 @@ async function carregarComponentes(disciplinaId: number): Promise<any[]> {
   const json = await resp.json();
   return (json.success && Array.isArray(json.data)) ? json.data : [];
 }
+
+
+async function carregarNotasTurma(fk_turma: number): Promise<void> {
+  const resp = await fetch('/api/notas/turma/' + fk_turma, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+  });
+  if (!resp.ok) {
+    console.error('Erro ao carregar notas:', resp.statusText);
+    return;
+  }
+  const json = await resp.json();
+  notasTurma = {};
+  if (json.success && Array.isArray(json.data)) {
+    json.data.forEach((linha: any) => {
+      if (linha.nota != null)
+        notasTurma[`${linha.matricula}_${linha.id_compNota}`] = Number(linha.nota);
+    });
+  }
+}
+
 
 // =======================
 // MONTAR CABEÇALHO DINÂMICO DA TABELA
@@ -48,10 +72,13 @@ function atualizarTabelaAlunos(): void {
   const tbody = tabela.querySelector('tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
+  
+  // O FOR de alunos vem primeiro
   alunosTurma.forEach(aluno => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${aluno.matricula}</td><td>${aluno.nome}</td>`;
-    // Inputs de nota para cada componente
+    
+    // E DENTRO do for de alunos, gera os inputs dos componentes
     componentesNotas.forEach(comp => {
       const td = document.createElement('td');
       const input = document.createElement('input');
@@ -61,9 +88,30 @@ function atualizarTabelaAlunos(): void {
       input.step = '0.1';
       input.dataset.componente = String(comp.id_compNota);
       input.disabled = true;
+      const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
+      if (notasTurma && notasTurma[chaveNota] != null) {
+        input.value = String(notasTurma[chaveNota]).replace('.', ',');
+      }
+      // Evento para salvar
+      input.addEventListener('change', async () => {
+        let valor = parseFloat(input.value.replace(',', '.'));
+        if (isNaN(valor)) return;
+        await fetch('/api/notas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            matricula: aluno.matricula,
+            idComponente: comp.id_compNota,
+            valor
+          })
+        });
+        notasTurma[`${aluno.matricula}_${comp.id_compNota}`] = valor;
+      });
       td.appendChild(input);
       tr.appendChild(td);
     });
+
     const tdFinal = document.createElement('td');
     tdFinal.className = 'final-grade-col';
     tdFinal.textContent = '-';
@@ -71,6 +119,9 @@ function atualizarTabelaAlunos(): void {
     tbody.appendChild(tr);
   });
 }
+
+
+
 
 // =======================
 // BACKEND HELPERS (ALUNOS)
@@ -306,9 +357,9 @@ function initModalAlunos(): void {
   });
 }
 
-// =======================
+// ============================================================
 // FUNCIONALIDADES DA PLANILHA DE NOTAS (opcional e ajustável)
-// =======================
+// ============================================================
 document.addEventListener("DOMContentLoaded", () => {
   const tabela = document.getElementById("grade_table") as HTMLTableElement | null;
   const thead = tabela?.querySelector("thead") as HTMLTableSectionElement | null;
@@ -353,5 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await montarGradeTable(disciplinaId);
   await carregarAlunosDaTurma(fk_turma);
+  await carregarNotasTurma(fk_turma);
+  atualizarTabelaAlunos();
   initModalAlunos();
 });
