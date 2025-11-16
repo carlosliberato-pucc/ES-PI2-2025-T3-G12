@@ -9,11 +9,17 @@ export const salvarNota = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Dados incompletos' });
     }
 
+    // Validação extra: apenas entre 0 e 10 e deve ser decimal numérico
+    const numValor = Number(valor);
+    if (isNaN(numValor) || numValor < 0 || numValor > 10) {
+      return res.status(400).json({ success: false, message: 'Nota deve ser um número de 0 a 10' });
+    }
+
     db.query(
       `INSERT INTO notas (valor, fk_matricula, fk_compNota)
        VALUES (?, ?, ?)
        ON DUPLICATE KEY UPDATE valor = VALUES(valor)`,
-      [valor, matricula, idComponente],
+      [numValor, matricula, idComponente],
       (err) => {
         if (err) {
           console.error('Erro ao salvar nota:', err);
@@ -27,6 +33,7 @@ export const salvarNota = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
   }
 };
+
 
 // Buscar todas as notas de uma turma
 export const listarNotasTurma = async (req: Request, res: Response) => {

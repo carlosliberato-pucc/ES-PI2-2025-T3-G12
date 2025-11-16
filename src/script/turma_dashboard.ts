@@ -4,6 +4,14 @@
 let alunosTurma: { matricula: string; nome: string }[] = [];
 let componentesNotas: { id_compNota: number; nome: string; sigla: string }[] = [];
 let notasTurma: Record<string, number> = {}; // chave: `${matricula}_${id_compNota}`
+let formulaDisciplina: { expressao: string; tipo: string } | null = null;
+let fk_turma: number = 1;           // Agora global
+let disciplinaId: number = 1;       // Agora global
+interface NotaFinal {
+  matricula: string | number;
+  nome: string;
+  nota_final: string | number;
+}
 
 
 // =======================
@@ -23,7 +31,9 @@ async function carregarComponentes(disciplinaId: number): Promise<any[]> {
   return (json.success && Array.isArray(json.data)) ? json.data : [];
 }
 
-
+// =======================
+// CARREGAR NOTAS DA TURMA
+// =======================
 async function carregarNotasTurma(fk_turma: number): Promise<void> {
   const resp = await fetch('/api/notas/turma/' + fk_turma, {
     method: 'GET',
@@ -44,13 +54,30 @@ async function carregarNotasTurma(fk_turma: number): Promise<void> {
   }
 }
 
+// =======================
+// CARREGAR FÓRMULA DA DISCIPLINA
+// =======================
+async function carregarFormula(disciplinaId: number): Promise<void> {
+  const resp = await fetch('/api/disciplinas/' + disciplinaId + '/formula', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+  });
+  if (!resp.ok) {
+    console.error('Erro ao carregar fórmula:', resp.statusText);
+    return;
+  }
+  const json = await resp.json();
+  if (json.success && json.data.formula) {
+    formulaDisciplina = json.data.formula;
+  }
+}
 
 // =======================
 // MONTAR CABEÇALHO DINÂMICO DA TABELA
 // =======================
 async function montarGradeTable(disciplinaId: number) {
   componentesNotas = await carregarComponentes(disciplinaId);
-
   const tabela = document.getElementById("grade_table") as HTMLTableElement | null;
   if (!tabela) return;
   let thead = tabela.querySelector('thead');
@@ -72,30 +99,36 @@ function atualizarTabelaAlunos(): void {
   const tbody = tabela.querySelector('tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  
-  // O FOR de alunos vem primeiro
+
   alunosTurma.forEach(aluno => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${aluno.matricula}</td><td>${aluno.nome}</td>`;
-    
-    // E DENTRO do for de alunos, gera os inputs dos componentes
+
     componentesNotas.forEach(comp => {
       const td = document.createElement('td');
       const input = document.createElement('input');
       input.type = 'number';
       input.min = '0';
       input.max = '10';
-      input.step = '0.1';
+      input.step = '0.01'; // ← Permite 2 casas decimais
+
+      input.dataset.matricula = aluno.matricula;
       input.dataset.componente = String(comp.id_compNota);
       input.disabled = true;
+
       const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
       if (notasTurma && notasTurma[chaveNota] != null) {
-        input.value = String(notasTurma[chaveNota]).replace('.', ',');
+        input.value = String(notasTurma[chaveNota]); // ← SEM .replace() !
       }
-      // Evento para salvar
+
       input.addEventListener('change', async () => {
-        let valor = parseFloat(input.value.replace(',', '.'));
-        if (isNaN(valor)) return;
+        let valor = parseFloat(input.value); // já vai receber ponto
+        if (isNaN(valor) || valor < 0 || valor > 10) {
+          alert('Nota deve ser de 0 a 10!');
+          input.value = '';
+          return;
+        }
+
         await fetch('/api/notas', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -108,6 +141,7 @@ function atualizarTabelaAlunos(): void {
         });
         notasTurma[`${aluno.matricula}_${comp.id_compNota}`] = valor;
       });
+
       td.appendChild(input);
       tr.appendChild(td);
     });
@@ -121,12 +155,145 @@ function atualizarTabelaAlunos(): void {
 }
 
 
+// =======================
+// VALIDAÇÃO DA FÓRMULA
+// =======================
+function validarFormula(expressao: string, tipo: string): { valido: boolean; mensagem: string } {
+  if (tipo === 'ponderada') {
+    const pesos = expressao.match(/\*\s*([\d.]+)/g);
+    if (!pesos) return { valido: false, mensagem: 'Fórmula ponderada inválida' };
+
+    const somaPesos = pesos.reduce((acc, p) => {
+      const peso = parseFloat(p.replace('*', '').trim());
+      return acc + peso;
+    }, 0);
+
+    if (Math.abs(somaPesos - 1.0) > 0.001) {
+      return {
+        valido: false,
+        mensagem: `Erro: Soma dos pesos é ${somaPesos.toFixed(3)}. Deve ser 1.0 para nota máxima de 10.00`
+      };
+    }
+  } else if (tipo === 'aritmetica') {
+    const divMatch = expressao.match(/\/\s*(\d+)/);
+    if (divMatch) {
+      const divisor = Number(divMatch[1]);
+      if (divisor !== componentesNotas.length) {
+        return {
+          valido: false,
+          mensagem: `Divisor ${divisor} diferente do número de componentes (${componentesNotas.length})`
+        };
+      }
+    }
+  }
+  return { valido: true, mensagem: '' };
+}
+
+// =======================
+// CALCULAR NOTA FINAL DE UM ALUNO
+// =======================
+function calcularNotaFinal(matricula: string): number | null {
+  if (!formulaDisciplina) return null;
+
+  for (const comp of componentesNotas) {
+    const chave = `${matricula}_${comp.id_compNota}`;
+    if (notasTurma[chave] == null) {
+      return null;
+    }
+  }
+
+  let expressao = formulaDisciplina.expressao;
+  componentesNotas.forEach(comp => {
+    const chave = `${matricula}_${comp.id_compNota}`;
+    const nota = notasTurma[chave] || 0;
+    const regex = new RegExp(`\\b${comp.sigla}\\b`, 'g');
+    expressao = expressao.replace(regex, String(nota));
+  });
+
+  try {
+    const notaFinal = eval(expressao);
+
+
+    if (notaFinal > 10.00) {
+      console.warn(`Nota calculada (${notaFinal}) excede 10.00 para aluno ${matricula}`);
+      return 10.00;
+    }
+
+    return notaFinal;
+  } catch (e) {
+    console.error('Erro ao avaliar expressão:', e);
+    return null;
+  }
+}
+
+// =======================
+// CALCULAR TODAS AS NOTAS FINAIS
+// =======================
+async function calcularTodasNotasFinais(): Promise<void> {
+  if (!formulaDisciplina) {
+    alert('Nenhuma fórmula cadastrada para esta disciplina!');
+    return;
+  }
+
+  const validacao = validarFormula(formulaDisciplina.expressao, formulaDisciplina.tipo);
+  if (!validacao.valido) {
+    alert(validacao.mensagem);
+    return;
+  }
+
+  const tabela = document.getElementById('grade_table') as HTMLTableElement | null;
+  if (!tabela) return;
+  const linhas = tabela.querySelectorAll('tbody tr');
+
+  let alunosSemNotas: string[] = [];
+
+  for (let idx = 0; idx < linhas.length; idx++) {
+    const aluno = alunosTurma[idx];
+    if (!aluno) continue;
+
+    const notaFinal = calcularNotaFinal(aluno.matricula);
+    const tdFinal = linhas[idx].querySelector('.final-grade-col') as HTMLTableCellElement;
+
+    if (notaFinal === null) {
+      alunosSemNotas.push(aluno.nome);
+      tdFinal.textContent = '-';
+    } else {
+      // Salvar nota final no backend
+      try {
+        await fetch('/api/nota-final', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            matricula: aluno.matricula,
+            turma: fk_turma,  // passe a turma atual do contexto
+            valor: Number(notaFinal.toFixed(2))
+          })
+        });
+      } catch (error) {
+        console.error('Erro ao salvar nota final:', error);
+      }
+
+      tdFinal.textContent = notaFinal.toFixed(2).replace('.', ',');
+      tdFinal.style.fontWeight = 'bold';
+      tdFinal.style.color = notaFinal >= 5 ? '#28a745' : '#dc3545';
+    }
+  }
+
+  if (alunosSemNotas.length > 0) {
+    alert(`Atenção: ${alunosSemNotas.length} aluno(s) não têm todas as notas preenchidas:\n${alunosSemNotas.join(', ')}`);
+  } else {
+    alert('Notas finais calculadas com sucesso!');
+  }
+}
+
+
+
 
 
 // =======================
 // BACKEND HELPERS (ALUNOS)
 // =======================
-
 async function salvarAlunoBackend(matricula: string, nome: string, fk_turma: number): Promise<void> {
   await fetch('/api/turma_dashboard/' + fk_turma + '/alunos', {
     method: 'POST',
@@ -152,7 +319,6 @@ async function carregarAlunosDaTurma(fk_turma: number): Promise<void> {
       matricula: String(a.matricula),
       nome: String(a.nome)
     }));
-    atualizarTabelaAlunos();
   }
 }
 
@@ -167,7 +333,6 @@ function initModalAlunos(): void {
 
   if (!modalOverlay || !modalAlunos) return;
 
-  // Abas e painéis
   const tabs = modalAlunos.querySelectorAll('.tab-buttons .btn');
   const panels = modalAlunos.querySelectorAll('.tab-panel');
   function ativarAba(tabId: string) {
@@ -179,25 +344,21 @@ function initModalAlunos(): void {
     (tabPanel as HTMLElement).style.display = 'block';
   }
 
-  // Abrir modal
   btnGerenciar?.addEventListener('click', () => {
     modalOverlay.style.display = 'flex';
     modalAlunos.style.display = 'block';
     ativarAba('tab-manual-aluno');
   });
-  // Fechar modal
   btnFechar?.addEventListener('click', () => {
     modalAlunos.style.display = 'none';
     modalOverlay.style.display = 'none';
   });
-  // Troca de abas
   tabs.forEach(btn => {
     btn.addEventListener('click', () => {
       const tabId = btn.getAttribute('data-tab');
       if (tabId) ativarAba(tabId);
     });
   });
-  // Fechar no overlay
   modalOverlay.addEventListener('click', (e) => {
     if (e.target === modalOverlay) {
       if (modalAlunos.style.display === 'block') {
@@ -207,7 +368,6 @@ function initModalAlunos(): void {
     }
   });
 
-  // Adicionar manualmente
   const formManual = document.getElementById('form-aluno-manual') as HTMLFormElement;
   formManual?.addEventListener('submit', async e => {
     e.preventDefault();
@@ -216,23 +376,19 @@ function initModalAlunos(): void {
     const matricula = matInput.value.trim();
     const nome = nomeInput.value.trim();
     if (!matricula || !nome) return;
-
     if (alunosTurma.some(a => a.matricula === matricula)) {
       alert('Já existe um aluno com essa matrícula!');
       return;
     }
     const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement;
     const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
-
     await salvarAlunoBackend(matricula, nome, fk_turma);
     alunosTurma.push({ matricula, nome });
     atualizarTabelaAlunos();
-
     matInput.value = '';
     nomeInput.value = '';
   });
 
-  // Importar CSV
   const formImport = document.getElementById('form-aluno-import') as HTMLFormElement;
   const statusImport = document.getElementById('import-status') as HTMLElement;
   formImport?.addEventListener('submit', e => {
@@ -262,7 +418,6 @@ function initModalAlunos(): void {
     reader.readAsText(file);
   });
 
-  // Editar aluno
   const formEdit = document.querySelector('#tab-edit-aluno form') as HTMLFormElement;
   const btnEditar = modalAlunos.querySelector('#tab-edit-aluno .btn') as HTMLButtonElement;
   const inputsEdit = formEdit.querySelectorAll('input') as NodeListOf<HTMLInputElement>;
@@ -295,7 +450,6 @@ function initModalAlunos(): void {
       alert('Aluno não encontrado!');
       return;
     }
-    // Backend PUT
     const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matAntiga}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -313,7 +467,6 @@ function initModalAlunos(): void {
     alert('Aluno atualizado com sucesso!');
   });
 
-  // Excluir aluno
   const formDel = document.querySelector('#tab-delete-aluno form') as HTMLFormElement;
   const btnDeletar = modalAlunos.querySelector('#tab-delete-aluno .btn') as HTMLButtonElement;
   btnDeletar?.addEventListener('click', async e => {
@@ -335,10 +488,8 @@ function initModalAlunos(): void {
       alert('Aluno não encontrado!');
       return;
     }
-    // id da turma
     const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
     const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
-    // Backend DELETE
     const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matricula}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -357,9 +508,9 @@ function initModalAlunos(): void {
   });
 }
 
-// ============================================================
-// FUNCIONALIDADES DA PLANILHA DE NOTAS (opcional e ajustável)
-// ============================================================
+// =======================
+// DUPLO CLIQUE PARA LIBERAR COLUNA
+// =======================
 document.addEventListener("DOMContentLoaded", () => {
   const tabela = document.getElementById("grade_table") as HTMLTableElement | null;
   const thead = tabela?.querySelector("thead") as HTMLTableSectionElement | null;
@@ -399,12 +550,15 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener('DOMContentLoaded', async () => {
   const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
   const disciplinaInput = document.getElementById('id-disciplina') as HTMLInputElement | null;
-  const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
-  const disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : 1;
-
+  fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
+  disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : 1;
   await montarGradeTable(disciplinaId);
   await carregarAlunosDaTurma(fk_turma);
   await carregarNotasTurma(fk_turma);
+  await carregarFormula(disciplinaId);
   atualizarTabelaAlunos();
   initModalAlunos();
+  // Evento do botão calcular
+  const btnCalcular = document.getElementById('btn-calcular-notas');
+  btnCalcular?.addEventListener('click', calcularTodasNotasFinais);
 });

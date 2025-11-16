@@ -16,6 +16,7 @@ import classRoutes from '../database/classes/classRouter';
 import studentRouter from '../database/students/studentRouter';
 import componentesRouter from '../database/components/componentesRouter';
 import notasRouter from '../database/notas/notasRouter';
+import notaFinalRouter from '../database/notaFinal/notaFinalRouter';
 
 // ...
 
@@ -114,8 +115,10 @@ app.use('/api/disciplinas', verificarAutenticacao, disciplinesRoutes);
 app.use('/api/turmas', verificarAutenticacao, classRoutes);
 app.use('/api/turma_dashboard', verificarAutenticacao, studentRouter);
 app.use('/api/componentes', verificarAutenticacao, componentesRouter);
-app.use('/api/notas', verificarAutenticacao, notasRouter)
+app.use('/api/notas', verificarAutenticacao, notasRouter);
+app.use('/api/nota-final', verificarAutenticacao, notaFinalRouter);
 
+// Rotas para servir os arquivos HTML protegidos (após autenticação)
 app.get('/instituicoes', verificarAutenticacao, (req, res) => {
     res.sendFile('instituicoes.html', { root: publicPath });
 });
