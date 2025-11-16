@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { db } from '../index';
 
 // Criar aluno
+// Criar aluno
 export const criarAluno = (req: Request, res: Response) => {
   try {
     const { matricula, nome } = req.body;
-    const fk_turma = Number(req.params.id); // id da turma na rota
+    const fk_turma = Number(req.params.id);
 
     if (!matricula || !nome) {
       return res.status(400).json({
@@ -31,7 +32,7 @@ export const criarAluno = (req: Request, res: Response) => {
   }
 };
 
-// Listar alunos (de uma turma)
+// Listar alunos de uma turma
 export const listarAlunos = (req: Request, res: Response) => {
   try {
     const fk_turma = Number(req.params.id);
@@ -52,12 +53,12 @@ export const listarAlunos = (req: Request, res: Response) => {
   }
 };
 
-// Editar aluno (mesma turma, pela matrícula)
+// Editar aluno na turma
 export const editarAluno = (req: Request, res: Response) => {
   try {
-    const fk_turma = Number(req.params.id);           // id da turma
-    const matricula = req.params.matricula;           // matrícula antiga (identificador)
-    const { novaMatricula, novoNome } = req.body;     // dados novos
+    const fk_turma = Number(req.params.id);
+    const matricula = req.params.matricula;
+    const { novaMatricula, novoNome } = req.body;
 
     if (!novaMatricula && !novoNome) {
       return res.status(400).json({
@@ -66,10 +67,9 @@ export const editarAluno = (req: Request, res: Response) => {
       });
     }
 
-    // Monta a query dinamicamente conforme o que veio para alterar
+    // Monta dinamicamente
     const campos: string[] = [];
     const valores: any[] = [];
-
     if (novaMatricula) {
       campos.push('matricula = ?');
       valores.push(novaMatricula);
@@ -78,8 +78,6 @@ export const editarAluno = (req: Request, res: Response) => {
       campos.push('nome = ?');
       valores.push(novoNome);
     }
-
-    // WHERE garante que só altera o aluno daquela turma
     valores.push(matricula, fk_turma);
 
     const sql = `UPDATE alunos SET ${campos.join(', ')} WHERE matricula = ? AND fk_turma = ?`;
@@ -89,11 +87,9 @@ export const editarAluno = (req: Request, res: Response) => {
         console.error('Erro ao editar aluno:', err);
         return res.status(500).json({ success: false, message: 'Erro ao editar aluno' });
       }
-
       if (result.affectedRows === 0) {
         return res.status(404).json({ success: false, message: 'Aluno não encontrado nessa turma' });
       }
-
       return res.json({ success: true, message: 'Aluno atualizado com sucesso' });
     });
   } catch (error) {
@@ -102,12 +98,12 @@ export const editarAluno = (req: Request, res: Response) => {
   }
 };
 
-// Deletar aluno (pela matrícula e turma)
+// Excluir aluno na turma
 export const deletarAluno = (req: Request, res: Response) => {
   try {
-    const fk_turma = Number(req.params.id);   // id da turma
-    const matricula = req.params.matricula;   // matrícula do aluno
-    const nome = req.params.nome;  // nome do aluno
+    const fk_turma = Number(req.params.id);
+    const matricula = req.params.matricula;
+    const { nome } = req.body; // nome vem do body!
 
     db.query(
       'DELETE FROM alunos WHERE matricula = ? AND nome = ? AND fk_turma = ?',
@@ -117,11 +113,9 @@ export const deletarAluno = (req: Request, res: Response) => {
           console.error('Erro ao deletar aluno:', err);
           return res.status(500).json({ success: false, message: 'Erro ao deletar aluno' });
         }
-
         if (result.affectedRows === 0) {
           return res.status(404).json({ success: false, message: 'Aluno não encontrado nessa turma' });
         }
-
         return res.json({ success: true, message: 'Aluno deletado com sucesso' });
       }
     );

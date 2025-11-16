@@ -1,5 +1,6 @@
 create database notadez;
 use notadez;
+drop database notadez;
 
 CREATE TABLE usuario
 (
@@ -9,6 +10,7 @@ CREATE TABLE usuario
 	telefone varchar(20),
 	senha varchar(255)
 );
+select * from usuario;
 
 CREATE TABLE instituicao (
     id_instituicao INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,6 +19,8 @@ CREATE TABLE instituicao (
     fk_usuario INT NOT NULL,
     FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
+
+select * from instituicao;
 
 CREATE TABLE cursos (
     id_curso INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,6 +55,7 @@ CREATE TABLE disciplinas (
     FOREIGN KEY (fk_formula) REFERENCES formula(id_formula),
     FOREIGN KEY (fk_notaFinal) REFERENCES nota_final(id_notaFinal)
 );
+select * from disciplinas;
 
 CREATE TABLE turmas (
     id_turma INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,11 +65,12 @@ CREATE TABLE turmas (
 );
 
 CREATE TABLE alunos (
-    ra INT PRIMARY KEY,
+    matricula INT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     fk_turma INT NOT NULL,
     FOREIGN KEY (fk_turma) REFERENCES turmas(id_turma)
 );
+select * from alunos;
 
 CREATE TABLE componentes_notas (
     id_compNota INT AUTO_INCREMENT PRIMARY KEY,
@@ -82,6 +88,8 @@ CREATE TABLE auditoria (
     fk_usuario INT NOT NULL,
     FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
+
+SELECT * FROM auditoria;
 
 CREATE TABLE registra (
     fk_compNota INT NOT NULL,
@@ -178,97 +186,6 @@ BEGIN
     );
 END $$
 
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_delete_instituicoes
-AFTER DELETE ON INSTITUICAO
-FOR EACH ROW
-BEGIN
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT('O usuário de ID = ', OLD.fk_usuario, ' deletou a INSTITUIÇÃO ', OLD.nome),
-        OLD.fk_usuario
-    );
-END $$
-
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_delete_cursos
-AFTER DELETE ON CURSOS
-FOR EACH ROW
-BEGIN
-    DECLARE v_usuario_instituicao INT;
-    DECLARE v_nome_instituicao VARCHAR(100);
-    
-    SELECT fk_usuario, nome
-    INTO v_usuario_instituicao, v_nome_instituicao
-    FROM INSTITUICAO
-    WHERE ID_INSTITUICAO = OLD.fk_instituicao;
-    
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT(
-            'O usuário de ID = ', v_usuario_instituicao,
-            ' deletou o CURSO ', OLD.nome,
-            ' da INSTITUIÇÃO ', v_nome_instituicao
-        ),
-        v_usuario_instituicao
-    );
-END $$
-
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_delete_disciplinas
-AFTER DELETE ON DISCIPLINAS
-FOR EACH ROW
-BEGIN
-    DECLARE v_usuario_instituicao INT;
-    DECLARE v_nome_instituicao VARCHAR(100);
-    DECLARE v_nome_curso VARCHAR(100);
-    
-    SELECT i.fk_usuario, i.nome, c.nome
-    INTO v_usuario_instituicao, v_nome_instituicao, v_nome_curso
-    FROM INSTITUICAO i
-    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
-    WHERE c.ID_CURSO = OLD.fk_curso;
-    
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT(
-            'O usuário de ID = ', v_usuario_instituicao,
-            ' deletou a DISCIPLINA ', OLD.nome,
-            ' do CURSO ', v_nome_curso,
-            ' da INSTITUIÇÃO ', v_nome_instituicao
-        ),
-        v_usuario_instituicao
-    );
-END $$
-
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_delete_turmas
-AFTER DELETE ON TURMAS
-FOR EACH ROW
-BEGIN
-    DECLARE v_usuario_instituicao INT;
-    DECLARE v_nome_instituicao VARCHAR(100);
-    DECLARE v_nome_disciplina VARCHAR(100);
-    
-    SELECT i.fk_usuario, i.nome, d.nome
-    INTO v_usuario_instituicao, v_nome_instituicao, v_nome_disciplina
-    FROM INSTITUICAO i
-    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
-    INNER JOIN DISCIPLINAS d ON d.fk_curso = c.ID_CURSO
-    WHERE d.ID_DISCIPLINA = OLD.fk_disciplina;
-    
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT(
-            'O usuário de ID = ', v_usuario_instituicao,
-            ' deletou a TURMA ', OLD.nome,
-            ' da DISCIPLINA ', v_nome_disciplina,
-            ' da INSTITUIÇÃO ', v_nome_instituicao
-        ),
-        v_usuario_instituicao
-    );
-END $$
-
 DELIMITER ;
 
 CREATE TABLE password_reset_tokens (
@@ -279,3 +196,4 @@ CREATE TABLE password_reset_tokens (
     used BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
