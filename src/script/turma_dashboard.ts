@@ -1,6 +1,17 @@
 // Array para armazenar alunos da turma
 let alunosTurma: { matricula: string; nome: string }[] = [];
 
+// Função para salvar aluno no backend via API
+async function salvarAlunoBackend(matricula: string, nome: string, fk_turma: number): Promise<void> {
+ await fetch('/api/turma_dashboard/' + fk_turma + '/alunos', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ matricula, nome })
+});
+
+
+}
+
 function initModalAlunos(): void {
   const btnGerenciar = document.getElementById('manage_students_btn');
   const modalOverlay = document.getElementById('modal_container');
@@ -30,7 +41,7 @@ function initModalAlunos(): void {
   btnGerenciar?.addEventListener('click', () => {
     modalOverlay.style.display = 'flex';
     modalAlunos.style.display = 'block';
-    ativarAba('tab-manual-aluno'); // Ativa a aba de cadastro manual
+    ativarAba('tab-manual-aluno');
   });
 
   // ========================
@@ -57,25 +68,19 @@ function initModalAlunos(): void {
   // Adiciona o listener para fechar ao clicar no overlay
   // ========================
   modalOverlay.addEventListener('click', (e) => {
-    // Verifica se o clique foi diretamente no overlay (e não em um elemento filho)
     if (e.target === modalOverlay) {
-      // Fecha o modal de alunos se estiver aberto
       if (modalAlunos.style.display === 'block') {
         modalAlunos.style.display = 'none';
         modalOverlay.style.display = 'none';
       }
-      // Se houver outros modais que usam este mesmo overlay,
-      // você pode adicioná-los aqui, seguindo o padrão anterior.
     }
   });
-
-  
 
   /* ======================
      ADICIONAR MANUALMENTE
   ======================= */
   const formManual = document.getElementById('form-aluno-manual') as HTMLFormElement;
-  formManual?.addEventListener('submit', e => {
+  formManual?.addEventListener('submit', async e => {
     e.preventDefault();
     const matInput = formManual.querySelector('#aluno-matricula') as HTMLInputElement;
     const nomeInput = formManual.querySelector('#aluno-nome') as HTMLInputElement;
@@ -87,6 +92,13 @@ function initModalAlunos(): void {
       alert('Já existe um aluno com essa matrícula!');
       return;
     }
+
+    // Obtém id da turma do input hidden
+    const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement;
+    const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
+
+    // Salva no backend!
+    await salvarAlunoBackend(matricula, nome, fk_turma);
 
     alunosTurma.push({ matricula, nome });
     atualizarTabelaAlunos();
@@ -106,17 +118,20 @@ function initModalAlunos(): void {
     const file = fileInput.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const text = reader.result as string;
       const linhas = text.split('\n').map(l => l.trim()).filter(l => l);
       let count = 0;
-      linhas.forEach(linha => {
+      const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement;
+      const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
+      for (const linha of linhas) {
         const [matricula, nome] = linha.split(',').map(x => x.trim());
         if (matricula && nome && !alunosTurma.some(a => a.matricula === matricula)) {
+          await salvarAlunoBackend(matricula, nome, fk_turma);
           alunosTurma.push({ matricula, nome });
           count++;
         }
-      });
+      }
       atualizarTabelaAlunos();
       statusImport.textContent = `Importação concluída. ${count} alunos adicionados.`;
       fileInput.value = '';
@@ -135,14 +150,12 @@ function initModalAlunos(): void {
   const inputNovaMatricula = inputsEdit[1]; // matrícula nova
   const inputNovoNome = inputsEdit[2]; // nome novo
 
-  // Busca aluno ao sair do campo matrícula
   inputMatriculaBusca.addEventListener('blur', () => {
     const matricula = inputMatriculaBusca.value.trim();
     if (!matricula) return;
 
     const aluno = alunosTurma.find(a => a.matricula === matricula);
     if (aluno) {
-      // Preenche os campos para edição
       inputNovaMatricula.value = aluno.matricula;
       inputNovoNome.value = aluno.nome;
     } else {
@@ -152,7 +165,6 @@ function initModalAlunos(): void {
     }
   });
 
-  // Salvar edição
   btnEditar?.addEventListener('click', e => {
     e.preventDefault();
     const matAntiga = inputMatriculaBusca.value.trim();
@@ -201,18 +213,13 @@ function initModalAlunos(): void {
     formDel.reset();
   });
 
-  /* ======================
-     FUNÇÃO AUXILIAR PARA ATUALIZAR TABELA
-  ======================= */
   function atualizarTabelaAlunos() {
     const tabela = document.getElementById('grade_table') as HTMLTableElement;
     const tbody = tabela.querySelector('tbody');
     if (!tbody) return;
 
-    // Limpa tabela
     tbody.innerHTML = '';
 
-    // Para cada aluno, cria uma linha na tabela
     alunosTurma.forEach(aluno => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -220,7 +227,6 @@ function initModalAlunos(): void {
         <td>${aluno.nome}</td>
       `;
 
-      // Adiciona inputs para cada componente existente
       const componentes = document.querySelectorAll('#grade_table thead th');
       componentes.forEach((th, i) => {
         if (i > 1 && !th.classList.contains('final-grade-col')) {

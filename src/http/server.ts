@@ -13,6 +13,8 @@ import institutionRoutes from '../database/institutions/institutionRouter';
 import courseRoutes from '../database/courses/courseRouter';
 import disciplinesRoutes from '../database/disciplines/disciplineRouter';
 import classRoutes from '../database/classes/classRouter';
+import studentRouter from '../database/students/studentRouter';
+// ...
 
 const app = express(); // Inicializa o aplicativo Express.
 
@@ -107,6 +109,7 @@ app.use('/api/instituicoes', verificarAutenticacao, institutionRoutes);
 app.use('/api/cursos', verificarAutenticacao, courseRoutes);
 app.use('/api/disciplinas', verificarAutenticacao, disciplinesRoutes);
 app.use('/api/turmas', verificarAutenticacao, classRoutes);
+app.use('/api/turma_dashboard', verificarAutenticacao, studentRouter);
 
 app.get('/instituicoes', verificarAutenticacao, (req, res) => {
     res.sendFile('instituicoes.html', { root: publicPath });
