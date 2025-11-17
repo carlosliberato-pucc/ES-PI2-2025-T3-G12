@@ -1,54 +1,73 @@
 //Desenvolvido por Carlos Liberato
 
+// Quando todo o DOM estiver pronto, executa esta função principal
+// Inicializa variáveis importantes do contexto da página, como IDs vindos da URL
+// Faz verificações, manipula cards de disciplinas e inicializa eventos
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Pega parâmetros da URL para saber a instituição e o curso
     const urlParams = new URLSearchParams(window.location.search);
     const idInstituicao = urlParams.get('id_instituicao');
     const idCurso = urlParams.get('id_curso');
 
+    // Se não encontrou os IDs essenciais, avisa e redireciona
     if (!idInstituicao || !idCurso) {
         alert('ID da instituição ou ID curso não encontrado');
         window.location.href = '/dashboard';
         return;
     }
 
+    // Seleciona todos os botões internos dos cards de edição
     const btnsCard = document.querySelectorAll<HTMLButtonElement>(".btn-card");
+    // Seleciona o painel de edição (edit card lateral)
     const edicaoCard = document.querySelector<HTMLDivElement>(".edicao-card");
 
+    // Seleciona botões de cor usados no painel de edição
     const coresEdit = document.querySelectorAll<HTMLButtonElement>('.cor-btn[data-context="edit"]');
 
+    // Seleciona modal de criar card/discipina e todos campos do formulário
     const createCardModal = document.querySelector('.create-card') as HTMLDivElement;
     const nomeInst = document.getElementById("nome") as HTMLInputElement;
     const siglaDisc = document.getElementById("sigla") as HTMLInputElement;
     const periodoSelect = document.getElementById("periodo") as HTMLSelectElement;
     const codigoDisc = document.getElementById("codigo") as HTMLInputElement;
     const btnCriar = document.getElementById("btn-criar") as HTMLButtonElement;
+    // Botões coloridos do contexto criação
     const coresCreate = document.querySelectorAll<HTMLButtonElement>('.cor-btn[data-context="create"]');
+    // Botão que abre modal de criar card
     const btnCreateCard = document.querySelectorAll<HTMLButtonElement>(".btn-create-card");
+    // Camada que cobre a tela por trás do modal
     const modalOverlay = document.querySelector('.modal-overlay') as HTMLDivElement;
 
-    let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
+    // Cor padrão de nova disciplina
+    let corSelecionada = 'rgb(10, 61, 183)';
 
+    // Função assíncrona que busca todas disciplinas do backend e monta cards
     const carregarDisciplinas = async () => {
         try {
+            // Requisição GET para API de disciplinas filtrando por instituição e curso
             const response = await fetch(`http://localhost:3000/api/disciplinas?id_instituicao=${idInstituicao}&id_curso=${idCurso}`, {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include' // inclui cookies de sessão
             });
 
+            // Se erro, loga no console e encerra
             if (!response.ok) {
                 console.error('Erro ao carregar disciplinas:', response.status);
                 return;
             }
 
+            // Converte resposta para JSON
             const result = await response.json();
 
+            // Se resposta veio ok e é uma lista, cria um card para cada disciplina
             if (result.success && Array.isArray(result.data)) {
                 result.data.forEach((disciplina: any) => {
-                    // Buscar cor salva no localStorage
+                    // Busca cor personalizada salva ou usa cor padrão
                     const corSalva = localStorage.getItem(`cor_disciplina_${disciplina.id_disciplina}`);
                     const cor = corSalva || 'rgb(10, 61, 183)';
 
-                    // Criar card visual com dados do banco
+                    // Chama função que realmente monta o card na interface
                     criarNovoCard(
                         disciplina.nome,
                         disciplina.sigla || 'Não informado',
@@ -59,29 +78,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                 });
 
+                // Loga quantidade de disciplinas carregadas
                 console.log(`${result.data.length} disciplinas carregados`);
             }
         } catch (erro) {
+            // Se houver qualquer erro, mostra mensagem no console
             console.error('Erro ao carregar disciplinas: ', erro);
         }
     }
 
-    //Create Card
+    // Função que monta/verbaliza um novo card de disciplina na tela
     const criarNovoCard = (nome: string, sigla: string, periodo: string, codigo: string, cor: string, id_disciplina?: number) => {
+        // Seleciona a SEÇÃO onde ficam os cards
         const section = document.querySelector("main section")
 
+        // Cria um novo elemento DIV para representar o card
         const novoCard = document.createElement("div") as HTMLDivElement
         novoCard.classList.add("card")
         novoCard.style.backgroundColor = cor
 
+        // Se recebeu id_disciplina, armazena como atributo data-id no card
         if (id_disciplina) {
             novoCard.dataset.id = id_disciplina.toString();
         }
 
+        // Define o conteúdo HTML do card
         novoCard.innerHTML = `
                     <button class="btn-card">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            viewBox="0 0 640 640">
                             <path fill="#ffffff"
                                 d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
                         </svg>
@@ -92,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>                
         `
 
+        // Se clicou NO CARD (não no menu de edição), vai para a listagem de turmas daquela disciplina
         novoCard.addEventListener('click', (e) => {
             const clickedElement = e.target as HTMLElement;
             if (!clickedElement.closest('.btn-card') && id_disciplina) {
@@ -99,15 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Adiciona o card como último filho da seção
         section?.appendChild(novoCard)
 
-        // Adiciona evento ao botão do novo card
+        // Pega botão interno do card e associa evento de abrir menu de edição
         const btnNovoCard = novoCard.querySelector('.btn-card') as HTMLButtonElement;
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
-    //criar disciplina no banco
+
+    // Função assíncrona para criar disciplina no banco de dados via POST
     const criarDisciplinaNoBanco = async (nome: string, sigla: string, cor: string, periodo: string, codigo: string): Promise<boolean> => {
         try {
+            // Requisita ao backend a criação da disciplina
             const response = await fetch(`http://localhost:3000/api/disciplinas`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -115,16 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ id_instituicao: idInstituicao, id_curso: idCurso, nome, sigla, codigo, periodo })
             });
 
+            // Recebe JSON da resposta
             const result = await response.json();
 
+            // Se deu certo, salva cor no localStorage e cria card na interface
             if (result.success) {
                 console.log('Curso criado no banco:', result.data);
 
-                // Salvar cor no localStorage
                 const id_disciplina = result.data.id_disciplina;
                 localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
 
-                // Criar card visual com o ID do banco
                 criarNovoCard(nome, sigla, periodo, codigo, cor, id_disciplina);
 
                 return true;
@@ -139,19 +168,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Associa eventos de seleção de cor (contexto criar disciplina)
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
 
+            // Salva cor escolhida
             corSelecionada = window.getComputedStyle(corBtn).backgroundColor;
 
-            // Feedback visual
+            // Remove borda de todos botões
             coresCreate.forEach(el => el.style.border = 'none');
 
+            // Destaca a cor selecionada
             corBtn.style.border = '3px solid #333'
         });
     });
 
+    // Evento de clique no botão de criar disciplina
     btnCriar.addEventListener('click', async (e) => {
         e.preventDefault()
 
@@ -160,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const periodo = periodoSelect.options[periodoSelect.selectedIndex].text;
         const codigo = codigoDisc.value.trim();
 
+        // Validação dos campos
         if (!nome) {
             alert("Digite o nome da instituição.");
             return;
@@ -170,33 +204,39 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Feedback de carregamento
         btnCriar.disabled = true;
         const textoOriginal = btnCriar.textContent;
         btnCriar.textContent = 'Criando...';
 
+        // Cria disciplina de fato
         const sucesso = await criarDisciplinaNoBanco(nome, sigla, corSelecionada, periodo, codigo);
 
+        // Restaura estado do botão
         btnCriar.disabled = false;
         btnCriar.textContent = textoOriginal;
 
+        // Limpa e fecha modal apenas se operação deu certo
         if (sucesso) {
             nomeInst.value = '';
             siglaDisc.value = '';
             corSelecionada = 'rgb(10, 61, 183)';
             coresCreate.forEach(el => el.style.border = 'none')
-
             createCardModal.style.display = 'none'
             modalOverlay.classList.remove('ativo')
             painelCreateAberto = false;
         }
     })
 
+    // Controla painel de criação de nova disciplina
     let painelCreateAberto = false
 
+    // Função centraliza adicionar/remover modal de criar disciplina
     const adicionarEventoBtnCreate = (btnCreate: HTMLButtonElement) => {
         btnCreate.addEventListener('click', (e) => {
             e.stopPropagation()
 
+            // Alterna painel de criação
             if (painelCreateAberto == false) {
                 createCardModal.style.display = 'block'
                 modalOverlay.classList.add('ativo')
@@ -209,26 +249,29 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    // Adiciona evento de abrir modal criar disciplina a todos botões do tipo
     btnCreateCard.forEach((btnCreate) => {
         adicionarEventoBtnCreate(btnCreate)
     })
 
+    // EDIÇÃO DE CARD - PAINEL LATERAL
 
-    //Edit Card
+    // Armazena se painel está aberto e o card referente
     let painelEditAberto = false;
     let cardAtual: HTMLDivElement | null = null;
 
-    // Verifica se o painel existe
+    // Checagem de existência do painel
     if (!edicaoCard) {
         console.error('Painel de edição não encontrado!');
         return;
     }
 
-    // Adiciona evento de clique em cada botão dos cards
+    // Função que liga botão de edição ao painel lateral
     const adicionarEventoEdicao = (btn: HTMLButtonElement, card: HTMLDivElement) => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
 
+            // Se já está aberto para este card, só fecha
             if (painelEditAberto && cardAtual === card) {
                 edicaoCard.classList.remove('aberto');
                 painelEditAberto = false;
@@ -236,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Calcula posição do painel: prioriza abrir à direita do card
             const rect = card.getBoundingClientRect();
             const espacoDireita = window.innerWidth - (rect.right + 10);
             const larguraPainel = 200;
@@ -254,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             painelEditAberto = true;
             cardAtual = card;
 
+            // Atualiza botão de delete com id correto
             const btnDelete = edicaoCard.querySelector('.btn-open-delete') as HTMLButtonElement | null;
             if (btnDelete && card.dataset.id) {
                 btnDelete.setAttribute('data-id', card.dataset.id);
@@ -262,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Adiciona evento nos cards existentes
+    // Liga todos os botões de edição já presentes nos cards existentes
     btnsCard.forEach((btn) => {
         const card = btn.closest('.card') as HTMLDivElement;
         if (card) {
@@ -270,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Seleciona a cor ao clicar em uma das opções
+    // Permite trocar a cor do card em edição clicando nas opções
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -279,17 +324,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const corSelecionada = window.getComputedStyle(corElement).backgroundColor;
 
-            // Aplica a cor ao card atual
+            // Aplica cor ao card na tela
             cardAtual.style.backgroundColor = corSelecionada;
 
-            // Feedback visual
+            // Destaca visualmente qual está selecionada
             coresEdit.forEach(el => el.style.border = 'none');
 
+            // Função que salva cor no localStorage
             const salvarCor = (cor: string, id_disciplina: string) => {
                 localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
             };
 
-            // Opcional: salvar cor
+            // Só salva se o card tem data-id
             const instituicaoId = cardAtual.dataset.id;
             if (instituicaoId) {
                 salvarCor(corSelecionada, instituicaoId);
@@ -297,10 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Fecha o painel ao clicar fora dele
+    // Fecha painel lateral de edição ao clicar fora dele
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
 
+        // Fecha lateral se clicou fora	edicaoCard e não em botão menu
         if (painelEditAberto &&
             !edicaoCard.contains(target) &&
             !target.closest('.btn-card')) {
@@ -312,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cardAtual = null;
         }
 
+        // Fecha modal criação se clicou fora
         if (painelCreateAberto && !createCardModal.contains(target) && !target.closest('.btn-create-card')) {
             createCardModal.style.display = 'none'
             modalOverlay.classList.remove('ativo')
@@ -319,8 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Carrega cards de disciplinas logo ao iniciar página
     carregarDisciplinas();
 
+    // --- Evento para deletar disciplina ---
     const btnDeleteDisciplina = edicaoCard?.querySelector('.btn-open-delete') as HTMLButtonElement;
 
     btnDeleteDisciplina?.addEventListener('click', async (e) => {
@@ -353,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && data.success) {
                 alert(data.message);
                 
-                // Remove o card da tela com animação
+                // Remove o card visualmente da tela com animação
                 const cardParaDeletar = document.querySelector(`.card[data-id="${disciplinaId}"]`) as HTMLDivElement;
                 if (cardParaDeletar) {
                     cardParaDeletar.style.opacity = '0';
@@ -361,17 +411,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => cardParaDeletar.remove(), 300);
                 }
                 
-                // Remove cor do localStorage
+                // Remove cor personalizada desse card
                 localStorage.removeItem(`cor_disciplina_${disciplinaId}`);
                 
-                // Fecha o painel de edição
+                // Fecha painel lateral
                 if (edicaoCard) {
                     edicaoCard.classList.remove('aberto');
                     edicaoCard.style.display = 'none';
                 }
                 
             } else {
-                // Mensagem de erro do servidor (incluindo validação de hierarquia)
+                // Se fracassou, mostra mensagem do backend
                 alert(data.message || 'Erro ao deletar disciplina');
                 btnDeleteDisciplina.disabled = false;
             }

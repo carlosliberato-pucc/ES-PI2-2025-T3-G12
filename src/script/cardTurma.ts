@@ -1,9 +1,6 @@
 //Desenvolvido por Carlos Liberato
 
-
-// ============================================
 // INTERFACES E TIPOS
-// ============================================
 
 interface FormulaData {
     tipo: string;
@@ -17,20 +14,14 @@ interface ComponenteNota {
     descricao: string;
 }
 
-
-
-// ============================================
 // VARIÁVEIS GLOBAIS (com prefixo para evitar conflito)
-// ============================================
 
 let turmasFormulaAtual: FormulaData | null = null;
 let turmasComponentesNota: ComponenteNota[] = [];
 let turmasComponenteParaExcluir: string | null = null;
 let temTurmasExistentes = false;
 
-// ============================================
 // FUNÇÕES DE INTEGRAÇÃO COM BACKEND
-// ============================================
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -168,9 +159,7 @@ const removerComponenteNoBanco = async (idDisciplina: string, idComponente: stri
     }
 };
 
-// ============================================
 // DOCUMENT READY
-// ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
 
