@@ -1,11 +1,17 @@
 "use strict";
-//Desenvolvido por Carlos Liberato
+// ============================================
+// INTERFACES E TIPOS
+// ============================================
+// ============================================
 // VARIÁVEIS GLOBAIS (com prefixo para evitar conflito)
+// ============================================
 let turmasFormulaAtual = null;
 let turmasComponentesNota = [];
 let turmasComponenteParaExcluir = null;
 let temTurmasExistentes = false;
+// ============================================
 // FUNÇÕES DE INTEGRAÇÃO COM BACKEND
+// ============================================
 const API_BASE = 'http://localhost:3000/api';
 const carregarFormulaDoBanco = async (idDisciplina) => {
     try {
@@ -132,7 +138,9 @@ const removerComponenteNoBanco = async (idDisciplina, idComponente) => {
         return false;
     }
 };
+// ============================================
 // DOCUMENT READY
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const idInstituicao = urlParams.get('id_instituicao');
@@ -265,7 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const clickedElement = e.target;
             if (!clickedElement.closest('.btn-card') && id_turma) {
                 // Futura navegação para alunos
-                window.location.href = `/turma_dashboard?id_instituicao=${idInstituicao}&id_curso=${idCurso}&id_disciplina=${idDisciplina}&id_turma=${id_turma}`;
+                window.location.href = `/turma_dashboard?id_instituicao=${idInstituicao}
+                &id_curso=${idCurso}&id_disciplina=${idDisciplina}&id_turma=${id_turma}`;
             }
         });
         section?.appendChild(novoCard);

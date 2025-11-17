@@ -112,7 +112,6 @@ app.use('/auth', authRoutes);
 app.use('/api/instituicoes', verificarAutenticacao, institutionRoutes);
 app.use('/api/cursos', verificarAutenticacao, courseRoutes);
 app.use('/api/disciplinas', verificarAutenticacao, disciplinesRoutes);
-
 app.use('/api/turmas', verificarAutenticacao, classRoutes);
 app.use('/api/turma_dashboard', verificarAutenticacao, studentRouter);
 app.use('/api/componentes', verificarAutenticacao, componentesRouter);

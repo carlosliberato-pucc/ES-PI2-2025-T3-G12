@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletarTurma = exports.buscarTurmaPorId = exports.listarTurmas = exports.criarTurma = void 0;
+exports.buscarTurmaPorId = exports.deletarTurma = exports.listarTurmas = exports.criarTurma = void 0;
 const index_1 = require("../index");
 // ==================== CRIAR TURMA ====================
 const criarTurma = async (req, res) => {
@@ -130,38 +130,6 @@ const listarTurmas = async (req, res) => {
     }
 };
 exports.listarTurmas = listarTurmas;
-// Em classController.ts, adicione esta nova função:
-const buscarTurmaPorId = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userEmail = req.session.userEmail;
-        if (!userEmail) {
-            return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
-        }
-        // Buscar turma e verificar se pertence ao usuário
-        index_1.db.query(`SELECT t.id_turma, t.nome 
-       FROM turmas t
-       INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
-       INNER JOIN cursos c ON d.fk_curso = c.id_curso
-       INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
-       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-       WHERE t.id_turma = ? AND u.email = ?`, [id, userEmail], (err, results) => {
-            if (err) {
-                console.error('Erro ao buscar turma:', err);
-                return res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
-            }
-            if (!Array.isArray(results) || results.length === 0) {
-                return res.status(403).json({ success: false, message: 'Turma não encontrada ou sem permissão' });
-            }
-            res.json({ success: true, data: results[0] });
-        });
-    }
-    catch (error) {
-        console.error('Erro ao buscar turma:', error);
-        res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
-    }
-};
-exports.buscarTurmaPorId = buscarTurmaPorId;
 const deletarTurma = async (req, res) => {
     try {
         const { id } = req.params;
@@ -209,3 +177,18 @@ const deletarTurma = async (req, res) => {
     }
 };
 exports.deletarTurma = deletarTurma;
+const buscarTurmaPorId = (req, res) => {
+    const { id } = req.params;
+    index_1.db.query('SELECT id_turma, nome FROM turmas WHERE id_turma = ?', [id], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar turma por id:', err);
+            return res.status(500).json({ success: false, message: 'Erro ao buscar turma' });
+        }
+        const rows = results; // <- cast para array
+        if (!rows || rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Turma não encontrada' });
+        }
+        res.json({ success: true, data: rows[0] });
+    });
+};
+exports.buscarTurmaPorId = buscarTurmaPorId;

@@ -138,6 +138,30 @@ export const listarDisciplinas = async (req: Request, res: Response) => {
     }
 };
 
+
+export const buscarDisciplinaPorId = (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  db.query(
+    'SELECT id_disciplina, nome, sigla FROM disciplinas WHERE id_disciplina = ?',
+    [id],
+    (err, results) => {
+      if (err) {
+        console.error('Erro ao buscar disciplina por id:', err);
+        return res.status(500).json({ success: false, message: 'Erro ao buscar disciplina' });
+      }
+
+      const rows = results as any[]; // <- cast para array
+
+      if (!rows || rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Disciplina não encontrada' });
+      }
+
+      res.json({ success: true, data: rows[0] });
+    }
+  );
+};
+
 // Retorna a fórmula (se existir) e os componentes vinculados à disciplina
 export const listarFormulaEComponentes = async (req: Request, res: Response) => {
     try {
@@ -450,43 +474,6 @@ export const deletarComponente = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
     }
 };
-export const buscarDisciplinaPorId = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const userEmail = req.session.userEmail;
-
-    if (!userEmail) {
-      return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
-    }
-
-    // Buscar disciplina e verificar se pertence ao usuário
-    db.query(
-      `SELECT d.id_disciplina, d.nome, d.sigla, d.codigo, d.periodo
-       FROM disciplinas d
-       INNER JOIN cursos c ON d.fk_curso = c.id_curso
-       INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
-       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-       WHERE d.id_disciplina = ? AND u.email = ?`,
-      [id, userEmail],
-      (err: any, results: any) => {
-        if (err) {
-          console.error('Erro ao buscar disciplina:', err);
-          return res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
-        }
-
-        if (!Array.isArray(results) || results.length === 0) {
-          return res.status(403).json({ success: false, message: 'Disciplina não encontrada ou sem permissão' });
-        }
-
-        res.json({ success: true, data: results[0] });
-      }
-    );
-  } catch (error) {
-    console.error('Erro ao buscar disciplina:', error);
-    res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
-  }
-};
-
 
 export const deletarDisciplina = async (req: Request, res: Response) => {
     try {

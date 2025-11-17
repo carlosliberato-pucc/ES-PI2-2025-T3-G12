@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { db } from '../index';
 
 // Salvar (inserir/atualizar) nota de um aluno para um componente
+// Salvar (inserir/atualizar) nota de um aluno para um componente
 export const salvarNota = async (req: Request, res: Response) => {
   try {
     const { matricula, idComponente, valor } = req.body;
@@ -9,23 +10,40 @@ export const salvarNota = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Dados incompletos' });
     }
 
-    // Validação extra: apenas entre 0 e 10 e deve ser decimal numérico
     const numValor = Number(valor);
     if (isNaN(numValor) || numValor < 0 || numValor > 10) {
       return res.status(400).json({ success: false, message: 'Nota deve ser um número de 0 a 10' });
     }
 
+    // 1) Buscar id do aluno pela matrícula
     db.query(
-      `INSERT INTO notas (valor, fk_matricula, fk_compNota)
-       VALUES (?, ?, ?)
-       ON DUPLICATE KEY UPDATE valor = VALUES(valor)`,
-      [numValor, matricula, idComponente],
-      (err) => {
+      'SELECT id FROM alunos WHERE matricula = ? LIMIT 1',
+      [matricula],
+      (err, rows: any[]) => {
         if (err) {
-          console.error('Erro ao salvar nota:', err);
-          return res.status(500).json({ success: false, message: 'Erro ao salvar nota' });
+          console.error('Erro ao buscar aluno pela matrícula:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao buscar aluno' });
         }
-        res.json({ success: true, message: 'Nota salva com sucesso' });
+        if (!rows || rows.length === 0) {
+          return res.status(404).json({ success: false, message: 'Aluno não encontrado para esta matrícula' });
+        }
+
+        const idAluno = rows[0].id as number;
+
+        // 2) Inserir/atualizar nota usando fk_id_aluno
+        db.query(
+          `INSERT INTO notas (valor, fk_id_aluno, fk_compNota)
+           VALUES (?, ?, ?)
+           ON DUPLICATE KEY UPDATE valor = VALUES(valor)`,
+          [numValor, idAluno, idComponente],
+          (err2) => {
+            if (err2) {
+              console.error('Erro ao salvar nota:', err2);
+              return res.status(500).json({ success: false, message: 'Erro ao salvar nota' });
+            }
+            res.json({ success: true, message: 'Nota salva com sucesso' });
+          }
+        );
       }
     );
   } catch (error) {
@@ -35,6 +53,7 @@ export const salvarNota = async (req: Request, res: Response) => {
 };
 
 
+
 // Buscar todas as notas de uma turma
 export const listarNotasTurma = async (req: Request, res: Response) => {
   try {
@@ -42,15 +61,17 @@ export const listarNotasTurma = async (req: Request, res: Response) => {
     if (!idTurma) {
       return res.status(400).json({ success: false, message: 'Id da turma não informado' });
     }
+
     db.query(
       `SELECT a.matricula, a.nome, c.id_compNota, c.sigla, n.valor AS nota
-       FROM alunos a
-       JOIN turmas t ON t.id_turma = a.fk_turma
-       JOIN disciplinas d ON d.id_disciplina = t.fk_disciplina
-       JOIN componentes_notas c ON c.fk_disciplina = d.id_disciplina
-       LEFT JOIN notas n ON n.fk_matricula = a.matricula AND n.fk_compNota = c.id_compNota
-       WHERE t.id_turma = ?
-       ORDER BY a.nome, c.id_compNota`,
+         FROM alunos a
+         JOIN turmas t            ON t.id_turma      = a.fk_turma
+         JOIN disciplinas d       ON d.id_disciplina = t.fk_disciplina
+         JOIN componentes_notas c ON c.fk_disciplina = d.id_disciplina
+         LEFT JOIN notas n        ON n.fk_id_aluno   = a.id
+                                  AND n.fk_compNota  = c.id_compNota
+        WHERE t.id_turma = ?
+        ORDER BY a.nome, c.id_compNota`,
       [idTurma],
       (err, rows) => {
         if (err) {
