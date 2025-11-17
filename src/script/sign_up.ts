@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato (Login)
+// Desenvolvido por Carlos Liberato (Cadastro)
 // Felipe Miranda (Sessão)
 
 // Captura o botão de cadastro e a área de mensagem na tela de signup

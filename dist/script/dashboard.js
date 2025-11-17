@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Carlos Liberato
 // Script para popular a tabela do dashboard com resumo por instituição
 document.addEventListener('DOMContentLoaded', () => {
     // Seleciona corpo da tabela onde os dados serão inseridos

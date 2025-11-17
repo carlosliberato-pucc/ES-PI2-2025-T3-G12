@@ -1,5 +1,6 @@
 "use strict";
-// Desenvolvido por Carlos Liberato e Felipe Miranda
+// Desenvolvido por Carlos Liberato (Desenvolvimento do Servidor)
+// Felipe Miranda (Configuração de Sessão)
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);

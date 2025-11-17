@@ -1,5 +1,6 @@
 "use strict";
-// Desenvolvido por Carlos Liberato e Felipe Miranda
+// Desenvolvido por Carlos Liberato (Login)
+//  Felipe Miranda (Sessão)
 // Captura o botão de login e a área de mensagem na tela de login
 const signinBtn = document.getElementById("login-btn");
 const messageDiv_SIN = document.getElementById("signin-message");

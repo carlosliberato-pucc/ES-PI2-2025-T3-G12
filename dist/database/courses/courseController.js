@@ -1,4 +1,6 @@
 "use strict";
+// Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Curso)
+// Desenvolvido por Carlos Liberato (Armazenar, Listar e Deletar Curso e validações de vínculo)
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletarCurso = exports.listarCursos = exports.criarCurso = void 0;
 const index_1 = require("../index");
@@ -101,7 +103,8 @@ const deletarCurso = async (req, res) => {
             index_1.db.query(`DELETE c FROM cursos c
            INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
            INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-           WHERE c.id_curso = ? AND u.email = ?`, [id_curso, userEmail], (err, results) => {
+           WHERE c.id_curso = ? AND u.email = ?`, // Vínculo usuário-curso
+            [id_curso, userEmail], (err, results) => {
                 if (err) {
                     console.error('Erro ao deletar curso:', err);
                     return res.status(500).json({ success: false, message: 'Erro ao deletar curso' });

@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Salvar e Buscar Notas Finais)
+
 import { Request, Response } from 'express';
 import { db } from '../index';
 

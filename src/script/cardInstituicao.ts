@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato (Funções de armazenar, criar, listar e excluir cards)
 // Felipe (Funções de armazenar, listar e excluir cards)
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,6 +1,7 @@
 "use strict";
+// Desenvolvido por Carlos Liberato (Rotas de Login, Cadastro, Sessão e Recuperação de Senha)
+// Desenvolvido por Felipe Miranda (Sessão e recuperação de senha)
 Object.defineProperty(exports, "__esModule", { value: true });
-// Desenvolvido por Carlos Liberato
 const express_1 = require("express");
 const authController_1 = require("./authController");
 const router = (0, express_1.Router)();

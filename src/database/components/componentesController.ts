@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Listar Componentes de Nota)
+
 import { Request, Response } from 'express';
 import { db } from '../index';
 
@@ -7,17 +9,17 @@ export const listarComponentes = async (req: Request, res: Response) => {
     const { id } = req.params; // id_disciplina
     db.query(
       'SELECT id_compNota, nome, sigla, descricao FROM componentes_notas WHERE fk_disciplina = ? ORDER BY id_compNota',
-      [id],
+      [id], // Seleciona componentes pela disciplina
       (err, componentes) => {
         if (err) {
           console.error('Erro ao buscar componentes:', err);
           return res.status(500).json({ success: false, message: 'Erro ao buscar componentes' });
         }
         return res.json({ success: true, data: componentes });
-      }
+      } // Callback da query
     );
   } catch (error) {
     console.error('Erro em listarComponentes:', error);
     res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
-  }
+  } // catch
 };

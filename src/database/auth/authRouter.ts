@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato (Rotas de Login, Cadastro, Sessão e Recuperação de Senha)
 // Desenvolvido por Felipe Miranda (Sessão e recuperação de senha)
 
 import { Router } from 'express';

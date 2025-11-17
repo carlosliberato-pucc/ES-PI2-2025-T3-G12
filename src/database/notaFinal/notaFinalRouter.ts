@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Rotas de Notas Finais)
+
 import express from 'express';
 import { salvarNotaFinal, buscarNotasFinais } from './notaFinalController';
 

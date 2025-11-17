@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Turma)
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buscarTurmaPorId = exports.deletarTurma = exports.listarTurmas = exports.criarTurma = void 0;
 const index_1 = require("../index");

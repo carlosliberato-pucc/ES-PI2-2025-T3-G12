@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato (Banco de Dados MySQL - Conexão)
 const mysql2_1 = __importDefault(require("mysql2"));
 const dotenv = __importStar(require("dotenv"));
 // Carrega variáveis do .env

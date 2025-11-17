@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Curso)
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

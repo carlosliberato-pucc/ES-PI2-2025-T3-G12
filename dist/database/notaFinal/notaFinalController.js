@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Carlos Liberato (Salvar e Buscar Notas Finais)
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buscarNotasFinais = exports.salvarNotaFinal = void 0;
 const index_1 = require("../index");

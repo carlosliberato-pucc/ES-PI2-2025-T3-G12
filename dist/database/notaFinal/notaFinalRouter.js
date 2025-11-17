@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Carlos Liberato (Rotas de Notas Finais)
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

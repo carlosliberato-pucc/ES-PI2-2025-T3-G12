@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Rotas de Componentes de Nota)
+
 import express from 'express';
 import { listarComponentes } from './componentesController';
 

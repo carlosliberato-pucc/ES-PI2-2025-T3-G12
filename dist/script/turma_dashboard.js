@@ -12,6 +12,7 @@ let disciplinaId = 1;
 // CARREGAR COMPONENTES DA DISCIPLINA
 // =======================
 async function carregarComponentes(disciplinaId) {
+    // Busca componentes do backend
     const resp = await fetch('/api/componentes/' + disciplinaId, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -28,6 +29,7 @@ async function carregarComponentes(disciplinaId) {
 // CARREGAR NOTAS DA TURMA
 // =======================
 async function carregarNotasTurma(fk_turma) {
+    // Busca notas do backend
     const resp = await fetch('/api/notas/turma/' + fk_turma, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -68,6 +70,7 @@ async function carregarFormula(disciplinaId) {
 // MONTAR CABEÇALHO DINÂMICO DA TABELA
 // =======================
 async function montarGradeTable(disciplinaId) {
+    // Carrega componentes da disciplina
     componentesNotas = await carregarComponentes(disciplinaId);
     const tabela = document.getElementById("grade_table");
     if (!tabela)
@@ -77,6 +80,7 @@ async function montarGradeTable(disciplinaId) {
         thead = document.createElement('thead');
         tabela.appendChild(thead);
     }
+    // Monta cabeçalho com colunas dinâmicas
     thead.innerHTML = '<tr><th>Matrícula</th><th>Nome</th>' +
         componentesNotas.map(c => `<th>${c.sigla}</th>`).join('') +
         '<th class="final-grade-col">Final</th></tr>';
@@ -112,6 +116,7 @@ async function atualizarTabelaAlunos() {
             if (notasTurma && notasTurma[chaveNota] != null) {
                 input.value = String(notasTurma[chaveNota]);
             }
+            // Evento ao alterar a nota
             input.addEventListener('change', async () => {
                 let valor = parseFloat(input.value);
                 if (isNaN(valor) || valor < 0 || valor > 10) {
@@ -119,6 +124,7 @@ async function atualizarTabelaAlunos() {
                     input.value = '';
                     return;
                 }
+                // Salvar nota no backend
                 await fetch('/api/notas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -155,6 +161,7 @@ async function atualizarTabelaAlunos() {
 // FUNÇÃO AUXILIAR PARA CARREGAR NOTAS FINAIS
 // =======================
 async function carregarNotasFinais(fk_turma) {
+    // Busca notas finais do backend
     const resp = await fetch(`/api/nota-final/${fk_turma}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -166,6 +173,7 @@ async function carregarNotasFinais(fk_turma) {
     }
     const json = await resp.json();
     const notasFinaisMap = {};
+    // Preenche o mapa de notas finais
     if (json.success && Array.isArray(json.data)) {
         json.data.forEach((linha) => {
             if (linha.valor != null) {
@@ -183,6 +191,7 @@ function validarFormula(expressao, tipo) {
         const pesos = expressao.match(/\*\s*([\d.]+)/g);
         if (!pesos)
             return { valido: false, mensagem: 'Fórmula ponderada inválida' };
+        // Soma dos pesos deve ser 1.0
         const somaPesos = pesos.reduce((acc, p) => {
             const peso = parseFloat(p.replace('*', '').trim());
             return acc + peso;
@@ -195,9 +204,11 @@ function validarFormula(expressao, tipo) {
         }
     }
     else if (tipo === 'aritmetica') {
+        // Verifica se o divisor bate com o número de componentes
         const divMatch = expressao.match(/\/\s*(\d+)/);
         if (divMatch) {
             const divisor = Number(divMatch[1]);
+            // Verifica se o divisor é igual ao número de componentes
             if (divisor !== componentesNotas.length) {
                 return {
                     valido: false,
@@ -214,12 +225,14 @@ function validarFormula(expressao, tipo) {
 function calcularNotaFinal(matricula) {
     if (!formulaDisciplina)
         return null;
+    // Verifica se todas as notas estão presentes
     for (const comp of componentesNotas) {
         const chave = `${matricula}_${comp.id_compNota}`;
         if (notasTurma[chave] == null) {
             return null;
         }
     }
+    // Substitui siglas pelas notas na expressão
     let expressao = formulaDisciplina.expressao;
     componentesNotas.forEach(comp => {
         const chave = `${matricula}_${comp.id_compNota}`;
@@ -258,6 +271,7 @@ async function calcularTodasNotasFinais() {
         return;
     const linhas = tabela.querySelectorAll('tbody tr');
     let alunosSemNotas = [];
+    // Percorre cada aluno na tabela
     for (let idx = 0; idx < linhas.length; idx++) {
         const aluno = alunosTurma[idx];
         if (!aluno)
@@ -301,6 +315,7 @@ async function calcularTodasNotasFinais() {
 // BACKEND HELPERS (ALUNOS)
 // =======================
 async function salvarAlunoBackend(matricula, nome, fk_turma) {
+    // Envia requisição ao backend para salvar aluno
     await fetch('/api/turma_dashboard/' + fk_turma + '/alunos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -309,6 +324,7 @@ async function salvarAlunoBackend(matricula, nome, fk_turma) {
     });
 }
 async function carregarAlunosDaTurma(fk_turma) {
+    // Busca alunos do backend
     const resp = await fetch('/api/turma_dashboard/' + fk_turma + '/alunos', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -319,6 +335,7 @@ async function carregarAlunosDaTurma(fk_turma) {
         return;
     }
     const json = await resp.json();
+    // Preenche array global de alunos
     if (json.success && Array.isArray(json.data)) {
         alunosTurma = json.data.map((a) => ({
             matricula: String(a.matricula),
@@ -338,6 +355,7 @@ function initModalAlunos() {
         return;
     const tabs = modalAlunos.querySelectorAll('.tab-buttons .btn');
     const panels = modalAlunos.querySelectorAll('.tab-panel');
+    // Função para ativar aba
     function ativarAba(tabId) {
         tabs.forEach(btn => btn.classList.remove('active'));
         panels.forEach(panel => panel.style.display = 'none');
@@ -356,12 +374,14 @@ function initModalAlunos() {
         modalOverlay.style.display = 'none';
     });
     tabs.forEach(btn => {
+        // Alternar abas
         btn.addEventListener('click', () => {
             const tabId = btn.getAttribute('data-tab');
             if (tabId)
                 ativarAba(tabId);
         });
     });
+    // Fechar modal ao clicar fora
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) {
             if (modalAlunos.style.display === 'block') {
@@ -372,6 +392,7 @@ function initModalAlunos() {
     });
     const formManual = document.getElementById('form-aluno-manual');
     formManual?.addEventListener('submit', async (e) => {
+        // Adicionar aluno manualmente
         e.preventDefault();
         const matInput = formManual.querySelector('#aluno-matricula');
         const nomeInput = formManual.querySelector('#aluno-nome');
@@ -391,17 +412,21 @@ function initModalAlunos() {
     });
     const formImport = document.getElementById('form-aluno-import');
     const statusImport = document.getElementById('import-status');
+    // Importar alunos via CSV
     formImport?.addEventListener('submit', e => {
         e.preventDefault();
+        // Lê o arquivo CSV
         const fileInput = formImport.querySelector('#csv-file');
         const file = fileInput.files?.[0];
         if (!file)
             return;
         const reader = new FileReader();
         reader.onload = async () => {
+            // Processa o conteúdo do arquivo
             const text = reader.result;
             const linhas = text.split('\n').map(l => l.trim()).filter(l => l);
             let count = 0;
+            // Processa cada linha do CSV
             for (const linha of linhas) {
                 const [matricula, nome] = linha.split(',').map(x => x.trim());
                 if (matricula && nome && !alunosTurma.some(a => a.matricula === matricula)) {
@@ -416,12 +441,14 @@ function initModalAlunos() {
         };
         reader.readAsText(file);
     });
+    // Editar aluno
     const formEdit = document.querySelector('#tab-edit-aluno form');
     const btnEditar = modalAlunos.querySelector('#tab-edit-aluno .btn');
     const inputsEdit = formEdit.querySelectorAll('input');
     const inputMatriculaBusca = inputsEdit[0];
     const inputNovaMatricula = inputsEdit[1];
     const inputNovoNome = inputsEdit[2];
+    // Preenche dados ao perder foco no campo de busca
     inputMatriculaBusca.addEventListener('blur', () => {
         const matricula = inputMatriculaBusca.value.trim();
         if (!matricula)
@@ -439,14 +466,17 @@ function initModalAlunos() {
     });
     btnEditar?.addEventListener('click', async (e) => {
         e.preventDefault();
+        // Coleta dados do formulário
         const matAntiga = inputMatriculaBusca.value.trim();
         const novaMat = inputNovaMatricula.value.trim();
         const novoNome = inputNovoNome.value.trim();
+        // Validações básicas
         const aluno = alunosTurma.find(a => a.matricula === matAntiga);
         if (!aluno) {
             alert('Aluno não encontrado!');
             return;
         }
+        // Verifica se a nova matrícula já existe
         const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matAntiga}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -457,6 +487,7 @@ function initModalAlunos() {
             alert('Falha ao editar aluno!');
             return;
         }
+        // Atualiza dados locais
         if (novaMat)
             aluno.matricula = novaMat;
         if (novoNome)
@@ -465,10 +496,12 @@ function initModalAlunos() {
         formEdit.reset();
         alert('Aluno atualizado com sucesso!');
     });
+    // Deletar aluno
     const formDel = document.querySelector('#tab-delete-aluno form');
     const btnDeletar = modalAlunos.querySelector('#tab-delete-aluno .btn');
     btnDeletar?.addEventListener('click', async (e) => {
         e.preventDefault();
+        // Coleta dados do formulário
         const inputs = formDel.querySelectorAll('input');
         const matricula = inputs[0].value.trim();
         const matriculaConfirm = inputs[1].value.trim();
@@ -481,11 +514,13 @@ function initModalAlunos() {
             alert('Erro: Matrículas não coincidem!');
             return;
         }
+        // Verifica se o aluno existe
         const indexMatricula = alunosTurma.findIndex(a => a.matricula === matricula && a.nome === nomeConfirm);
         if (indexMatricula === -1) {
             alert('Aluno não encontrado!');
             return;
         }
+        // Chamada ao backend para deletar o aluno
         const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matricula}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -509,7 +544,9 @@ function initModalAlunos() {
 document.addEventListener("DOMContentLoaded", () => {
     const tabela = document.getElementById("grade_table");
     const thead = tabela?.querySelector("thead");
+    // Adicionar evento de duplo clique no cabeçalho
     thead?.addEventListener("dblclick", (e) => {
+        // Verifica se o alvo é um TH
         const th = e.target.closest("th");
         if (!th)
             return;
@@ -519,6 +556,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         const linhas = tabela?.querySelectorAll("tbody tr");
         const inputsColuna = [];
+        // Coletar todos os inputs da coluna clicada
         linhas?.forEach((linha) => {
             const celula = linha.children[indice];
             if (!celula)
@@ -528,6 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 inputsColuna.push(input);
         });
         const colunaAtiva = th.dataset.ativa === "true";
+        // Alternar estado da coluna
         if (!colunaAtiva) {
             tabela?.querySelectorAll("tbody td input").forEach(inp => inp.disabled = true);
             cabecalhos.forEach(c => c.style.backgroundColor = "");
@@ -629,6 +668,7 @@ async function exportarNotasCSV() {
 // =======================
 async function buscarInfoTurma(fk_turma) {
     try {
+        // Buscar informações da turma
         const resp = await fetch(`/api/turmas/${fk_turma}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -651,6 +691,7 @@ async function buscarInfoTurma(fk_turma) {
 // =======================
 async function buscarInfoDisciplina(disciplinaId) {
     try {
+        // Buscar informações da disciplina
         const resp = await fetch(`/api/disciplinas/${disciplinaId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -660,6 +701,7 @@ async function buscarInfoDisciplina(disciplinaId) {
             console.error('Erro ao buscar info da disciplina:', resp.statusText);
             return null;
         }
+        // Parsear resposta JSON
         const json = await resp.json();
         return json.success && json.data ? json.data : null;
     }
@@ -668,22 +710,22 @@ async function buscarInfoDisciplina(disciplinaId) {
         return null;
     }
 }
-// =======================
-// INICIALIZAÇÃO COMPLETA
-// =======================
 document.addEventListener('DOMContentLoaded', async () => {
+    // Extrair parâmetros da URL
     const params = new URLSearchParams(window.location.search);
     const turmaFromUrl = params.get("id_turma");
     const disciplinaFromUrl = params.get("id_disciplina");
     fk_turma = turmaFromUrl ? Number(turmaFromUrl) : 1;
     disciplinaId = disciplinaFromUrl ? Number(disciplinaFromUrl) : 1;
     console.log("Turma atual:", fk_turma, "Disciplina atual:", disciplinaId);
+    // Inicializar tabela e carregar dados
     await montarGradeTable(disciplinaId);
     await carregarAlunosDaTurma(fk_turma);
     await carregarNotasTurma(fk_turma);
     await carregarFormula(disciplinaId);
     await atualizarTabelaAlunos();
     initModalAlunos();
+    // Eventos dos botões
     const btnCalcular = document.getElementById('btn-calcular-notas');
     btnCalcular?.addEventListener('click', calcularTodasNotasFinais);
     const btnExportar = document.getElementById('export_grades_btn');

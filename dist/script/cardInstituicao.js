@@ -1,4 +1,6 @@
 "use strict";
+// Desenvolvido por Carlos Liberato (Funções de armazenar, criar, listar e excluir cards)
+// Felipe (Funções de armazenar, listar e excluir cards)
 document.addEventListener('DOMContentLoaded', () => {
     // Seletores principais
     const btnsCard = document.querySelectorAll(".btn-card");

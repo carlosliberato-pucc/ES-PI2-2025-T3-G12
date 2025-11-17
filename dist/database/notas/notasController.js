@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Carlos Liberato (Salvar e Listar Notas de Alunos)
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listarNotasTurma = exports.salvarNota = void 0;
 const index_1 = require("../index");

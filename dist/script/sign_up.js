@@ -1,5 +1,6 @@
 "use strict";
-// Desenvolvido por Carlos Liberato e Felipe Miranda
+// Desenvolvido por Carlos Liberato (Cadastro)
+// Felipe Miranda (Sessão)
 // Captura o botão de cadastro e a área de mensagem na tela de signup
 const signupBtn = document.getElementById("signup-btn");
 const messageDiv_SUP = document.getElementById("signup-message");

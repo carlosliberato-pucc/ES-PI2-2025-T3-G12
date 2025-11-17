@@ -1,5 +1,5 @@
-// Desenvolvido por Felipe Miranda
-
+// Desenvolvido por Felipe Miranda  (Instituições: Armazenar, Listar, Deletar e Resumo )
+// Desenvolvido por Carlos Liberato (Validações de vínculo em Instituições e outros ajustes)
 import { Request, Response } from 'express';
 import { db } from '../index';
 

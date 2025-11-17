@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Rotas de Notas)
+
 import express from 'express';
 import { salvarNota, listarNotasTurma } from './notasController';
 

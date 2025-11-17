@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato (Banco de Dados MySQL - Conexão)
 import mysql from 'mysql2';
 import * as dotenv from 'dotenv';
 

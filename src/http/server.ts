@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato (Desenvolvimento do Servidor)
 // Felipe Miranda (Configuração de Sessão)
 
 import * as dotenv from 'dotenv';

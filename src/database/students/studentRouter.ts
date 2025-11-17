@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Criar, Listar, Editar e Deletar Alunos)
+
 import express from 'express';
 import { criarAluno, listarAlunos, editarAluno, deletarAluno } from './studentController';
 

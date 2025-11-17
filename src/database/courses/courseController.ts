@@ -1,4 +1,5 @@
 // Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Curso)
+// Desenvolvido por Carlos Liberato (Armazenar, Listar e Deletar Curso e validações de vínculo)
 
 import { Request, Response } from 'express';
 import { db } from '../index';
@@ -130,7 +131,7 @@ export const deletarCurso = async (req: Request, res: Response) => {
           `DELETE c FROM cursos c
            INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
            INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-           WHERE c.id_curso = ? AND u.email = ?`,
+           WHERE c.id_curso = ? AND u.email = ?`, // Vínculo usuário-curso
           [id_curso, userEmail],
           (err, results: any) => {
             if (err) {

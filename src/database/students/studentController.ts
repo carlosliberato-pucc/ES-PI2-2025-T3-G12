@@ -1,3 +1,5 @@
+// Desenvolvido por Carlos Liberato (Criar, Listar, Editar e Deletar Alunos)
+
 import { Request, Response } from 'express';
 import { db } from '../index';
 

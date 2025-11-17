@@ -1,4 +1,5 @@
 "use strict";
+// Desenvolvido por Carlos Liberato (Criar, Listar, Editar e Deletar Alunos)
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletarAluno = exports.editarAluno = exports.listarAlunos = exports.criarAluno = void 0;
 const index_1 = require("../index");

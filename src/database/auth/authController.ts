@@ -1,4 +1,4 @@
-// Desenvolvido por Carlos Liberato
+// Desenvolvido por Carlos Liberato (Login, Cadastro, Sessão e Recuperação de Senha)
 // Desenvolvido por Felipe Miranda (Sessão e recuperação de senha)
 import type { Request, Response } from 'express';
 import bcrypt from 'bcrypt';

@@ -1,4 +1,5 @@
 // Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Disciplina)
+// Desenvolvido por Gabriel Coutinho (Armazenar, Listar e Deletar Disciplina, Componentes, Fórmulas e validações de vínculo)
 
 import { Request, Response } from 'express';
 import { db } from '../index';
