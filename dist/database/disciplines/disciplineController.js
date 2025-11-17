@@ -424,7 +424,7 @@ const deletarDisciplina = async (req, res) => {
                 message: 'Usuário não autenticado'
             });
         }
-        // Verificar se a disciplina tem turmas vinculadas
+        // 1) Verificar se a disciplina tem turmas vinculadas
         index_1.db.query(`SELECT COUNT(*) as total FROM turmas WHERE fk_disciplina = ?`, [id], (countErr, countResults) => {
             if (countErr) {
                 console.error('Erro ao verificar turmas:', countErr);
@@ -440,12 +440,12 @@ const deletarDisciplina = async (req, res) => {
                     message: `Não é possível deletar esta disciplina. Existem ${totalTurmas} turma(s) vinculada(s). Exclua as turmas primeiro.`
                 });
             }
-            // Verificar se a disciplina pertence ao usuário e deletar
+            // 2) Verificar se a disciplina pertence ao usuário e deletar
             index_1.db.query(`DELETE d FROM disciplinas d
-                     INNER JOIN cursos c ON d.fk_curso = c.id_curso
-                     INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
-                     INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-                     WHERE d.id_disciplina = ? AND u.email = ?`, [id, userEmail], (err, results) => {
+           INNER JOIN cursos c ON d.fk_curso = c.id_curso
+           INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+           INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+           WHERE d.id_disciplina = ? AND u.email = ?`, [id, userEmail], (err, results) => {
                 if (err) {
                     console.error('Erro ao deletar disciplina:', err);
                     return res.status(500).json({
