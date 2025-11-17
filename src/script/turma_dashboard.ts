@@ -15,6 +15,9 @@ interface NotaFinal {
   nota_final: string | number;
 }
 
+let siglaDisciplinaAtual: string = 'DISC';
+let nomeTurmaAtual: string = '';
+
 
 // =======================
 // CARREGAR COMPONENTES DA DISCIPLINA
@@ -590,13 +593,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // =======================
 // EXPORTAR NOTAS PARA CSV
 // =======================
+// =======================
+// EXPORTAR NOTAS PARA CSV
+// =======================
 async function exportarNotasCSV(): Promise<void> {
   // Validar se todas as notas estão preenchidas
   let todasNotasPreenchidas = true;
   let alunosSemNotas: string[] = [];
   
   for (const aluno of alunosTurma) {
-    // Verificar se todas as notas de componentes estão preenchidas
     for (const comp of componentesNotas) {
       const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
       if (notasTurma[chaveNota] == null) {
@@ -607,7 +612,6 @@ async function exportarNotasCSV(): Promise<void> {
       }
     }
     
-    // Verificar se a nota final foi calculada
     const notaFinal = calcularNotaFinal(aluno.matricula);
     if (notaFinal === null) {
       todasNotasPreenchidas = false;
@@ -617,7 +621,6 @@ async function exportarNotasCSV(): Promise<void> {
     }
   }
   
-  // Se não estiver tudo preenchido, mostrar aviso
   if (!todasNotasPreenchidas) {
     alert(
       'Não é possível exportar as notas!\n\n' +
@@ -627,9 +630,13 @@ async function exportarNotasCSV(): Promise<void> {
     return;
   }
   
-  // Buscar informações da turma e disciplina para o nome do arquivo
+  // Buscar informações da turma e disciplina
   const turmaInfo = await buscarInfoTurma(fk_turma);
   const disciplinaInfo = await buscarInfoDisciplina(disciplinaId);
+  
+  // Log para debug
+  console.log('📊 Info Turma:', turmaInfo);
+  console.log('📚 Info Disciplina:', disciplinaInfo);
   
   // Gerar nome do arquivo: YYYY-MM-DD_HHmmssms-TurmaX_Sigla.csv
   const agora = new Date();
@@ -641,38 +648,35 @@ async function exportarNotasCSV(): Promise<void> {
   const segundo = String(agora.getSeconds()).padStart(2, '0');
   const milissegundo = String(agora.getMilliseconds()).padStart(3, '0');
   
-  const nomeTurma = turmaInfo?.nome || `T${fk_turma}`;
-  const siglaDisciplina = disciplinaInfo?.sigla || 'DISC';
+  // USAR DIRETAMENTE AS VARIÁVEIS GLOBAIS
+  const nomeTurma = nomeTurmaAtual || `Turma_${fk_turma}`;
+  const siglaDisciplina = siglaDisciplinaAtual || 'DISC';
   
   const nomeArquivo = `${ano}-${mes}-${dia}_${hora}${minuto}${segundo}${milissegundo}-${nomeTurma}-${siglaDisciplina}.csv`;
+  console.log('📁 Nome do arquivo:', nomeArquivo);
   
   // Montar conteúdo CSV
   let csvContent = 'Matrícula,Nome';
   
-  // Adicionar cabeçalhos dos componentes
   componentesNotas.forEach(comp => {
     csvContent += `,${comp.sigla}`;
   });
   csvContent += ',Nota Final\n';
   
-  // Adicionar dados dos alunos
   alunosTurma.forEach(aluno => {
     csvContent += `${aluno.matricula},${aluno.nome}`;
     
-    // Adicionar notas dos componentes
     componentesNotas.forEach(comp => {
       const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
       const nota = notasTurma[chaveNota];
       csvContent += `,${nota != null ? nota.toFixed(2) : '-'}`;
     });
     
-    // Adicionar nota final
     const notaFinal = calcularNotaFinal(aluno.matricula);
     csvContent += `,${notaFinal != null ? notaFinal.toFixed(2) : '-'}`;
     csvContent += '\n';
   });
   
-  // Criar blob e fazer download
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
@@ -684,8 +688,9 @@ async function exportarNotasCSV(): Promise<void> {
   link.click();
   document.body.removeChild(link);
   
-  console.log(`Arquivo exportado: ${nomeArquivo}`);
+  console.log(`✅ Arquivo exportado: ${nomeArquivo}`);
 }
+
 
 // =======================
 // BUSCAR INFORMAÇÕES DA TURMA
@@ -739,14 +744,11 @@ async function buscarInfoDisciplina(disciplinaId: number): Promise<{ sigla: stri
 // INICIALIZAÇÃO COMPLETA
 // =======================
 document.addEventListener('DOMContentLoaded', async () => {
-  // Pegar parâmetros da URL
   const urlParams = new URLSearchParams(window.location.search);
   
-  // Tentar pegar dos inputs HTML primeiro
   const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
   const disciplinaInput = document.getElementById('id-disciplina') as HTMLInputElement | null;
   
-  // Se não existir input, pegar da URL
   fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : Number(urlParams.get('id_turma')) || 1;
   disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : Number(urlParams.get('id_disciplina')) || 1;
   
@@ -755,6 +757,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('disciplinaId final:', disciplinaId);
   console.log('URL:', window.location.href);
   console.log('=================');
+  
+  // CARREGUE AS INFORMAÇÕES AQUI NO INÍCIO
+  const turmaInfo = await buscarInfoTurma(fk_turma);
+  const disciplinaInfo = await buscarInfoDisciplina(disciplinaId);
+  
+  // GUARDE EM VARIÁVEIS GLOBAIS
+  if (turmaInfo) nomeTurmaAtual = turmaInfo.nome;
+  if (disciplinaInfo) siglaDisciplinaAtual = disciplinaInfo.sigla;
+  
+  console.log('📊 Turma:', nomeTurmaAtual);
+  console.log('📚 Disciplina:', siglaDisciplinaAtual);
   
   await montarGradeTable(disciplinaId);
   await carregarAlunosDaTurma(fk_turma);

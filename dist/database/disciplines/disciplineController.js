@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletarDisciplina = exports.deletarComponente = exports.criarComponente = exports.listarComponentes = exports.salvarFormula = exports.listarFormulaEComponentes = exports.listarDisciplinas = exports.criarDisciplina = void 0;
+exports.deletarDisciplina = exports.buscarDisciplinaPorId = exports.deletarComponente = exports.criarComponente = exports.listarComponentes = exports.salvarFormula = exports.listarFormulaEComponentes = exports.listarDisciplinas = exports.criarDisciplina = void 0;
 const index_1 = require("../index");
 const criarDisciplina = async (req, res) => {
     try {
@@ -377,6 +377,36 @@ const deletarComponente = async (req, res) => {
     }
 };
 exports.deletarComponente = deletarComponente;
+const buscarDisciplinaPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userEmail = req.session.userEmail;
+        if (!userEmail) {
+            return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
+        }
+        // Buscar disciplina e verificar se pertence ao usuário
+        index_1.db.query(`SELECT d.id_disciplina, d.nome, d.sigla, d.codigo, d.periodo
+       FROM disciplinas d
+       INNER JOIN cursos c ON d.fk_curso = c.id_curso
+       INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+       WHERE d.id_disciplina = ? AND u.email = ?`, [id, userEmail], (err, results) => {
+            if (err) {
+                console.error('Erro ao buscar disciplina:', err);
+                return res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+            }
+            if (!Array.isArray(results) || results.length === 0) {
+                return res.status(403).json({ success: false, message: 'Disciplina não encontrada ou sem permissão' });
+            }
+            res.json({ success: true, data: results[0] });
+        });
+    }
+    catch (error) {
+        console.error('Erro ao buscar disciplina:', error);
+        res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+    }
+};
+exports.buscarDisciplinaPorId = buscarDisciplinaPorId;
 const deletarDisciplina = async (req, res) => {
     try {
         const { id } = req.params;

@@ -159,6 +159,47 @@ export const listarTurmas = async (req: Request, res: Response) => {
     }
 };
 
+// Em classController.ts, adicione esta nova função:
+export const buscarTurmaPorId = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userEmail = req.session.userEmail;
+
+    if (!userEmail) {
+      return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
+    }
+
+    // Buscar turma e verificar se pertence ao usuário
+    db.query(
+      `SELECT t.id_turma, t.nome 
+       FROM turmas t
+       INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
+       INNER JOIN cursos c ON d.fk_curso = c.id_curso
+       INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+       WHERE t.id_turma = ? AND u.email = ?`,
+      [id, userEmail],
+      (err: any, results: any) => {
+        if (err) {
+          console.error('Erro ao buscar turma:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+        }
+
+        if (!Array.isArray(results) || results.length === 0) {
+          return res.status(403).json({ success: false, message: 'Turma não encontrada ou sem permissão' });
+        }
+
+        res.json({ success: true, data: results[0] });
+      }
+    );
+  } catch (error) {
+    console.error('Erro ao buscar turma:', error);
+    res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+  }
+};
+
+
+
 export const deletarTurma = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
