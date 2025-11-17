@@ -364,26 +364,48 @@ const criarComponente = async (req, res) => {
 };
 exports.criarComponente = criarComponente;
 // Deletar componente
+// Deletar componente
 const deletarComponente = async (req, res) => {
     try {
-        const { id, id_comp } = req.params;
+        const { id, id_comp } = req.params; // id = id_disciplina
         const userEmail = req.session.userEmail;
-        if (!userEmail)
+        if (!userEmail) {
             return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
+        }
         index_1.db.query(`DELETE cn FROM componentes_notas cn
-             INNER JOIN disciplinas d ON cn.fk_disciplina = d.id_disciplina
-             INNER JOIN cursos c ON d.fk_curso = c.id_curso
-             INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE cn.id_compNota = ? AND d.id_disciplina = ? AND u.email = ?`, [id_comp, id, userEmail], (delErr, delRes) => {
+       INNER JOIN disciplinas d ON cn.fk_disciplina = d.id_disciplina
+       INNER JOIN cursos c ON d.fk_curso = c.id_curso
+       INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+       WHERE cn.id_compNota = ? AND d.id_disciplina = ? AND u.email = ?`, [id_comp, id, userEmail], (delErr, delRes) => {
             if (delErr) {
                 console.error('Erro ao deletar componente:', delErr);
                 return res.status(500).json({ success: false, message: 'Erro ao deletar componente' });
             }
-            if (delRes.affectedRows === 0) {
+            if (!delRes || delRes.affectedRows === 0) {
                 return res.status(404).json({ success: false, message: 'Componente não encontrado ou sem permissão' });
             }
-            return res.json({ success: true, message: 'Componente deletado' });
+            // 1) invalidar fórmula
+            index_1.db.query('UPDATE disciplinas SET fk_formula = NULL WHERE id_disciplina = ?', [id], (updErr) => {
+                if (updErr) {
+                    console.error('Erro ao limpar fórmula da disciplina após deleção de componente:', updErr);
+                    // ainda assim tentamos limpar nota_final
+                }
+                // 2) remover notas finais associadas às turmas dessa disciplina
+                index_1.db.query(`DELETE nf FROM nota_final nf
+                 INNER JOIN alunos a  ON nf.fk_id_aluno = a.id
+                 INNER JOIN turmas t  ON nf.fk_turma   = t.id_turma
+                 INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
+               WHERE d.id_disciplina = ?`, [id], (nfErr) => {
+                    if (nfErr) {
+                        console.error('Erro ao limpar notas finais após deleção de componente:', nfErr);
+                    }
+                    return res.json({
+                        success: true,
+                        message: 'Componente deletado. Fórmula da disciplina foi invalidada e notas finais antigas foram removidas; configure a fórmula novamente e recalcule.'
+                    });
+                });
+            });
         });
     }
     catch (error) {

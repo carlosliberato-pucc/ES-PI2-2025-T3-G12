@@ -687,6 +687,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 divsFormula[0].textContent = 'Nenhuma fórmula configurada';
                 divsFormula[1].textContent = '';
+                (divsFormula[0] as HTMLElement).style.fontStyle = 'italic';
+
             }
         }
     };
