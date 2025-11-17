@@ -17,13 +17,13 @@
 
 ---
 
-## 🌟 Projeto ClassBoard
+## 🌟 Projeto NotaDez
 
 <p align="center">
   <img src="public/img/NotaDez_Logo.png" alt="Logo ClassBoard" width="350"/>
 </p>
 
-O **ClassBoard** é uma aplicação web inovadora voltada para **docentes do ensino superior**, com o objetivo de gerenciar notas e desempenho acadêmico de seus estudantes de forma **intuitiva, segura e automatizada**.  
+O **NotaDez** é uma aplicação web inovadora voltada para **docentes do ensino superior**, com o objetivo de gerenciar notas e desempenho acadêmico de seus estudantes de forma **intuitiva, segura e automatizada**.  
 
 Atualmente, muitos professores dependem de planilhas como Excel para registrar notas, o que limita a integração com sistemas institucionais e dificulta o gerenciamento eficiente ao longo do tempo. O ClassBoard resolve esse problema, permitindo que o docente:
 
@@ -143,40 +143,6 @@ USE notadez;
 
 ---
 
-#### **OPÇÃO B: Via Linha de Comando (CMD/PowerShell)**
-
-1. Abra o **CMD** ou **PowerShell**
-2. Faça login no MySQL:
-
-```bash
-mysql -u root -p
-```
-
-3. Digite a senha root quando solicitado
-4. Execute os comandos:
-
-```sql
-CREATE DATABASE notadez;
-USE notadez;
-```
-
-5. Saia do MySQL digitando `exit`
-6. Execute o script `NotaDez.sql` diretamente:
-
-```bash
-mysql -u root -p notadez < caminho/para/NotaDez.sql
-```
-
-**Exemplo:**
-```bash
-mysql -u root -p notadez < C:\Users\SeuUsuario\Documents\PI_II_ES_TIMEX\NotaDez.sql
-```
-
-7. Digite a senha root novamente
-8. Pronto! O banco de dados e todas as tabelas foram criadas.
-
----
-
 ### 1.4. Verificar se as Tabelas Foram Criadas
 
 No **MySQL Workbench** ou via **linha de comando**, execute:
@@ -186,31 +152,22 @@ USE notadez;
 SHOW TABLES;
 ```
 
-Você deve ver uma lista de tabelas como:
-- `usuarios`
-- `instituicoes`
-- `disciplinas`
-- `turmas`
-- `alunos`
-- `componentes_notas`
-- `notas`
-- `notas_finais`
-- `auditoria_notas`
-- `formulas_notas`
-
 Se todas aparecerem, o banco está configurado corretamente! ✅
 
 ---
 
 ## 💻 PASSO 2: Clonar e Configurar o Projeto
+## 2.1. Instalar o Git
+Baixe no [site oficial](https://git-scm.com/) e instale normalmente. Na instalação, mantenha as opções padrão.
 
-### 2.1. Clonar o Repositório
+Após instalar, feche e abra novamente o terminal para garantir que git já funciona.
+### 2.2. Clonar o Repositório
 
 Abra o **CMD** ou **PowerShell** e execute:
 
 ```bash
 git clone https://github.com/carlosliberato-pucc/PI_II_ES_TIME12.git
-cd PI_II_ES_TIMEX
+cd PI_II_ES_TIME12
 ```
 
 ### 2.2. Configurar as Variáveis de Ambiente (.env)
@@ -221,21 +178,16 @@ cd PI_II_ES_TIMEX
 ```env
 # Configurações do Banco de Dados MySQL
 DB_HOST=localhost
-DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=sua_senha_root_aqui
 DB_NAME=notadez
 
-# Porta do Servidor
-PORT=3000
+SESSION_SECRET=abc1234segredo
 
-# Chave Secreta para Sessões (crie uma senha forte qualquer)
-SESSION_SECRET=minha_chave_secreta_super_segura_123
+EMAIL_USER=n8365989@gmail.com
+EMAIL_PASS=iojp divi dlul qgyf 
 
-# Configurações de Email (para recuperação de senha)
-# Se não tiver configurado email ainda, pode deixar em branco por enquanto
-EMAIL_USER=seu_email@gmail.com
-EMAIL_PASS=sua_senha_de_app
+NODE_ENV=development
 ```
 
 **IMPORTANTE:** Substitua `sua_senha_root_aqui` pela senha que você definiu quando instalou o MySQL!
@@ -277,19 +229,19 @@ Após a instalação das dependências, execute:
 ### No **PowerShell**:
 
 ```powershell
-npm.cmd run dev
+npm.cmd start
 ```
 
 OU:
 
 ```powershell
-cmd /c "npm run dev"
+npm start
 ```
 
 ### No **CMD**:
 
 ```bash
-npm run dev
+npm start
 ```
 
 Você verá uma mensagem como:
@@ -356,7 +308,7 @@ E acesse `http://localhost:3001` no navegador.
 
 ```powershell
 npm.cmd install
-npm.cmd run dev
+npm.cmd start
 ```
 
 **Solução 2:**
@@ -385,42 +337,6 @@ O script SQL não foi executado corretamente. Execute novamente:
 ```bash
 mysql -u root -p notadez < NotaDez.sql
 ```
-
----
-
-## 📌 Resumo dos Comandos
-
-```bash
-# 1. Criar banco de dados (MySQL)
-mysql -u root -p
-CREATE DATABASE notadez;
-USE notadez;
-exit
-
-# 2. Executar script SQL
-mysql -u root -p notadez < NotaDez.sql
-
-# 3. Clonar projeto
-git clone <link-do-repositorio>
-cd <nome-da-pasta>
-
-# 4. Configurar .env
-# (edite o arquivo manualmente com os dados do MySQL)
-
-# 5. Instalar dependências
-npm install
-# OU no PowerShell:
-npm.cmd install
-
-# 6. Rodar o projeto
-npm run dev
-# OU no PowerShell:
-npm.cmd run dev
-
-# 7. Abrir no navegador
-http://localhost:3000
-```
-
 ---
 
 ## 🎯 Checklist Antes de Rodar
@@ -430,7 +346,7 @@ http://localhost:3000
 - [ ] Script `NotaDez.sql` executado (tabelas e triggers criados)
 - [ ] Arquivo `.env` configurado com senha do MySQL correta
 - [ ] Dependências instaladas com `npm install`
-- [ ] Servidor iniciado com `npm run dev`
+- [ ] Servidor iniciado com `npm start`
 - [ ] Navegador acessando `http://localhost:3000`
 
 ---
