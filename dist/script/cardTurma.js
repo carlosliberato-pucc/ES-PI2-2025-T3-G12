@@ -1,15 +1,11 @@
 "use strict";
 //Desenvolvido por Carlos Liberato
-// ============================================
 // VARIÁVEIS GLOBAIS (com prefixo para evitar conflito)
-// ============================================
 let turmasFormulaAtual = null;
 let turmasComponentesNota = [];
 let turmasComponenteParaExcluir = null;
 let temTurmasExistentes = false;
-// ============================================
 // FUNÇÕES DE INTEGRAÇÃO COM BACKEND
-// ============================================
 const API_BASE = 'http://localhost:3000/api';
 const carregarFormulaDoBanco = async (idDisciplina) => {
     try {
@@ -136,9 +132,7 @@ const removerComponenteNoBanco = async (idDisciplina, idComponente) => {
         return false;
     }
 };
-// ============================================
 // DOCUMENT READY
-// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const idInstituicao = urlParams.get('id_instituicao');

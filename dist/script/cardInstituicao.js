@@ -1,38 +1,56 @@
 "use strict";
-//Desenvolvido por Carlos Liberato
+// Aguarda o carregamento completo do DOM antes de executar todo o script
 document.addEventListener('DOMContentLoaded', () => {
+    // Seleciona os botões de menu dos cards existentes (podem ser estáticos)
     const btnsCard = document.querySelectorAll(".btn-card");
+    // Seleciona painel lateral de edição para mudança de cor/deletar
     const edicaoCard = document.querySelector(".edicao-card");
+    // Seleciona botões de cor do painel de edição
     const coresEdit = document.querySelectorAll('.cor-btn[data-context="edit"]');
+    // Seleciona o modal de criar instituição
     const createCardModal = document.querySelector('.create-card');
+    // Input do nome da instituição
     const nomeInst = document.getElementById("nome");
+    // Input da abreviação da instituição
     const abrInst = document.getElementById("abreviacao");
+    // Botão de criar instituição
     const btnCriar = document.getElementById("btn-criar");
+    // Botões de cor do modal de criação
     const coresCreate = document.querySelectorAll('.cor-btn[data-context="create"]');
+    // Botões que abrem o modal de criar instituição
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
+    // Camada escura atrás do modal
     const modalOverlay = document.querySelector('.modal-overlay');
-    let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
+    // Define cor padrão na criação de novas instituições
+    let corSelecionada = 'rgb(10, 61, 183)';
+    // Função assíncrona que busca instituições no backend e mostra em cards visualmente
     const carregarInstituicoes = async () => {
         try {
+            // Faz requisição GET para listar instituições
             const response = await fetch('http://localhost:3000/api/instituicoes', {
                 method: 'GET',
                 credentials: 'include'
             });
+            // Se falha ao buscar, só registra o erro
             if (!response.ok) {
                 console.error('Erro ao carregar instituições:', response.status);
                 return;
             }
+            // Transforma resposta em JSON
             const result = await response.json();
+            // Se resposta com sucesso e lista de instituições
             if (result.success && Array.isArray(result.data)) {
-                // Limpar apenas os cards dinâmicos (opcional)
+                // Pega a seção onde os cards vão ser mostrados
                 const section = document.querySelector("main section");
+                // Para cada instituição recebida, cria um card
                 result.data.forEach((instituicao) => {
-                    // Buscar cor salva no localStorage
+                    // Busca cor salva para o card ou usa padrão
                     const corSalva = localStorage.getItem(`cor_instituicao_${instituicao.id_instituicao}`);
                     const cor = corSalva || 'rgb(10, 61, 183)';
-                    // Criar card visual com dados do banco
+                    // Monta card na interface
                     criarNovoCard(instituicao.nome, instituicao.abreviacao, cor, instituicao.id_instituicao);
                 });
+                // Mostra no console a quantidade criada
                 console.log(`${result.data.length} instituições carregadas`);
             }
         }
@@ -40,15 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao carregar instituições:', error);
         }
     };
+    // Função que monta visualmente e insere um card de instituição na tela
     const criarNovoCard = (nome, abreviacao, cor, idInstituicao) => {
         const section = document.querySelector("main section");
+        // Cria o elemento div principal do card
         const novoCard = document.createElement("div");
         novoCard.classList.add("card");
         novoCard.style.backgroundColor = cor;
-        // Adicionar ID ao dataset
+        // Se recebeu idInstituicao, guarda como atributo data no card
         if (idInstituicao) {
             novoCard.dataset.id = idInstituicao.toString();
         }
+        // Define o HTML do card, incluindo botão, nome e abreviação
         novoCard.innerHTML = `
             <button class="btn-card">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -62,34 +83,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2>${abreviacao}</h2>
             </div>                
         `;
-        // Adicionar evento de clique no card para navegar aos cursos
+        // Clicar no card (fora do menu) navega para a tela de cursos daquela instituição
         novoCard.addEventListener('click', (e) => {
-            // Não navegar se clicar no botão de edição
             const clickedElement = e.target;
             if (!clickedElement.closest('.btn-card') && idInstituicao) {
                 window.location.href = `/cursos?id_instituicao=${idInstituicao}`;
             }
         });
+        // Insere card na seção principal
         section?.appendChild(novoCard);
-        // Adiciona evento ao botão do novo card
+        // Liga botão de menu do card ao painel de edição
         const btnNovoCard = novoCard.querySelector('.btn-card');
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
+    // Função que cria nova instituição no banco e adiciona visualmente se sucesso
     const criarInstituicaoNoBanco = async (nome, abreviacao, cor) => {
         try {
+            // Requisição POST para o backend
             const response = await fetch('http://localhost:3000/api/instituicoes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify({ nome, abreviacao, cor })
             });
+            // Resposta da API em JSON
             const result = await response.json();
+            // Se criou com sucesso, salva cor e cria card
             if (result.success) {
                 console.log('Instituição criada no banco:', result.data);
-                // Salvar cor no localStorage
+                // Salva cor escolhida no localStorage
                 const idInstituicao = result.data.id_instituicao;
                 localStorage.setItem(`cor_instituicao_${idInstituicao}`, cor);
-                // Criar card visual com o ID do banco
+                // Cria visualmente na tela
                 criarNovoCard(nome, abreviacao, cor, idInstituicao);
                 return true;
             }
@@ -104,19 +129,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
     };
+    // Seleção de cor no modal de criação: aplica cor escolhida e destaque visual
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             corSelecionada = window.getComputedStyle(corBtn).backgroundColor;
-            // Feedback visual
+            // Remove borda dos outros
             coresCreate.forEach(el => el.style.border = 'none');
+            // Destaca o botão clicado
             corBtn.style.border = '3px solid #333';
         });
     });
+    // Evento do botão de criar instituição: envia formulário pro backend
     btnCriar.addEventListener('click', async (e) => {
         e.preventDefault();
         const nome = nomeInst.value.trim();
         const abreviacao = abrInst.value.trim();
+        // Validação dos campos obrigatórios
         if (!nome) {
             alert("Digite o nome da instituição.");
             return;
@@ -125,28 +154,29 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Digite a sigla da instituição.");
             return;
         }
-        // Desabilitar botão durante a requisição
+        // Feedback visual de carregamento
         btnCriar.disabled = true;
         const textoOriginal = btnCriar.textContent;
         btnCriar.textContent = 'Criando...';
-        // Criar no banco de dados
+        // Envia dados ao backend
         const sucesso = await criarInstituicaoNoBanco(nome, abreviacao, corSelecionada);
-        // Reabilitar botão
+        // Restaura estado do botão
         btnCriar.disabled = false;
         btnCriar.textContent = textoOriginal;
+        // Se sucesso, limpa modal e estado
         if (sucesso) {
-            // Limpar formulário
             nomeInst.value = '';
             abrInst.value = '';
             corSelecionada = 'rgb(10, 61, 183)';
             coresCreate.forEach(el => el.style.border = 'none');
-            // Fechar modal
             createCardModal.style.display = 'none';
             modalOverlay.classList.remove('ativo');
             painelCreateAberto = false;
         }
     });
+    // Controle se painel de criação está aberto
     let painelCreateAberto = false;
+    // Função centraliza abrir/fechar modal de criar instituição
     const adicionarEventoBtnCreate = (btnCreate) => {
         btnCreate.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -162,25 +192,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
+    // Associa todos botões de abrir modal (caso haja mais de um)
     btnCreateCard.forEach((btnCreate) => {
         adicionarEventoBtnCreate(btnCreate);
     });
-    // ==================== EDIT CARD ====================
+    // ===== PAINEL LATERAL DE EDIÇÃO (mudança cor/exclusão) =====
     let painelEditAberto = false;
     let cardAtual = null;
+    // Se não existe painel lateral, para execução
     if (!edicaoCard) {
         console.error('Painel de edição não encontrado!');
         return;
     }
+    // Função liga botão menu do card ao painel lateral de edição
     const adicionarEventoEdicao = (btn, card) => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
+            // Se painel já aberto para este card, fecha
             if (painelEditAberto && cardAtual === card) {
                 edicaoCard.classList.remove('aberto');
                 painelEditAberto = false;
                 cardAtual = null;
                 return;
             }
+            // Calcula posição: tenta abrir à direita, senão esquerda
             const rect = card.getBoundingClientRect();
             const espacoDireita = window.innerWidth - (rect.right + 10);
             const larguraPainel = 200;
@@ -197,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             edicaoCard.classList.add('aberto');
             painelEditAberto = true;
             cardAtual = card;
-            // Atualiza atributo data-id do botão de excluir no painel compartilhado
+            // Atrbui id ao botão de excluir do painel lateral
             const btnDelete = edicaoCard.querySelector('.btn-open-delete');
             if (btnDelete) {
                 if (card.dataset.id)
@@ -208,24 +243,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
-    // Adiciona evento nos cards existentes (se houver cards estáticos no HTML)
+    // Liga painel lateral aos cards já existentes
     btnsCard.forEach((btn) => {
         const card = btn.closest('.card');
         if (card) {
             adicionarEventoEdicao(btn, card);
         }
     });
+    // Permite trocar cor do card pelo painel lateral de edição
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!cardAtual)
                 return;
             const corSelecionadaEdit = window.getComputedStyle(corElement).backgroundColor;
-            // Aplica a cor ao card atual
+            // Muda cor do card
             cardAtual.style.backgroundColor = corSelecionadaEdit;
-            // Feedback visual
+            // Destaca cor selecionada
             coresEdit.forEach(el => el.style.border = 'none');
-            // Salvar cor no localStorage
+            // Salva cor no localStorage
             const instituicaoId = cardAtual.dataset.id;
             if (instituicaoId) {
                 localStorage.setItem(`cor_instituicao_${instituicaoId}`, corSelecionadaEdit);
@@ -233,9 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    // Clique fora do painel lateral/modal fecha eles
     document.addEventListener('click', (e) => {
         const target = e.target;
-        // Fechar painel de edição
+        // Fecha lateral
         if (painelEditAberto &&
             !edicaoCard.contains(target) &&
             !target.closest('.btn-card')) {
@@ -246,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
             painelEditAberto = false;
             cardAtual = null;
         }
-        // Fechar modal de criação
+        // Fecha modal de criação
         if (painelCreateAberto &&
             !createCardModal.contains(target) &&
             !target.closest('.btn-create-card')) {
@@ -255,8 +292,11 @@ document.addEventListener('DOMContentLoaded', () => {
             painelCreateAberto = false;
         }
     });
+    // Chama função para carregar cards das instituições ao abrir página
     carregarInstituicoes();
+    // Seleciona botão de deletar da instituição no painel lateral
     const btnDeleteInst = edicaoCard?.querySelector('.btn-open-delete');
+    // Evento para deletar instituição via API
     btnDeleteInst?.addEventListener('click', async (e) => {
         e.stopPropagation();
         const instituicaoId = btnDeleteInst.getAttribute('data-id');
@@ -279,23 +319,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (response.ok && data.success) {
                 alert(data.message);
-                // Remove o card da tela
+                // Remove o card visualmente com animação fade
                 const cardParaDeletar = document.querySelector(`.card[data-id="${instituicaoId}"]`);
                 if (cardParaDeletar) {
                     cardParaDeletar.style.opacity = '0';
                     cardParaDeletar.style.transition = 'opacity 0.3s';
                     setTimeout(() => cardParaDeletar.remove(), 300);
                 }
-                // Remove cor do localStorage
+                // Limpa a cor personalizada salva
                 localStorage.removeItem(`cor_instituicao_${instituicaoId}`);
-                // Fecha o painel de edição
+                // Fecha painel lateral
                 if (edicaoCard) {
                     edicaoCard.classList.remove('aberto');
                     edicaoCard.style.display = 'none';
                 }
             }
             else {
-                // Mensagem de erro do servidor (incluindo validação de hierarquia)
                 alert(data.message || 'Erro ao deletar instituição');
                 btnDeleteInst.disabled = false;
             }
