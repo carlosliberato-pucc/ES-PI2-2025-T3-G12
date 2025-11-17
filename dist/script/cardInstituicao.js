@@ -1,5 +1,6 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', () => {
+    // Seletores principais
     const btnsCard = document.querySelectorAll(".btn-card");
     const edicaoCard = document.querySelector(".edicao-card");
     const coresEdit = document.querySelectorAll('.cor-btn[data-context="edit"]');
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
     const modalOverlay = document.querySelector('.modal-overlay');
     let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
+    // Busca instituições e gera cards
     const carregarInstituicoes = async () => {
         try {
             const response = await fetch('http://localhost:3000/api/instituicoes', {
@@ -26,10 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Limpar apenas os cards dinâmicos (opcional)
                 const section = document.querySelector("main section");
                 result.data.forEach((instituicao) => {
-                    // Buscar cor salva no localStorage
                     const corSalva = localStorage.getItem(`cor_instituicao_${instituicao.id_instituicao}`);
                     const cor = corSalva || 'rgb(10, 61, 183)';
-                    // Criar card visual com dados do banco
                     criarNovoCard(instituicao.nome, instituicao.abreviacao, cor, instituicao.id_instituicao);
                 });
                 console.log(`${result.data.length} instituições carregadas`);
@@ -39,12 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao carregar instituições:', error);
         }
     };
+    // Gera novo card visual para instituição
     const criarNovoCard = (nome, abreviacao, cor, idInstituicao) => {
         const section = document.querySelector("main section");
         const novoCard = document.createElement("div");
         novoCard.classList.add("card");
         novoCard.style.backgroundColor = cor;
-        // Adicionar ID ao dataset
         if (idInstituicao) {
             novoCard.dataset.id = idInstituicao.toString();
         }
@@ -61,19 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2>${abreviacao}</h2>
             </div>                
         `;
-        // Adicionar evento de clique no card para navegar aos cursos
         novoCard.addEventListener('click', (e) => {
-            // Não navegar se clicar no botão de edição
             const clickedElement = e.target;
             if (!clickedElement.closest('.btn-card') && idInstituicao) {
                 window.location.href = `/cursos?id_instituicao=${idInstituicao}`;
             }
         });
         section?.appendChild(novoCard);
-        // Adiciona evento ao botão do novo card
         const btnNovoCard = novoCard.querySelector('.btn-card');
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
+    // Efetua requisição de criação de instituição e adiciona card na tela
     const criarInstituicaoNoBanco = async (nome, abreviacao, cor) => {
         try {
             const response = await fetch('http://localhost:3000/api/instituicoes', {
@@ -85,10 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.success) {
                 console.log('Instituição criada no banco:', result.data);
-                // Salvar cor no localStorage
                 const idInstituicao = result.data.id_instituicao;
                 localStorage.setItem(`cor_instituicao_${idInstituicao}`, cor);
-                // Criar card visual com o ID do banco
                 criarNovoCard(nome, abreviacao, cor, idInstituicao);
                 return true;
             }
@@ -103,15 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
     };
+    // Escolha de cor para novo card
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             corSelecionada = window.getComputedStyle(corBtn).backgroundColor;
-            // Feedback visual
             coresCreate.forEach(el => el.style.border = 'none');
             corBtn.style.border = '3px solid #333';
         });
     });
+    // Evento do botão de criar instituição
     btnCriar.addEventListener('click', async (e) => {
         e.preventDefault();
         const nome = nomeInst.value.trim();
@@ -124,27 +121,23 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Digite a sigla da instituição.");
             return;
         }
-        // Desabilitar botão durante a requisição
         btnCriar.disabled = true;
         const textoOriginal = btnCriar.textContent;
         btnCriar.textContent = 'Criando...';
-        // Criar no banco de dados
         const sucesso = await criarInstituicaoNoBanco(nome, abreviacao, corSelecionada);
-        // Reabilitar botão
         btnCriar.disabled = false;
         btnCriar.textContent = textoOriginal;
         if (sucesso) {
-            // Limpar formulário
             nomeInst.value = '';
             abrInst.value = '';
             corSelecionada = 'rgb(10, 61, 183)';
             coresCreate.forEach(el => el.style.border = 'none');
-            // Fechar modal
             createCardModal.style.display = 'none';
             modalOverlay.classList.remove('ativo');
             painelCreateAberto = false;
         }
     });
+    // Controle do modal de criação
     let painelCreateAberto = false;
     const adicionarEventoBtnCreate = (btnCreate) => {
         btnCreate.addEventListener('click', (e) => {
@@ -196,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             edicaoCard.classList.add('aberto');
             painelEditAberto = true;
             cardAtual = card;
-            // Atualiza atributo data-id do botão de excluir no painel compartilhado
+            // Atribuir data-id para botão excluir no painel de edição
             const btnDelete = edicaoCard.querySelector('.btn-open-delete');
             if (btnDelete) {
                 if (card.dataset.id)
@@ -207,24 +200,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
-    // Adiciona evento nos cards existentes (se houver cards estáticos no HTML)
+    // Editar cards existentes
     btnsCard.forEach((btn) => {
         const card = btn.closest('.card');
         if (card) {
             adicionarEventoEdicao(btn, card);
         }
     });
+    // Editar cor no modo edição
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!cardAtual)
                 return;
             const corSelecionadaEdit = window.getComputedStyle(corElement).backgroundColor;
-            // Aplica a cor ao card atual
             cardAtual.style.backgroundColor = corSelecionadaEdit;
-            // Feedback visual
             coresEdit.forEach(el => el.style.border = 'none');
-            // Salvar cor no localStorage
             const instituicaoId = cardAtual.dataset.id;
             if (instituicaoId) {
                 localStorage.setItem(`cor_instituicao_${instituicaoId}`, corSelecionadaEdit);
@@ -232,9 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    // Fecha painéis ao clicar fora
     document.addEventListener('click', (e) => {
         const target = e.target;
-        // Fechar painel de edição
         if (painelEditAberto &&
             !edicaoCard.contains(target) &&
             !target.closest('.btn-card')) {
@@ -245,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
             painelEditAberto = false;
             cardAtual = null;
         }
-        // Fechar modal de criação
         if (painelCreateAberto &&
             !createCardModal.contains(target) &&
             !target.closest('.btn-create-card')) {
@@ -254,7 +244,9 @@ document.addEventListener('DOMContentLoaded', () => {
             painelCreateAberto = false;
         }
     });
+    // Inicia carregamento ao abrir a tela
     carregarInstituicoes();
+    // Excluir instituição
     const btnDeleteInst = edicaoCard?.querySelector('.btn-open-delete');
     btnDeleteInst?.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -278,23 +270,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (response.ok && data.success) {
                 alert(data.message);
-                // Remove o card da tela
                 const cardParaDeletar = document.querySelector(`.card[data-id="${instituicaoId}"]`);
                 if (cardParaDeletar) {
                     cardParaDeletar.style.opacity = '0';
                     cardParaDeletar.style.transition = 'opacity 0.3s';
                     setTimeout(() => cardParaDeletar.remove(), 300);
                 }
-                // Remove cor do localStorage
                 localStorage.removeItem(`cor_instituicao_${instituicaoId}`);
-                // Fecha o painel de edição
                 if (edicaoCard) {
                     edicaoCard.classList.remove('aberto');
                     edicaoCard.style.display = 'none';
                 }
             }
             else {
-                // Mensagem de erro do servidor (incluindo validação de hierarquia)
                 alert(data.message || 'Erro ao deletar instituição');
                 btnDeleteInst.disabled = false;
             }

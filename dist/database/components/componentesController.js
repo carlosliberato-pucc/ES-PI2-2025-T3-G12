@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listarComponentes = void 0;
 const index_1 = require("../index");
+// Lista componentes de nota de uma disciplina
 const listarComponentes = async (req, res) => {
     try {
         const { id } = req.params; // id_disciplina

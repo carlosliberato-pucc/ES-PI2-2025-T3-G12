@@ -2,144 +2,160 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="css/screens_cards.css">
-    <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
-    <title>Disciplinas | NotaDez</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Importa o CSS das telas de cards para disciplinas -->
+  <link rel="stylesheet" href="css/screens_cards.css">
+  <!-- Ícone do site (favicon) -->
+  <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
+  <title>Disciplinas | NotaDez</title>
 </head>
 
 <body>
-    <header>
-        <div class="brand">
-            <button id="btn_voltar"
-                style="padding: 8px 12px; border-style: none; background-color: transparent; cursor: pointer;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20">
-                    <path fill="#0a3db7" d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2
-                         394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6
-                          150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
-                </svg>
-            </button>
-            <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
-            <div>
-                <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">Nota<span
-                        style="color: #ffc30f;">Dez</span></h1>
-                <div class="small">Disciplinas</div>
-            </div>
-        </div>
-
-        <div style="display:flex;gap:16px;align-items:center">
-            <div class="inline-grid">
-                <div style="text-align:right">
-                    <div class="small muted">Olá, Professor(a)</div>
-                    <div style="display:flex;gap:8px;align-items:center">
-                        <a class="link" href="#" id="logout-btn">Sair</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="container" style=" padding: 0px 50px 0px 50px; cursor: pointer;">
-        <main>
-
-            <div class="titulo-tela">
-                <h1>Suas Disciplinas</h1>
-                <button class="btn-create-card">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                        <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com -->
-                        <path d="M232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 
-                                            24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 
-                                            24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 
-                                            24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24zM256 
-                                            464A208 208 0 1 0 256 48a208 208 0 1 0 0 
-                                            416zm0 48A256 256 0 1 1 256 0a256 256 0 1 1 0 
-                                            512z" />
-                    </svg>
-
-                </button>
-            </div>
-
-            <section style="display:grid;grid-template-columns: repeat(5, 1fr);">
-                <!-- Aqui ficará os cards criados -->
-            </section>
-
-        </main>
-
-        <div class="modal-overlay">
-            <div class="create-card">
-                <h2>Criar Disciplina</h2>
-                <center>
-                    <small class="info-input">Todos os campos são obrigatórios.</small>
-                </center>
-                <input id="nome" type="text" placeholder="Digite o nome da disciplina." required>
-                <input id="sigla" type="text" placeholder="Digite uma sigla para a disciplina.">
-                <label for="periodo">Selecione o Período:</label>
-                <select id="periodo" name="periodo" required>
-                    <option value="" disabled selected>Selecione...</option>
-                    <option value="1º Semestre">1º Semestre</option>
-                    <option value="2º Semestre">2º Semestre</option>
-                    <option value="3º Semestre">3º Semestre</option>
-                    <option value="4º Semestre">4º Semestre</option>
-                    <option value="5º Semestre">5º Semestre</option>
-                    <option value="6º Semestre">6º Semestre</option>
-                    <option value="7º Semestre">7º Semestre</option>
-                    <option value="8º Semestre">8º Semestre</option>
-                    <option value="9º Semestre">9º Semestre</option>
-                    <option value="10º Semestre">10º Semestre</option>
-                    <option value="11º Semestre">11º Semestre</option>
-                    <option value="12º Semestre">12º Semestre</option>
-                </select>
-                <input id="codigo" type="text" placeholder="Digite uma código para a disciplina.">
-                <h3>Escolha uma cor para a Disciplina:</h3>
-                <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
-                    <button class="cor-btn" data-context="create" style="background: rgb(196, 30, 58);"></button>
-                    <button class="cor-btn" data-context="create" style="background: rgb(209, 0, 106);"></button>
-                    <button class="cor-btn" data-context="create" style="background: rgb(10, 61, 183);"></button>
-                    <button class="cor-btn" data-context="create" style="background: rgb(0, 155, 119);"></button>
-                    <button class="cor-btn" data-context="create" style="background: rgb(255, 195, 15);"></button>
-                    <button class="cor-btn" data-context="create" style="background: rgb(125, 60, 152);"></button>
-                </div>
-                <div style="text-align: center;">
-                    <button type="submit" id="btn-criar">Criar</button>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="edicao-card">
-            <div style="display:flex;align-items:center;gap:8px;">
-                <h2 style="margin:0">Editar Cor</h2>
-                <button class="btn-open-delete" id="btn-delete" title="Excluir" data-id="1"
-                    style="background:transparent;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
-                    <!-- ícone de lixeira padronizado -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                        <path d="M10 11v6"></path>
-                        <path d="M14 11v6"></path>
-                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                </button>
-            </div>
-            <h3>Escolha uma cor para a Turma</h3>
-            <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
-                <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
-                <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
-                <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
-                <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
-                <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
-                <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
-            </div>
-        </div>
-
+  <!-- Cabeçalho principal da página, traz a navegação e informações do usuário -->
+  <header>
+    <div class="brand">
+      <!-- Botão para voltar à tela anterior -->
+      <button id="btn_voltar"
+        style="padding: 8px 12px; border-style: none; background-color: transparent; cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20">
+          <path fill="#0a3db7"
+            d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2
+                394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6
+                150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
+        </svg>
+      </button>
+      <!-- Logo institucional do sistema -->
+      <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
+      <div>
+        <!-- Nome do sistema e subtítulo para contexto da tela -->
+        <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">
+          Nota<span style="color: #ffc30f;">Dez</span>
+        </h1>
+        <div class="small">Disciplinas</div>
+      </div>
     </div>
 
-    <script src="../dist/script/cardDisciplina.js"></script>
-    <script src="/dist/script/logout.js"></script>
-    <script src="../dist/script/btn_back.js"></script>
+    <!-- Saudação ao usuário e menu de logout -->
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="inline-grid">
+        <div style="text-align:right">
+          <div class="small muted">Olá, Professor(a)</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <a class="link" href="#" id="logout-btn">Sair</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Container principal onde ficam títulos, cards e modais -->
+  <div class="container" style=" padding: 0px 50px 0px 50px; cursor: pointer;">
+    <main>
+      <!-- Título e botão para criar nova disciplina -->
+      <div class="titulo-tela">
+        <h1>Suas Disciplinas</h1>
+        <!-- Botão para acionar o modal de criação de disciplina -->
+        <button class="btn-create-card">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path d="M232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 
+                    24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 
+                    24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 
+                    24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24zM256 
+                    464A208 208 0 1 0 256 48a208 208 0 1 0 0 
+                    416zm0 48A256 256 0 1 1 256 0a256 256 0 1 1 0 
+                    512z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Área em grid para exibir os cards das disciplinas criadas -->
+      <section style="display:grid;grid-template-columns: repeat(5, 1fr);">
+        <!-- Os cards são inseridos dinamicamente via JavaScript -->
+      </section>
+    </main>
+
+    <!-- Modal para criação de uma nova disciplina -->
+    <div class="modal-overlay">
+      <div class="create-card">
+        <h2>Criar Disciplina</h2>
+        <center>
+          <small class="info-input">Todos os campos são obrigatórios.</small>
+        </center>
+        <!-- Campo para nome da disciplina -->
+        <input id="nome" type="text" placeholder="Digite o nome da disciplina." required>
+        <!-- Campo para sigla da disciplina -->
+        <input id="sigla" type="text" placeholder="Digite uma sigla para a disciplina.">
+        <!-- Seleção do semestre/período da disciplina -->
+        <label for="periodo">Selecione o Período:</label>
+        <select id="periodo" name="periodo" required>
+          <option value="" disabled selected>Selecione...</option>
+          <option value="1º Semestre">1º Semestre</option>
+          <option value="2º Semestre">2º Semestre</option>
+          <option value="3º Semestre">3º Semestre</option>
+          <option value="4º Semestre">4º Semestre</option>
+          <option value="5º Semestre">5º Semestre</option>
+          <option value="6º Semestre">6º Semestre</option>
+          <option value="7º Semestre">7º Semestre</option>
+          <option value="8º Semestre">8º Semestre</option>
+          <option value="9º Semestre">9º Semestre</option>
+          <option value="10º Semestre">10º Semestre</option>
+          <option value="11º Semestre">11º Semestre</option>
+          <option value="12º Semestre">12º Semestre</option>
+        </select>
+        <!-- Campo para código interno da disciplina -->
+        <input id="codigo" type="text" placeholder="Digite uma código para a disciplina.">
+        <h3>Escolha uma cor para a Disciplina:</h3>
+        <!-- Opções de cor para personalizar o card da disciplina -->
+        <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+          <button class="cor-btn" data-context="create" style="background: rgb(196, 30, 58);"></button>
+          <button class="cor-btn" data-context="create" style="background: rgb(209, 0, 106);"></button>
+          <button class="cor-btn" data-context="create" style="background: rgb(10, 61, 183);"></button>
+          <button class="cor-btn" data-context="create" style="background: rgb(0, 155, 119);"></button>
+          <button class="cor-btn" data-context="create" style="background: rgb(255, 195, 15);"></button>
+          <button class="cor-btn" data-context="create" style="background: rgb(125, 60, 152);"></button>
+        </div>
+        <!-- Botão para criar disciplina -->
+        <div style="text-align: center;">
+          <button type="submit" id="btn-criar">Criar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de edição de cor e botão para excluir disciplina -->
+    <div class="edicao-card">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <h2 style="margin:0">Editar Cor</h2>
+        <!-- Botão padrão para acionar exclusão da disciplina -->
+        <button class="btn-open-delete" id="btn-delete" title="Excluir" data-id="1"
+          style="background:transparent;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
+      <h3>Escolha uma cor para a Turma</h3>
+      <!-- Opções de cor para edição da disciplina -->
+      <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+        <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+        <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts responsável por cards, logout e voltar à página anterior -->
+  <script src="../dist/script/cardDisciplina.js"></script>
+  <script src="/dist/script/logout.js"></script>
+  <script src="../dist/script/btn_back.js"></script>
 
 </body>
-
 </html>

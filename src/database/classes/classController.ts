@@ -1,220 +1,150 @@
+// Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Turma)
+
 import { Request, Response } from 'express';
 import { db } from '../index';
 
-// ==================== CRIAR TURMA ====================
+// Cria uma turma se a instituição pertencer ao usuário logado
 export const criarTurma = async (req: Request, res: Response) => {
-    try {
-        const { id_instituicao, id_curso, id_disciplina, nome } = req.body;
-        const userEmail = req.session.userEmail;
+  try {
+    const { id_instituicao, id_curso, id_disciplina, nome } = req.body;
+    const userEmail = req.session.userEmail;
 
-        // Validações
-        if (!nome || !id_instituicao || !id_curso || !id_disciplina) {
-            return res.status(400).json({
-                success: false,
-                message: 'Preencher todos os campos é obrigatório'
-            });
-        }
-
-        if (!userEmail) {
-            return res.status(401).json({
-                success: false,
-                message: 'Usuário não autenticado'
-            });
-        }
-
-        // Verificar se a instituição pertence ao usuário
-        db.query(
-            `SELECT i.id_instituicao 
-             FROM instituicao i
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE i.id_instituicao = ? AND u.email = ?`,
-            [id_instituicao, userEmail],
-            (err, results) => {
-                if (err) {
-                    console.error('Erro ao verificar instituição:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Erro ao processar solicitação'
-                    });
-                }
-
-                if (!Array.isArray(results) || results.length === 0) {
-                    return res.status(403).json({
-                        success: false,
-                        message: 'Instituição não encontrada ou não pertence ao usuário'
-                    });
-                }
-
-                // Inserir turma
-                db.query(
-                    'INSERT INTO turmas (nome, fk_disciplina) VALUES (?, ?)',
-                    [nome, id_disciplina],
-                    (insertErr, insertResults: any) => {
-                        if (insertErr) {
-                            console.error('Erro ao criar turma:', insertErr);
-                            return res.status(500).json({
-                                success: false,
-                                message: 'Erro ao criar turma'
-                            });
-                        }
-
-                        const turmaId = insertResults.insertId;
-
-                        console.log(`Turma criada: ${nome} (ID: ${turmaId}) na disciplina ${id_disciplina}`);
-
-                        res.status(201).json({
-                            success: true,
-                            message: 'Turma criada com sucesso',
-                            data: {
-                                id_turma: turmaId,
-                                nome,
-                                fk_disciplina: id_disciplina
-                            }
-                        });
-                    }
-                );
-            }
-        );
-
-    } catch (error) {
-        console.error('Erro ao criar turma:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao processar solicitação'
-        });
+    // Checa dados obrigatórios e autenticação
+    if (!nome || !id_instituicao || !id_curso || !id_disciplina) {
+      return res.status(400).json({ success: false, message: 'Preencher todos os campos é obrigatório' });
     }
+    if (!userEmail) {
+      return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
+    }
+
+    // Verifica vínculo do usuário à instituição
+    db.query(
+      `SELECT i.id_instituicao FROM instituicao i
+       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+       WHERE i.id_instituicao = ? AND u.email = ?`,
+      [id_instituicao, userEmail],
+      (err, results) => {
+        if (err) {
+          console.error('Erro ao verificar instituição:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+        }
+        if (!Array.isArray(results) || results.length === 0) {
+          return res.status(403).json({ success: false, message: 'Instituição não encontrada ou não pertence ao usuário' });
+        }
+
+        // Cria turma
+        db.query(
+          'INSERT INTO turmas (nome, fk_disciplina) VALUES (?, ?)',
+          [nome, id_disciplina],
+          (insertErr, insertResults: any) => {
+            if (insertErr) {
+              console.error('Erro ao criar turma:', insertErr);
+              return res.status(500).json({ success: false, message: 'Erro ao criar turma' });
+            }
+            const turmaId = insertResults.insertId;
+            res.status(201).json({
+              success: true,
+              message: 'Turma criada com sucesso',
+              data: {
+                id_turma: turmaId,
+                nome,
+                fk_disciplina: id_disciplina
+              }
+            });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Erro ao criar turma:', error);
+    res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+  }
 };
 
-// listar turmas
+// Lista turmas de uma disciplina, valida vínculo do usuário
 export const listarTurmas = async (req: Request, res: Response) => {
-    try {
-        const { id_instituicao, id_curso, id_disciplina } = req.query;
-        const userEmail = req.session.userEmail;
+  try {
+    const { id_instituicao, id_curso, id_disciplina } = req.query;
+    const userEmail = req.session.userEmail;
 
-        if (!userEmail) {
-            return res.status(401).json({
-                success: false,
-                message: 'Usuário não autenticado'
-            });
-        }
-
-        if (!id_instituicao || !id_curso || !id_disciplina) {
-            return res.status(400).json({
-                success: false,
-                message: 'IDs de instituição, curso e disciplina são obrigatórios'
-            });
-        }
-
-        // Verificar se a instituição pertence ao usuário
-        db.query(
-            `SELECT i.id_instituicao 
-             FROM instituicao i
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE i.id_instituicao = ? AND u.email = ?`,
-            [id_instituicao, userEmail],
-            (err, results) => {
-                if (err) {
-                    console.error('Erro ao verificar instituição:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Erro ao processar solicitação'
-                    });
-                }
-
-                if (!Array.isArray(results) || results.length === 0) {
-                    return res.status(403).json({
-                        success: false,
-                        message: 'Instituição não encontrada ou não pertence ao usuário'
-                    });
-                }
-
-                // Buscar turmas da disciplina
-                db.query(
-                    'SELECT id_turma, nome FROM turmas WHERE fk_disciplina = ? ORDER BY nome',
-                    [id_disciplina],
-                    (turmasErr, turmas) => {
-                        if (turmasErr) {
-                            console.error('Erro ao buscar turmas:', turmasErr);
-                            return res.status(500).json({
-                                success: false,
-                                message: 'Erro ao buscar turmas'
-                            });
-                        }
-
-                        res.json({
-                            success: true,
-                            data: turmas
-                        });
-                    }
-                );
-            }
-        );
-
-    } catch (error) {
-        console.error('Erro ao listar turmas:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao processar solicitação'
-        });
+    if (!userEmail) {
+      return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
     }
+    if (!id_instituicao || !id_curso || !id_disciplina) {
+      return res.status(400).json({ success: false, message: 'IDs de instituição, curso e disciplina são obrigatórios' });
+    }
+
+    // Confirma vínculo usuário/instituição
+    db.query(
+      `SELECT i.id_instituicao FROM instituicao i
+       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+       WHERE i.id_instituicao = ? AND u.email = ?`,
+      [id_instituicao, userEmail],
+      (err, results) => {
+        if (err) {
+          console.error('Erro ao verificar instituição:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+        }
+        if (!Array.isArray(results) || results.length === 0) {
+          return res.status(403).json({ success: false, message: 'Instituição não encontrada ou não pertence ao usuário' });
+        }
+
+        // Busca turmas
+        db.query(
+          'SELECT id_turma, nome FROM turmas WHERE fk_disciplina = ? ORDER BY nome',
+          [id_disciplina],
+          (turmasErr, turmas) => {
+            if (turmasErr) {
+              console.error('Erro ao buscar turmas:', turmasErr);
+              return res.status(500).json({ success: false, message: 'Erro ao buscar turmas' });
+            }
+            res.json({ success: true, data: turmas });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Erro ao listar turmas:', error);
+    res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+  }
 };
 
+// Deleta turma se pertencer ao usuário
 export const deletarTurma = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const userEmail = req.session.userEmail;
+  try {
+    const { id } = req.params;
+    const userEmail = req.session.userEmail;
 
-        if (!userEmail) {
-            return res.status(401).json({
-                success: false,
-                message: 'Usuário não autenticado'
-            });
-        }
-
-        // Turmas não têm dependências, pode deletar diretamente
-        // Verificar se a turma pertence ao usuário e deletar
-        db.query(
-            `DELETE t FROM turmas t
-             INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
-             INNER JOIN cursos c ON d.fk_curso = c.id_curso
-             INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
-             INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
-             WHERE t.id_turma = ? AND u.email = ?`,
-            [id, userEmail],
-            (err, results: any) => {
-                if (err) {
-                    console.error('Erro ao deletar turma:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Erro ao deletar turma'
-                    });
-                }
-
-                if (results.affectedRows === 0) {
-                    return res.status(404).json({
-                        success: false,
-                        message: 'Turma não encontrada ou não pertence ao usuário'
-                    });
-                }
-
-                console.log(`Turma deletada: ID ${id}`);
-
-                res.json({
-                    success: true,
-                    message: 'Turma deletada com sucesso'
-                });
-            }
-        );
-
-    } catch (error) {
-        console.error('Erro ao deletar turma:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao processar solicitação'
-        });
+    if (!userEmail) {
+      return res.status(401).json({ success: false, message: 'Usuário não autenticado' });
     }
+
+    db.query(
+      `DELETE t FROM turmas t
+       INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
+       INNER JOIN cursos c ON d.fk_curso = c.id_curso
+       INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+       INNER JOIN usuario u ON i.fk_usuario = u.id_usuario
+       WHERE t.id_turma = ? AND u.email = ?`,
+      [id, userEmail],
+      (err, results: any) => {
+        if (err) {
+          console.error('Erro ao deletar turma:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao deletar turma' });
+        }
+        if (results.affectedRows === 0) {
+          return res.status(404).json({ success: false, message: 'Turma não encontrada ou não pertence ao usuário' });
+        }
+        res.json({ success: true, message: 'Turma deletada com sucesso' });
+      }
+    );
+  } catch (error) {
+    console.error('Erro ao deletar turma:', error);
+    res.status(500).json({ success: false, message: 'Erro ao processar solicitação' });
+  }
 };
 
+// Retorna turma pelo ID (sem validar usuário)
 export const buscarTurmaPorId = (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -226,13 +156,10 @@ export const buscarTurmaPorId = (req: Request, res: Response) => {
         console.error('Erro ao buscar turma por id:', err);
         return res.status(500).json({ success: false, message: 'Erro ao buscar turma' });
       }
-
-      const rows = results as any[]; // <- cast para array
-
+      const rows = results as any[];
       if (!rows || rows.length === 0) {
         return res.status(404).json({ success: false, message: 'Turma não encontrada' });
       }
-
       res.json({ success: true, data: rows[0] });
     }
   );

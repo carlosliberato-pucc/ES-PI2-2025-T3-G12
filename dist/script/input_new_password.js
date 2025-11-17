@@ -1,8 +1,10 @@
 "use strict";
 // Desenvolvido por Felipe Miranda
 // Script para redefinição de senha
+// Captura o token da URL
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
+// Elementos DOM principais
 const loadingDiv = document.getElementById('loading');
 const formDiv = document.getElementById('resetForm');
 const passwordForm = document.getElementById('passwordForm');
@@ -10,15 +12,17 @@ const novaSenhaInput = document.getElementById('novaSenha');
 const confirmarSenhaInput = document.getElementById('confirmarSenha');
 const resetBtn = document.getElementById('reset-btn');
 const messageDiv = document.getElementById('message');
+// Exibe mensagem visual de sucesso ou erro
 function showMessage(text, type) {
     messageDiv.textContent = text;
     messageDiv.className = `message ${type}`;
     messageDiv.style.display = 'block';
 }
+// Esconde mensagens visuais
 function hideMessage() {
     messageDiv.style.display = 'none';
 }
-// Validar token ao carregar página
+// Valida token da URL com backend ao carregar página
 async function validarToken() {
     if (!token) {
         loadingDiv.innerHTML = `
@@ -39,12 +43,12 @@ async function validarToken() {
         });
         const data = await response.json();
         if (data.success) {
-            // Token válido, mostrar formulário
+            // Token válido: mostra o formulário
             loadingDiv.style.display = 'none';
             formDiv.style.display = 'block';
         }
         else {
-            // Token inválido/expirado
+            // Token expirado ou inválido
             loadingDiv.innerHTML = `
                 <h2 style="color: #e74c3c;">Token Expirado</h2>
                 <p style="color: #666; margin: 20px 0;">
@@ -65,13 +69,13 @@ async function validarToken() {
         `;
     }
 }
-// Redefinir senha
+// Evento de submit para redefinição da senha
 passwordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     hideMessage();
     const novaSenha = novaSenhaInput.value;
     const confirmarSenha = confirmarSenhaInput.value;
-    // Validações
+    // Validação dos campos de senha
     if (novaSenha.length < 6) {
         showMessage('A senha deve ter no mínimo 6 caracteres', 'error');
         return;
@@ -82,6 +86,7 @@ passwordForm.addEventListener('submit', async (e) => {
     }
     resetBtn.disabled = true;
     resetBtn.innerHTML = '<strong>Redefinindo...</strong>';
+    // Envia requisição de redefinição para o backend
     try {
         const response = await fetch('http://localhost:3000/auth/reset-password', {
             method: 'POST',
@@ -92,7 +97,7 @@ passwordForm.addEventListener('submit', async (e) => {
         const data = await response.json();
         if (data.success) {
             showMessage('Senha redefinida com sucesso! Redirecionando...', 'success');
-            // Redirecionar para login após 2 segundos
+            // Redireciona para login após sucesso
             setTimeout(() => {
                 window.location.href = '/sign_in';
             }, 2000);
@@ -110,5 +115,5 @@ passwordForm.addEventListener('submit', async (e) => {
         resetBtn.innerHTML = '<strong>Redefinir Senha</strong>';
     }
 });
-// Validar token ao carregar a página
+// Inicializa lógica de validação do token ao abrir página
 validarToken();

@@ -2,75 +2,87 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
-    <title>Painel do Docente | NotaDez</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Importa o CSS do painel do docente -->
+  <link rel="stylesheet" href="css/dashboard.css">
+  <!-- Ícone do site (favicon) -->
+  <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
+  <title>Painel do Docente | NotaDez</title>
 </head>
 
 <body>
-    <header>
-        <div class="brand">
-            <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
-            <div>
-                <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">Nota<span style="color: #ffc30f;">Dez</span></h1>
-                <div class="small">Painel do docente</div>
-            </div>
-        </div>
-
-        <div style="display:flex;gap:16px;align-items:center">
-            <div class="inline-grid">
-                <div style="text-align:right">
-                    <div class="small muted">Olá, Professor(a)</div>
-                    <div style="display:flex;gap:8px;align-items:center">
-                        <a class="link" href="#" id="logout-btn">Sair</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-
-        <main>
-            <section class="divider">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                    <div>
-                        <div class="small muted">Instituições ativas</div>
-                        <div style="font-weight:600">Minhas instituições</div>
-                    </div>
-                    <div>
-                        <a class="btn" href="instituicoes">Gerenciar Instituições</a>
-                    </div>
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sigla</th>
-                            <th>Cursos</th>
-                            <th>Disciplinas</th>
-                            <th>Turmas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td id="dash_sigla"></td>
-                            <td id="dash_curs"></td>
-                            <td id="dash_inst"></td>
-                            <td id="dash_num"></td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </section>
-        </main>
+  <!-- Cabeçalho principal com logo e saudação -->
+  <header>
+    <div class="brand">
+      <!-- Logo do sistema -->
+      <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
+      <div>
+        <!-- Nome do site -->
+        <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">
+          Nota<span style="color: #ffc30f;">Dez</span>
+        </h1>
+        <div class="small">Painel do docente</div>
+      </div>
     </div>
 
-    <script src="/dist/script/logout.js"></script>
-    <script src="/dist/script/dashboard.js"></script>
+    <!-- Área de saudação e botão de logout -->
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="inline-grid">
+        <div style="text-align:right">
+          <div class="small muted">Olá, Professor(a)</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <a class="link" href="#" id="logout-btn">Sair</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Container principal do painel -->
+  <div class="container">
+    <main>
+      <!-- Bloco divididor de destaque com informações das instituições -->
+      <section class="divider">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <!-- Identificação e título do painel de instituições -->
+          <div>
+            <div class="small muted">Instituições ativas</div>
+            <div style="font-weight:600">Minhas instituições</div>
+          </div>
+          <!-- Ação para gerenciar instituições -->
+          <div>
+            <a class="btn" href="instituicoes">Gerenciar Instituições</a>
+          </div>
+        </div>
+
+        <!-- Tabela resumo das instituições desse docente -->
+        <table>
+          <thead>
+            <tr>
+              <th>Sigla</th>
+              <th>Cursos</th>
+              <th>Disciplinas</th>
+              <th>Turmas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <!-- Células preenchidas dinamicamente via Javascript -->
+              <td id="dash_sigla"></td>
+              <td id="dash_curs"></td>
+              <td id="dash_inst"></td>
+              <td id="dash_num"></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts responsáveis por logout e funcionalidades do painel -->
+  <script src="/dist/script/logout.js"></script>
+  <script src="/dist/script/dashboard.js"></script>
 
 </body>
-
 </html>

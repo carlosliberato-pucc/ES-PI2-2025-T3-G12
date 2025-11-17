@@ -1,3 +1,5 @@
+// Desenvolvido por Felipe Miranda
+
 import { Request, Response } from 'express';
 import { db } from '../index';
 

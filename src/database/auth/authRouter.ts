@@ -1,28 +1,38 @@
 // Desenvolvido por Carlos Liberato
-import { Router } from 'express';
-// Importa as funções de autenticação (cadastro e login).
-import { register, login, logout, verificarSessao, validarToken, solicitarRecuperacaoSenha, redefinirSenha } from './authController'; 
+// Desenvolvido por Felipe Miranda (Sessão e recuperação de senha)
 
-// Esta variável "router" é que agrupa todas as rotas deste módulo.
+import { Router } from 'express';
+import {
+  register,
+  login,
+  logout,
+  verificarSessao,
+  validarToken,
+  solicitarRecuperacaoSenha,
+  redefinirSenha
+} from './authController';
+
 const router = Router();
 
-// Quando o servidor recebe uma requisição HTTP do tipo POST para a URL '/register', 
-// ele executa a função 'register' que está no authController.
+// Cadastro de usuário
 router.post('/register', register);
 
-// Quando o servidor recebe uma requisição HTTP do tipo POST para a URL '/login', 
-// ele executa a função 'login' que está no authController.
+// Login do usuário
 router.post('/login', login);
 
+// Logout
 router.post('/logout', logout);
 
+// Verifica se sessão está ativa
 router.get('/verificar-sessao', verificarSessao);
 
-// Rotas de recuperação de senha
+// Envia e-mail para recuperação de senha
 router.post('/forgot-password', solicitarRecuperacaoSenha);
 
+// Valida token do link enviado para redefinição
 router.get('/validate-token', validarToken);
 
+// Redefinindo a senha
 router.post('/reset-password', redefinirSenha);
 
 export default router;

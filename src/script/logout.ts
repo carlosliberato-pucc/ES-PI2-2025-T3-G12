@@ -1,18 +1,23 @@
 // Desenvolvido por Felipe Miranda
+
+// Seleciona botão de logout no header/menu
 const logoutBtn = document.getElementById("logout-btn") as HTMLAnchorElement;
 
+// Adiciona evento de clique para logout
 logoutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+    // Previne múltiplos cliques durante a requisição
     logoutBtn.style.pointerEvents = 'none';
 
     try {
+        // Faz POST para endpoint de logout (encerra sessão no backend)
         const response = await fetch('http://localhost:3000/auth/logout', {
             method: 'POST',
-            credentials: 'include' // Importante para enviar cookies
+            credentials: 'include' // Necessário para enviar cookie de sessão
         });
 
         if (response.ok) {
-            // Redireciona para página de login
+            // Logout bem-sucedido, redireciona para tela inicial/login
             window.location.href = '/';
         } else {
             alert('Erro ao fazer logout. Tente novamente.');
@@ -24,3 +29,4 @@ logoutBtn.addEventListener("click", async (e) => {
         logoutBtn.style.pointerEvents = 'auto';
     }
 });
+

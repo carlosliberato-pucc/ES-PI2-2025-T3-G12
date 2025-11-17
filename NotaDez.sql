@@ -1,3 +1,5 @@
+-- Feito por Carlos Liberato
+
 CREATE DATABASE notadez;
 USE notadez;
 

@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const classController_1 = require("./classController");
 const router = express_1.default.Router();
-// POST /api/turmas - Criar turma
-// Body: { id_instituicao, id_curso, id_disciplina, nome }
+// Cria turma
 router.post('/', classController_1.criarTurma);
-// GET /api/turmas?id_instituicao=X&id_curso=Y&id_disciplina=Z - Listar turmas
+// Lista turmas por filtros de query
 router.get('/', classController_1.listarTurmas);
+// Busca turma por ID
 router.get('/:id', classController_1.buscarTurmaPorId);
+// Deleta turma por ID
 router.delete('/:id', classController_1.deletarTurma);
 exports.default = router;

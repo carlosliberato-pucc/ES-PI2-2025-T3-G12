@@ -1,524 +1,576 @@
-/* Estilos básicos para visualização: adaptar para sua stack (Tailwind, Bootstrap, etc.) */
+/* Importa a fonte Montserrat para uso global */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+/* Variáveis globais de cores, usadas em diversos componentes */
 :root {
-    --bg: #f5f7fb;
-    --divider: #fff;
-    --blue-nt: #0a3db7;
-    --accent: #2858c9;
-    --muted: #6b7280;
-    --yellow-nt: #ffc30f;
-    --white-yellow: #facc43
+  --bg: #f5f7fb;
+  --divider: #fff;
+  --blue-nt: #0a3db7;
+  --accent: #2858c9;
+  --muted: #6b7280;
+  --yellow-nt: #ffc30f;
+  --white-yellow: #facc43;
 }
 
+/* Box sizing universal para ajuste do layout */
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
+/* Estilo global do body: fonte, margens e cores principais */
 body {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    margin: 0;
-    background: var(--bg);
-    color: #111;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  margin: 0;
+  background: var(--bg);
+  color: #111;
 }
 
+/* Cabeçalho principal: barra superior fixa, alinhada e com divisória */
 header {
-    background: var(--divider);
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #e6e9ef;
+  background: var(--divider);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e6e9ef;
 }
 
+/* Área de logo/marca no cabeçalho */
 .brand {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
+/* Título da marca no cabeçalho */
 .brand h1 {
-    font-size: 18px;
-    margin: 0;
+  font-size: 18px;
+  margin: 0;
 }
 
+/* Imagem do logo ajustada no header */
 header img {
-    width: 50px;
+  width: 50px;
 }
 
+/* Sidebar navegável lateral esquerda (elemento nav) */
 nav.sidebar {
-    width: 220px;
-    background: transparent;
-    padding: 20px;
-    border-right: 1px solid #e6e9ef;
-    min-height: calc(100vh - 66px);
+  width: 220px;
+  background: transparent;
+  padding: 20px;
+  border-right: 1px solid #e6e9ef;
+  min-height: calc(100vh - 66px);
 }
 
+/* Sidebar alternativa usando div */
 div.sidebar {
-    width: 220px;
-    background: transparent;
-    padding: 20px;
-    border-right: 1px solid #e6e9ef;
-    min-height: calc(100vh - 66px);
+  width: 220px;
+  background: transparent;
+  padding: 20px;
+  border-right: 1px solid #e6e9ef;
+  min-height: calc(100vh - 66px);
 }
 
+/* Botão de ação principal: cor, padding, borda arredondada e cursor */
 .btn {
-    background: var(--blue-nt);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    display: inline-block;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
+  background: var(--blue-nt);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
 }
 
+/* Efeito hover do botão principal */
 .btn:hover {
-    background: #facc43;
-    color: #0a3db7;
-    transition: 0.3s;
+  background: #facc43;
+  color: #0a3db7;
+  transition: 0.3s;
 }
 
+/* Botão secundário (normalmente para ações menos importantes) */
 .btn.secondary {
-    background-color: white;
-    color: var(--blue-nt);
-    border: 1px solid var(--blue-nt);
-    padding: 7px 11px; /* Ajuste para compensar a borda */
+  background-color: white;
+  color: var(--blue-nt);
+  border: 1px solid var(--blue-nt);
+  padding: 7px 11px;
 }
 
+/* Hover do botão secundário */
 .btn.secondary:hover {
-    background-color: rgb(228, 228, 228);
-    color: #19053f;
+  background-color: rgb(228, 228, 228);
+  color: #19053f;
 }
 
-.info-formula{
-    width: 100%;
-    font-size: 14px;
-    background-color: #f0f0f0;
-    color: #a0a0a0;
-    border-radius: 5px;
-    padding: 8px;
-    
+/* Caixa informativa para fórmulas */
+.info-formula {
+  width: 100%;
+  font-size: 14px;
+  background-color: #f0f0f0;
+  color: #a0a0a0;
+  border-radius: 5px;
+  padding: 8px;
 }
 
-.info-componentes{
-    width: 100%;
-    font-size: 14px;
-    background-color: #f0f0f0;
-    color: #a0a0a0;
-    border-radius: 5px;
-    padding: 8px; 
-    margin-bottom: 5px;
+/* Caixa informativa para componentes */
+.info-componentes {
+  width: 100%;
+  font-size: 14px;
+  background-color: #f0f0f0;
+  color: #a0a0a0;
+  border-radius: 5px;
+  padding: 8px;
+  margin-bottom: 5px;
 }
 
-
+/* Container principal: layout flexível */
 .container {
-    display: flex;
-
+  display: flex;
 }
 
+/* Conteúdo principal: ocupa espaço restante no layout */
 main {
-    flex: 1;
-    padding: 24px;
+  flex: 1;
+  padding: 24px;
 }
 
+/* Divisão visual entre partes do layout */
 .divider {
-    background: var(--divider);
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
-    padding: 16px;
-    margin-bottom: 16px;
+  background: var(--divider);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
+/* Grid horizontal para distribuição de elementos em linha */
 .inline-grid {
-    display: grid;
-    grid-auto-flow: column;
-    gap: 12px;
-    align-items: center;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 12px;
+  align-items: center;
 }
 
+/* Texto pequeno e discreto para detalhes */
 .small {
-    font-size: 13px;
-    color: var(--muted);
+  font-size: 13px;
+  color: var(--muted);
 }
 
+/* Estilos extra de botão base */
 .btn {
-    background: var(--blue-nt);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    display: inline-block;
+  background: var(--blue-nt);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
 }
 
+/* Efeito hover alternativo do botão base */
 .btn:hover {
-    background: var(--white-yellow);
-    color: var(--blue-nt);
-    transition: 0.3s;
+  background: var(--white-yellow);
+  color: var(--blue-nt);
+  transition: 0.3s;
 }
 
+/* Estilo de links realçados */
 .link {
-    color: var(--accent);
-    text-decoration: none;
+  color: var(--accent);
+  text-decoration: none;
 }
 
+/* Hover do link realçado */
 .link:hover {
-    color: #19053f;
+  color: #19053f;
 }
 
-
+/* Texto apagado, usado para informações secundárias */
 .muted {
-    color: var(--muted);
+  color: var(--muted);
 }
 
-/* Cards e Títulos */
+/* --- Cards e Títulos estilizados --- */
 
+/* Info de input, texto pequeno e discreto */
 .info-input {
-    font-size: 10px;
-    color: gray;
-    width: 100%;
-    text-align: left;
+  font-size: 10px;
+  color: gray;
+  width: 100%;
+  text-align: left;
 }
 
+/* Título em telas principais, alinhado com ícone/botão */
 .titulo-tela {
-    font-family: 'Montserrat', sans-serif;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
+/* Botão geralmente usado em títulos ou ações rápidas */
 .titulo-tela button {
-    width: 40px;
-    height: 40px;
-    background: none;
-    border-style: none;
-    padding: 5px;
-    cursor: pointer;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border-style: none;
+  padding: 5px;
+  cursor: pointer;
 }
 
+/* Card visual com cor principal, ajustado para usar flexbox */
 .card {
-    width: 200px;
-    height: 200px;
-    background-color: var(--blue-nt);
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    justify-content: flex-end;
-    border-radius: 5px;
-    margin-top: 20px;
+  width: 200px;
+  height: 200px;
+  background-color: var(--blue-nt);
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 5px;
+  margin-top: 20px;
 }
 
+/* Descrição dentro do card, fundo branco e sombra */
 .descricao {
-    width: 100%;
-    height: 100px;
-    background-color: #fff;
-    border-radius: 0px 0px 5px 5px;
-    padding: 5px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2)
+  width: 100%;
+  height: 100px;
+  background-color: #fff;
+  border-radius: 0px 0px 5px 5px;
+  padding: 5px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 }
 
+/* Título principal dentro de descrição do card */
 .descricao h1 {
-    font-size: 16px;
-    font-family: 'Montserrat', 'sans-serif';
-    font-weight: 500;
-    overflow: hidden;
-    margin: 3px;
-    display: -webkit-box;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+  font-size: 16px;
+  font-family: 'Montserrat', 'sans-serif';
+  font-weight: 500;
+  overflow: hidden;
+  margin: 3px;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
+/* Subtítulo ou informação extra na descrição do card */
 .descricao h2 {
-    font-size: 12px;
-    font-family: 'Montserrat', 'sans-serif';
-    font-weight: 500;
-    overflow: hidden;
-    margin: 10px 5px 5px 5px;
-    display: -webkit-box;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+  font-size: 12px;
+  font-family: 'Montserrat', 'sans-serif';
+  font-weight: 500;
+  overflow: hidden;
+  margin: 10px 5px 5px 5px;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
+/* Botão flutuante no card para ações rápidas */
 .card button {
-    width: 40px;
-    height: 40px;
-    background: none;
-    border-style: none;
-    padding: 5px;
-    position: absolute;
-    top: 8px;
-    right: 5px;
-    cursor: pointer;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border-style: none;
+  padding: 5px;
+  position: absolute;
+  top: 8px;
+  right: 5px;
+  cursor: pointer;
 }
 
-/* Painel de Edição */
+/* --- Painel de edição do Card --- */
 
+/* Modal fixo e oculto, usado para editar cards */
 .edicao-card {
-    position: fixed;
-    transform: scale(0);
-    transform-origin: left center;
-    transition: transform 0.3s ease;
-    z-index: 1000;
-    width: 200px;
-    height: 200px;
-    padding: 10px;
-    display: none;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.2)
+  position: fixed;
+  transform: scale(0);
+  transform-origin: left center;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  width: 200px;
+  height: 200px;
+  padding: 10px;
+  display: none;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.2);
 }
 
+/* Exibe e expande o painel de edição */
 .edicao-card.aberto {
-    transform: scale(1);
+  transform: scale(1);
 }
 
+/* Título do painel de edição */
 .edicao-card h2 {
-    font-size: 16px;
-    font-weight: 400;
-    margin: 0 0 5px;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0 0 5px;
 }
 
+/* Subtítulo do painel de edição */
 .edicao-card h3 {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--muted);
-    margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  margin: 0 0 10px 0;
 }
 
+/* Botão de cor dentro do painel de edição */
 .edicao-card .div_cores .cor-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    margin: 10px auto;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
-    align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  margin: 10px auto;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  align-items: center;
 }
 
-/* Botões de Cor */
+/* --- Botões de cor usados em cards/modal --- */
 
+/* Efeito hover para botão de cor */
 .cor-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.3);
 }
 
+/* Foco de acessibilidade em botão de cor */
 .cor-btn:focus {
-    outline: 3px solid var(--muted);
-    outline-offset: 2px;
+  outline: 3px solid var(--muted);
+  outline-offset: 2px;
 }
 
-/* Modal de Criação */
+/* --- Modal de criação de card --- */
 
+/* Overlay semitransparente para fundo de modais */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
 }
 
+/* Ativa overlay com display block */
 .modal-overlay.ativo {
-    display: block;
+  display: block;
 }
 
+/* Modal de criação de card centralizado */
 .create-card {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    width: 500px;
-    max-height: 90vh;
-    display: none;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
-    overflow-y: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 500px;
+  max-height: 90vh;
+  display: none;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
 }
 
+/* Título do modal criar card */
 .create-card h2 {
-    text-align: center;
-    font-size: 25px;
-    font-family: 'Montserrat', 'sans-serif';
-    margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 25px;
+  font-family: 'Montserrat', 'sans-serif';
+  margin: 0 0 10px 0;
 }
 
+/* Subtítulo do modal criar card */
 .create-card h3 {
-    text-align: center;
-    font-size: 15px;
-    font-family: 'Montserrat', 'sans-serif';
-    color: var(--muted);
-    margin: 10px 0;
+  text-align: center;
+  font-size: 15px;
+  font-family: 'Montserrat', 'sans-serif';
+  color: var(--muted);
+  margin: 10px 0;
 }
 
+/* Inputs dentro do modal criar card */
 .create-card input {
-    width: 100%;
-    height: 50px;
-    border: none;
-    border-radius: 6px;
-    background: #f2f2f2;
-    font-size: 15px;
-    padding-left: 10px;
-    margin-top: 10px;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 6px;
+  background: #f2f2f2;
+  font-size: 15px;
+  padding-left: 10px;
+  margin-top: 10px;
 }
 
+/* Labels para campos do modal criar card */
 .create-card label {
-    display: block;
-    font-size: 14px;
-    font-family: 'Montserrat', 'sans-serif';
-    font-weight: 500;
-    color: var(--muted);
-    margin-top: 15px;
-    margin-bottom: 5px;
-    padding-left: 5px;
+  display: block;
+  font-size: 14px;
+  font-family: 'Montserrat', 'sans-serif';
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 15px;
+  margin-bottom: 5px;
+  padding-left: 5px;
 }
 
+/* Select estilizado no modal criar card */
 .create-card select {
-    width: 100%;
-    height: 50px;
-    border: none;
-    border-radius: 6px;
-    background: #f2f2f2;
-    font-size: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.41 0L6 4.59 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 12px;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 6px;
+  background: #f2f2f2;
+  font-size: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.41 0L6 4.59 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 12px;
 }
 
+/* Estilo de foco para select do modal */
 .create-card select:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
+/* Option do select estilizado */
 .create-card select option {
-    padding: 10px;
-    background: #fff;
-    color: #111;
+  padding: 10px;
+  background: #fff;
+  color: #111;
 }
 
+/* Botão de cor maior usado na criação de card */
 .create-card .cor-btn {
-    width: 55px;
-    height: 55px;
-    border-radius: 100%;
-    margin: 15px auto;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
-    align-items: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 100%;
+  margin: 15px auto;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  align-items: center;
 }
 
+/* Botão submit e botão do modal: estilizados e centralizados */
 .create-card button[type="submit"], .modal-content button {
-    width: 120px;
-    padding: 10px;
-    background: var(--blue-nt);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    margin: 15px auto 0;
-    display: block;
-    transition: 0.3s;
+  width: 120px;
+  padding: 10px;
+  background: var(--blue-nt);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 15px auto 0;
+  display: block;
+  transition: 0.3s;
 }
 
+/* Hover para o botão submit/modal do modal criar card */
 .create-card button[type="submit"]:hover {
-    background: var(--yellow-nt);
-    color: var(--blue-nt);
+  background: var(--yellow-nt);
+  color: var(--blue-nt);
 }
 
-/* --- */
-/* Estilos Adicionais para Modais Genéricos (Gerenciar Fórmula e Componentes) */
+/* --- Modais genéricos para fórmulas e componentes --- */
 
-/* Contêiner principal do modal (usado por Gerenciar Fórmula e Componentes) */
+/* Área central dos modais gerais */
 .modal-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    /* Começa oculto no HTML, mas aqui está a estilização de posicionamento */
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    width: 550px;
-    max-height: 90vh;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
-    overflow-y: auto;
-    padding: 20px;
-    display: block; /* Garante que, quando ativado via JS, use esta aparência */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 550px;
+  max-height: 90vh;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  padding: 20px;
+  display: block;
 }
 
-/* Cabeçalho do Modal */
+/* Cabeçalho dos modais, com divisão e alinhamento */
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e6e9ef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e6e9ef;
 }
 
+/* Título principal no modal */
 .modal-header h2 {
-    font-size: 20px;
-    font-family: 'Montserrat', 'sans-serif';
-    margin: 0;
-    font-weight: 600;
-
+  font-size: 20px;
+  font-family: 'Montserrat', 'sans-serif';
+  margin: 0;
+  font-weight: 600;
 }
 
+/* Botão secundário flutuante no header do modal */
 .modal-header .secondary {
-    padding: 5px 10px;
-    border-radius: 50%;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1;
-    min-width: 30px;
-    height: 30px;
-    box-shadow: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 30px;
+  height: 30px;
+  box-shadow: none;
 }
-/* Corpo do Modal */
+
+/* Corpo principal do modal */
 .modal-body {
-    padding-top: 5px;
+  padding-top: 5px;
 }
 
+/* Mensagem de status centralizada dentro do modal */
 .modal-body .status-message {
-    text-align: center;
-    font-size: 15px;
-    font-family: 'Montserrat', 'sans-serif';
-    color: var(--muted);
-    font-weight: 600;
-    margin: 10px 0;
+  text-align: center;
+  font-size: 15px;
+  font-family: 'Montserrat', 'sans-serif';
+  color: var(--muted);
+  font-weight: 600;
+  margin: 10px 0;
 }
 
-/* Agrupamento de Formulário */
+/* Grupo de formulário: separação de campos */
 .form-group {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
+/* Label dos campos do formulário dentro do modal */
 .form-group label {
-    display: block;
-    font-size: 14px;
-    font-family: 'Montserrat', 'sans-serif';
-    font-weight: 500;
-    color: #111;
-    margin-bottom: 5px;
-    padding-left: 0;
+  display: block;
+  font-size: 14px;
+  font-family: 'Montserrat', 'sans-serif';
+  font-weight: 500;
+  color: #111;
+  margin-bottom: 5px;
+  padding-left: 0;
 }
 
+/* Botão no header dos modais estilizado para ícone (geralmente fechar) */
 .modal-header .btn {
   background: none;
   color: var(--muted);
@@ -526,80 +578,77 @@ main {
   padding: 0;
 }
 
-.modal-header .btn {
-  background: none;
-  color: var(--muted);
-  border: none;
-  padding: 0;
-}
-
+/* Hover em botão do header para destacar ação perigosa */
 .modal-header .btn:hover {
   color: var(--error-color);
   background: none;
 }
 
-/* Inputs e Selects dentro dos modais de gerenciamento */
+/* Inputs e selects dentro dos formulários dos modais */
 .form-group input[type="text"],
 .form-group select {
-    width: 100%;
-    height: 50px;
-    border: none;
-    border-radius: 6px;
-    background: #f2f2f2;
-    font-size: 15px;
-    padding-left: 10px;
-    margin-top: 10px;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 6px;
+  background: #f2f2f2;
+  font-size: 15px;
+  padding-left: 10px;
+  margin-top: 10px;
 }
 
+/* Select estilizado dentro do formulário do modal */
 .form-group select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.41 0L6 4.59 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 12px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1.41 0L6 4.59 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 12px;
 }
 
+/* Input desabilitado estilizado para diferenciar do normal */
 .form-group input[disabled] {
-    background: #f0f0f0;
-    color: var(--muted);
-    cursor: not-allowed;
-    border: 1px dashed #ddd;
+  background: #f0f0f0;
+  color: var(--muted);
+  cursor: not-allowed;
+  border: 1px dashed #ddd;
 }
 
-/* Lista de Componentes (dentro do modal de componentes) */
+/* Lista de componentes visual no modal */
 #componentes_lista {
-    padding: 10px;
-    border: 1px solid #e6e9ef;
-    border-radius: 6px;
-    max-height: 180px;
-    overflow-y: auto;
-    background-color: #fcfcfc;
+  padding: 10px;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  background-color: #fcfcfc;
 }
 
-/* Sobrescreve o info-componentes para ter um visual mais 'ativo' no modal */
+/* Info de componente estilizado ativo na lista do modal */
 .modal-body #componentes_lista .info-componentes {
-    background-color: #fff;
-    color: #333;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 500;
+  background-color: #fff;
+  color: #333;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
 }
 
-/* Botão de excluir componente */
+/* Botão de excluir um componente da lista do modal */
 .modal-body #componentes_lista .btn.secondary {
-    background: none;
-    color: #dc3545;
-    padding: 5px 8px;
-    border: 1px solid #dc3545;
-    border-radius: 4px;
-    transition: all 0.2s;
+  background: none;
+  color: #dc3545;
+  padding: 5px 8px;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  transition: all 0.2s;
 }
 
+/* Hover do botão de excluir componente no modal */
 .modal-body #componentes_lista .btn.secondary:hover {
-    background: #dc3545;
-    color: white;
+  background: #dc3545;
+  color: white;
 }

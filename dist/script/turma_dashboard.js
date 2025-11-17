@@ -4,10 +4,10 @@
 // =======================
 let alunosTurma = [];
 let componentesNotas = [];
-let notasTurma = {}; // chave: `${matricula}_${id_compNota}`
+let notasTurma = {};
 let formulaDisciplina = null;
-let fk_turma = 1; // Agora global
-let disciplinaId = 1; // Agora global
+let fk_turma = 1;
+let disciplinaId = 1;
 // =======================
 // CARREGAR COMPONENTES DA DISCIPLINA
 // =======================
@@ -383,8 +383,6 @@ function initModalAlunos() {
             alert('Já existe um aluno com essa matrícula!');
             return;
         }
-        // const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement;
-        // const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
         await salvarAlunoBackend(matricula, nome, fk_turma);
         alunosTurma.push({ matricula, nome });
         atualizarTabelaAlunos();
@@ -404,8 +402,6 @@ function initModalAlunos() {
             const text = reader.result;
             const linhas = text.split('\n').map(l => l.trim()).filter(l => l);
             let count = 0;
-            // const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement;
-            // const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
             for (const linha of linhas) {
                 const [matricula, nome] = linha.split(',').map(x => x.trim());
                 if (matricula && nome && !alunosTurma.some(a => a.matricula === matricula)) {
@@ -446,8 +442,6 @@ function initModalAlunos() {
         const matAntiga = inputMatriculaBusca.value.trim();
         const novaMat = inputNovaMatricula.value.trim();
         const novoNome = inputNovoNome.value.trim();
-        // const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
-        // const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
         const aluno = alunosTurma.find(a => a.matricula === matAntiga);
         if (!aluno) {
             alert('Aluno não encontrado!');
@@ -492,8 +486,6 @@ function initModalAlunos() {
             alert('Aluno não encontrado!');
             return;
         }
-        // const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
-        // const fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
         const resp = await fetch(`/api/turma_dashboard/${fk_turma}/alunos/${matricula}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -680,10 +672,6 @@ async function buscarInfoDisciplina(disciplinaId) {
 // INICIALIZAÇÃO COMPLETA
 // =======================
 document.addEventListener('DOMContentLoaded', async () => {
-    // const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
-    // const disciplinaInput = document.getElementById('id-disciplina') as HTMLInputElement | null;
-    // fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
-    // disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : 1;
     const params = new URLSearchParams(window.location.search);
     const turmaFromUrl = params.get("id_turma");
     const disciplinaFromUrl = params.get("id_disciplina");
@@ -698,7 +686,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     initModalAlunos();
     const btnCalcular = document.getElementById('btn-calcular-notas');
     btnCalcular?.addEventListener('click', calcularTodasNotasFinais);
-    // ADICIONE ESTA LINHA:
     const btnExportar = document.getElementById('export_grades_btn');
     btnExportar?.addEventListener('click', exportarNotasCSV);
 });

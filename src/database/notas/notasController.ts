@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../index';
 
-// Salvar (inserir/atualizar) nota de um aluno para um componente
-// Salvar (inserir/atualizar) nota de um aluno para um componente
+// Salva ou atualiza nota de um aluno para um componente
 export const salvarNota = async (req: Request, res: Response) => {
   try {
     const { matricula, idComponente, valor } = req.body;
@@ -15,7 +14,7 @@ export const salvarNota = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Nota deve ser um número de 0 a 10' });
     }
 
-    // 1) Buscar id do aluno pela matrícula
+    // Busca aluno pela matrícula antes de inserir/atualizar nota
     db.query(
       'SELECT id FROM alunos WHERE matricula = ? LIMIT 1',
       [matricula],
@@ -27,10 +26,9 @@ export const salvarNota = async (req: Request, res: Response) => {
         if (!rows || rows.length === 0) {
           return res.status(404).json({ success: false, message: 'Aluno não encontrado para esta matrícula' });
         }
-
         const idAluno = rows[0].id as number;
 
-        // 2) Inserir/atualizar nota usando fk_id_aluno
+        // Insere/atualiza nota
         db.query(
           `INSERT INTO notas (valor, fk_id_aluno, fk_compNota)
            VALUES (?, ?, ?)
@@ -52,9 +50,7 @@ export const salvarNota = async (req: Request, res: Response) => {
   }
 };
 
-
-
-// Buscar todas as notas de uma turma
+// Lista todas as notas de uma turma, agrupadas por aluno e componente
 export const listarNotasTurma = async (req: Request, res: Response) => {
   try {
     const { idTurma } = req.params;
@@ -69,9 +65,9 @@ export const listarNotasTurma = async (req: Request, res: Response) => {
          JOIN disciplinas d       ON d.id_disciplina = t.fk_disciplina
          JOIN componentes_notas c ON c.fk_disciplina = d.id_disciplina
          LEFT JOIN notas n        ON n.fk_id_aluno   = a.id
-                                  AND n.fk_compNota  = c.id_compNota
-        WHERE t.id_turma = ?
-        ORDER BY a.nome, c.id_compNota`,
+                                   AND n.fk_compNota  = c.id_compNota
+       WHERE t.id_turma = ?
+       ORDER BY a.nome, c.id_compNota`,
       [idTurma],
       (err, rows) => {
         if (err) {

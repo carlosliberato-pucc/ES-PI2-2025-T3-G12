@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const notaFinalController_1 = require("./notaFinalController");
 const router = express_1.default.Router();
+// Salva nota final para um aluno na turma
 router.post('/', notaFinalController_1.salvarNotaFinal);
-router.get('/:turma', notaFinalController_1.buscarNotasFinais); // Nova rota GET
+// Lista todas as notas finais de uma turma
+router.get('/:turma', notaFinalController_1.buscarNotasFinais);
 exports.default = router;

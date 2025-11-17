@@ -1,4 +1,5 @@
-// Desenvolvido por Carlos Liberato e Felipe Miranda
+// Desenvolvido por Carlos Liberato
+// Felipe Miranda (Configuração de Sessão)
 
 import * as dotenv from 'dotenv';
 dotenv.config(); // Carrega variáveis de ambiente (como a porta) do arquivo .env.

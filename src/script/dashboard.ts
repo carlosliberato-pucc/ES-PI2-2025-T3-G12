@@ -1,10 +1,13 @@
+// Desenvolvido por Carlos Liberato
 // Script para popular a tabela do dashboard com resumo por instituição
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Seleciona corpo da tabela onde os dados serão inseridos
     const tbody = document.querySelector('table tbody') as HTMLTableSectionElement | null;
 
     if (!tbody) return;
 
+    // Função principal: busca o resumo no backend e popula a tabela
     async function carregarResumo() {
         try {
             const response = await fetch('http://localhost:3000/api/instituicoes/resumo', {
@@ -24,9 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Limpa a tabela
+            // Limpa linhas anteriores do tbody
             tbody!.innerHTML = '';
 
+            // Para cada linha do resultado, cria uma linha na tabela
             result.data.forEach((row: any) => {
                 const tr = document.createElement('tr');
 
@@ -34,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 siglaTd.textContent = row.abreviacao || '';
 
                 const cursosTd = document.createElement('td');
-                // mostramos o nome do curso por linha (uma linha por curso)
+                // Nome do curso por linha
                 cursosTd.textContent = row.curso || '';
 
                 const disciplinasTd = document.createElement('td');
@@ -56,5 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Executa a função ao carregar a página
     carregarResumo();
 });

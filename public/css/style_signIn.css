@@ -1,6 +1,7 @@
-/* Autor: Leonardo Amad */
+/* Importa fonte Montserrat para todo o projeto */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+/* Reset global e fonte padrão da interface */
 * {
   margin: 0;
   padding: 0;
@@ -8,6 +9,7 @@
   font-family: 'Montserrat', sans-serif;
 }
 
+/* Define fundo branco e centraliza todo o conteúdo da tela */
 body {
   background: #fff;
   display: flex;
@@ -16,6 +18,7 @@ body {
   height: 100vh;
 }
 
+/* Container principal: layout flex de duas colunas, bordas arredondadas e sombra */
 .container {
   display: flex;
   width: 850px;
@@ -25,7 +28,7 @@ body {
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Lado esquerdo - Login */
+/* Área da esquerda: box de login */
 .login-box {
   flex: 1;
   background: #fff;
@@ -36,15 +39,18 @@ body {
   padding: 30px;
 }
 
+/* Título do login */
 .login-box h2 {
   font-size: 28px;
   font-weight: bold;
 }
 
-.login-box .info-input{
+/* Informações de input centralizadas */
+.login-box .info-input {
   text-align: center;
 }
 
+/* Texto auxiliar pequeno para campos do login */
 .login-box small {
   font-size: 10px;
   color: gray;
@@ -52,17 +58,20 @@ body {
   text-align: left;
 }
 
+/* Mensagem para cadastro ou erro no login */
 .login-box #signup-message {
   min-height: 10px;
   text-align: center;
   margin-bottom: 2px;
 }
 
+/* Parágrafo explicativo ou texto do formulário de login */
 .login-box p {
   font-size: 14px;
   margin: 3px 0;
 }
 
+/* Campos de entrada do login */
 .login-box input {
   width: 100%;
   padding: 12px;
@@ -73,6 +82,7 @@ body {
   font-size: 14px;
 }
 
+/* Botão de login estilizado */
 .login-box button {
   width: 120px;
   padding: 10px;
@@ -86,12 +96,13 @@ body {
   transition: 0.3s;
 }
 
+/* Efeito hover do botão de login */
 .login-box button:hover {
   background: #0a3db7;
   color: #ffc30f;
 }
 
-/* Lado direito - Criar conta */
+/* Área da direita: box de signup/criar conta */
 .signup-box {
   flex: 1;
   background: #0a3db7;
@@ -107,6 +118,7 @@ body {
   height: 100%;
 }
 
+/* Título do signup em destaque amarelo */
 .signup-box h2 {
   font-size: 28px;
   font-weight: bold;
@@ -114,11 +126,13 @@ body {
   margin-bottom: 15px;
 }
 
+/* Parágrafo explicativo do cadastro */
 .signup-box p {
   font-size: 14px;
   margin-bottom: 20px;
 }
 
+/* Botão/Link para alternar ação de signup */
 .signup-box a {
   display: inline-block;
   padding: 10px 25px;
@@ -130,21 +144,25 @@ body {
   transition: 0.3s;
 }
 
+/* Efeito hover no botão/link de signup */
 .signup-box a:hover {
   background: #ffc30f;
   color: #0a3db7;
 }
 
-.login-box #signin-message{
+/* Mensagem de erro ou status de login */
+.login-box #signin-message {
   min-height: 10px;
-  margin-top: 5px;  
+  margin-top: 5px;
   margin-bottom: 10px;
 }
 
+/* Imagem padrão (ex: logo) usada na tela */
 img {
   width: 100px;
 }
 
+/* Link para voltar (ex: voltar ao login) */
 .back-link {
   font-size: 14px;
   text-decoration: none;
@@ -152,6 +170,7 @@ img {
   transition: 0.3s;
 }
 
+/* Efeito hover para o link de voltar */
 .back-link:hover {
   color: #19053f;
 }

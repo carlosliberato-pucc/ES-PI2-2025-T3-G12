@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listarNotasTurma = exports.salvarNota = void 0;
 const index_1 = require("../index");
-// Salvar (inserir/atualizar) nota de um aluno para um componente
-// Salvar (inserir/atualizar) nota de um aluno para um componente
+// Salva ou atualiza nota de um aluno para um componente
 const salvarNota = async (req, res) => {
     try {
         const { matricula, idComponente, valor } = req.body;
@@ -14,7 +13,7 @@ const salvarNota = async (req, res) => {
         if (isNaN(numValor) || numValor < 0 || numValor > 10) {
             return res.status(400).json({ success: false, message: 'Nota deve ser um número de 0 a 10' });
         }
-        // 1) Buscar id do aluno pela matrícula
+        // Busca aluno pela matrícula antes de inserir/atualizar nota
         index_1.db.query('SELECT id FROM alunos WHERE matricula = ? LIMIT 1', [matricula], (err, rows) => {
             if (err) {
                 console.error('Erro ao buscar aluno pela matrícula:', err);
@@ -24,7 +23,7 @@ const salvarNota = async (req, res) => {
                 return res.status(404).json({ success: false, message: 'Aluno não encontrado para esta matrícula' });
             }
             const idAluno = rows[0].id;
-            // 2) Inserir/atualizar nota usando fk_id_aluno
+            // Insere/atualiza nota
             index_1.db.query(`INSERT INTO notas (valor, fk_id_aluno, fk_compNota)
            VALUES (?, ?, ?)
            ON DUPLICATE KEY UPDATE valor = VALUES(valor)`, [numValor, idAluno, idComponente], (err2) => {
@@ -42,7 +41,7 @@ const salvarNota = async (req, res) => {
     }
 };
 exports.salvarNota = salvarNota;
-// Buscar todas as notas de uma turma
+// Lista todas as notas de uma turma, agrupadas por aluno e componente
 const listarNotasTurma = async (req, res) => {
     try {
         const { idTurma } = req.params;
@@ -55,9 +54,9 @@ const listarNotasTurma = async (req, res) => {
          JOIN disciplinas d       ON d.id_disciplina = t.fk_disciplina
          JOIN componentes_notas c ON c.fk_disciplina = d.id_disciplina
          LEFT JOIN notas n        ON n.fk_id_aluno   = a.id
-                                  AND n.fk_compNota  = c.id_compNota
-        WHERE t.id_turma = ?
-        ORDER BY a.nome, c.id_compNota`, [idTurma], (err, rows) => {
+                                   AND n.fk_compNota  = c.id_compNota
+       WHERE t.id_turma = ?
+       ORDER BY a.nome, c.id_compNota`, [idTurma], (err, rows) => {
             if (err) {
                 console.error('Erro ao buscar notas:', err);
                 return res.status(500).json({ success: false, message: 'Erro ao buscar notas' });

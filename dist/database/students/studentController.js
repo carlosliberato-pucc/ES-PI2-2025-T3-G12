@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletarAluno = exports.editarAluno = exports.listarAlunos = exports.criarAluno = void 0;
 const index_1 = require("../index");
 // Criar aluno
-// Criar aluno
 const criarAluno = (req, res) => {
     try {
         const { matricula, nome } = req.body;
@@ -93,7 +92,7 @@ const deletarAluno = (req, res) => {
     try {
         const fk_turma = Number(req.params.id);
         const matricula = req.params.matricula;
-        const { nome } = req.body; // nome vem do body!
+        const { nome } = req.body;
         index_1.db.query('DELETE FROM alunos WHERE matricula = ? AND nome = ? AND fk_turma = ?', [matricula, nome, fk_turma], (err, result) => {
             if (err) {
                 console.error('Erro ao deletar aluno:', err);

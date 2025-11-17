@@ -1,31 +1,25 @@
-/*
-======================================================
-DASHBOARD.CSS - ARQUIVO UNIFICADO
-Contém estilos gerais e específicos para o Dashboard da Turma.
-======================================================
-*/
-
-/* Estilos básicos para visualização: adaptar para sua stack (Tailwind, Bootstrap, etc.) */
+/* Importa a fonte Montserrat para todo o dashboard */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+/* Variáveis globais de cores, incluindo cores do dashboard da turma */
 :root {
   --bg: #f5f7fb;
   --divider: #fff;
   --blue-nt: #0a3db7;
   --accent: #2858c9;
   --muted: #6b7280;
-
-  /* VARIÁVEIS DO DASHBOARD DA TURMA */
   --accent-yellow: #ffc30f;
   --success-color: #009b77;
   --error-color: #c41e3a;
   --final-grade-bg: #f7f7f7;
 }
 
+/* Todos elementos usam box-sizing border-box para layout */
 * {
   box-sizing: border-box;
 }
 
+/* Corpo com fonte padrão, fundo claro e sem margens */
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   margin: 0;
@@ -33,8 +27,9 @@ body {
   color: #111;
 }
 
-/* ================== ESTILOS GERAIS ================== */
+/* ================== Estilos Gerais ================== */
 
+/* Cabeçalho superior do dashboard */
 header {
   background: var(--divider);
   padding: 18px 24px;
@@ -44,30 +39,36 @@ header {
   border-bottom: 1px solid #e6e9ef;
 }
 
+/* Área da marca/logo do dashboard */
 .brand {
   display: flex;
   gap: 12px;
   align-items: center;
 }
 
+/* Título da marca */
 .brand h1 {
   font-size: 18px;
   margin: 0;
 }
 
+/* Logo do sistema */
 header img {
   width: 50px;
 }
 
+/* Container principal flexível da página */
 .container {
   display: flex;
 }
 
+/* Conteúdo principal da página, após sidebar */
 main {
   flex: 1;
   padding: 24px;
 }
 
+/* Caixa divisória visual */
 .divider {
   background: var(--divider);
   border-radius: 8px;
@@ -76,6 +77,7 @@ main {
   margin-bottom: 16px;
 }
 
+/* Grid horizontal para distribuição de itens */
 .inline-grid {
   display: grid;
   grid-auto-flow: column;
@@ -83,11 +85,13 @@ main {
   align-items: center;
 }
 
+/* Texto pequeno, usado para observações ou legendas */
 .small {
   font-size: 13px;
   color: var(--muted);
 }
 
+/* Botão principal: azul com fonte clara e bordas arredondadas */
 .btn {
   background: var(--blue-nt);
   color: white;
@@ -100,21 +104,25 @@ main {
   font-weight: 500;
 }
 
+/* Efeito hover de destaque no botão principal */
 .btn:hover {
   background: #facc43;
   color: #0a3db7;
   transition: 0.3s;
 }
 
+/* Link destacado na interface */
 .link {
   color: var(--accent);
   text-decoration: none;
 }
 
+/* Efeito hover do link */
 .link:hover {
   color: #19053f;
 }
 
+/* Avatar usado em listagens */
 .avatar {
   width: 36px;
   height: 36px;
@@ -123,13 +131,14 @@ main {
   display: inline-block;
 }
 
+/* Texto apagado para informações menos importantes */
 .muted {
   color: var(--muted);
 }
 
-/* ================== ESTILOS ESPECÍFICOS: DASHBOARD DA TURMA ================== */
+/* ================== Estilos Específicos do Dashboard da Turma ================== */
 
-/* 1. Barra de Ferramentas e Botões de Ação */
+/* Barra de ferramentas e área de botões de ação */
 .action-buttons {
   display: flex;
   gap: 10px;
@@ -137,7 +146,7 @@ main {
   align-items: center;
 }
 
-/* Botão Secundário (Ex: Gerenciar Alunos, Gerenciar Fórmula) */
+/* Botão secundário para áreas administrativas ("Gerenciar") */
 .btn.secondary {
   background-color: white;
   color: var(--blue-nt);
@@ -145,11 +154,12 @@ main {
   padding: 7px 11px;
 }
 
+/* Efeito hover do botão secundário */
 .btn.secondary:hover {
   background-color: var(--bg);
 }
 
-/* Botão de Download/Exportar (Amarelo/Accent) */
+/* Botão de download/exportação com cor destaque */
 .btn.download {
   background-color: var(--accent-yellow);
   color: var(--blue-nt);
@@ -157,15 +167,16 @@ main {
   border: 1px solid var(--accent-yellow);
 }
 
+/* Efeito hover do botão de download */
 .btn.download:hover {
   background-color: #facc43;
   filter: brightness(0.9);
   color: var(--blue-nt);
 }
 
-/* 2. Tabela de Notas */
+/* ================== Tabela de Notas ================== */
 
-/* Título */
+/* Título da tabela de notas */
 #table_title {
   font-size: 1.5em;
   font-weight: 600;
@@ -173,16 +184,18 @@ main {
   padding: 0 16px;
 }
 
-/* Container Responsivo */
+/* Wrapper para tabela responsiva */
 .responsive-table {
   width: 100%;
   overflow-x: auto;
 }
 
+/* Tabela principal */
 #grade_table {
   min-width: 900px;
 }
 
+/* Cabeçalho da tabela */
 #grade_table thead th {
   background-color: var(--blue-nt);
   color: white;
@@ -192,23 +205,23 @@ main {
   border-bottom: 2px solid var(--accent-yellow);
 }
 
-
+/* Input de nota dentro da tabela */
 #grade_table tr td input {
   width: 50px;
   height: 100%;
   padding: 5px;
   border: none;
   font-size: 16px;
-
 }
 
-/* Colunas de Notas de Componente */
+/* Colunas de componente, centralizadas */
 .component-col {
   cursor: pointer;
   text-align: center;
   width: 120px;
 }
 
+/* Textos pequenos em colunas de componente */
 .component-col .small-info {
   font-weight: 400;
   font-size: 0.7em;
@@ -217,6 +230,7 @@ main {
   margin-top: 2px;
 }
 
+/* Estilização das células gerais de tabela */
 th,
 td {
   padding: 10px 8px;
@@ -224,12 +238,13 @@ td {
   border-bottom: 1px solid #eef2f6;
 }
 
+/* Primeira coluna: matrícula, largura fixa */
 #grade_table th:nth-child(1),
 #grade_table td:nth-child(1) {
   width: 200px;
-  /* matrícula */
 }
 
+/* Segunda coluna: nome do aluno, largura maior e truncada */
 #grade_table th:nth-child(2),
 #grade_table td:nth-child(2) {
   width: 300px;
@@ -238,14 +253,13 @@ td {
   overflow: hidden;
 }
 
-
-/* Estilos de Célula em Edição */
+/* Célula em edição */
 .editing {
   background-color: #fffbe6;
   border: 1px solid var(--accent-yellow);
 }
 
-/* Coluna de Resultado Final (Calculado) */
+/* Coluna de resultado final calculado */
 .final-grade-col {
   background-color: var(--accent-yellow);
   font-weight: 700;
@@ -254,26 +268,27 @@ td {
   color: var(--blue-nt);
 }
 
+/* Valor final de nota renderizado */
 .final-grade-value {
   background-color: var(--final-grade-bg);
   text-align: center !important;
   font-weight: 600;
 }
 
+/* Tabela ocupa todo espaço possível */
 table {
   width: 100%;
   border-collapse: collapse;
 }
 
+/* Cabeçalho interativo */
 th {
   cursor: pointer;
 }
 
+/* ================== Estilos dos Modais ================== */
 
-
-/* ================== ESTILOS DOS MODAIS (CORRIGIDO) ================== */
-
-/* 3. Estilos de Modais */
+/* Overlay de fundo para modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -281,16 +296,13 @@ th {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-
-  /* CORREÇÃO 1: Começa escondido para não aparecer ao carregar a página */
   display: none;
-
-  /* Centralização imediata (quando display: flex) */
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
+/* Estruturas principais dos modais (inicialmente ocultos) */
 #modal_alunos,
 #modal_componentes,
 #modal_formula {
@@ -298,7 +310,7 @@ th {
   position: relative;
 }
 
-/* Modal de confirmação fica acima dos outros - CORRIGIDO */
+/* Modal de confirmação fica sempre acima */
 #modal_confirmacao {
   display: none;
   position: fixed !important;
@@ -309,7 +321,7 @@ th {
   margin: 0 !important;
 }
 
-/* Estrutura Principal do Conteúdo Modal */
+/* Conteúdo principal dos modais: caixa branca com sombra */
 .modal-content {
   background-color: var(--divider);
   padding: 0;
@@ -320,7 +332,7 @@ th {
   animation: fadeInOnly 0.2s ease-out;
 }
 
-/* Cabeçalho do Modal */
+/* Cabeçalho do modal, com título e botão de fechar */
 .modal-header {
   padding: 16px 20px;
   border-bottom: 1px solid #e6e9ef;
@@ -329,12 +341,13 @@ th {
   align-items: center;
 }
 
+/* Título do modal */
 .modal-header h2 {
   margin: 0;
   font-size: 1.2em;
 }
 
-/* Botão de Fechar */
+/* Botão de fechar o modal */
 .modal-header .btn {
   background: none;
   color: var(--muted);
@@ -342,42 +355,38 @@ th {
   padding: 0;
 }
 
-.modal-header .btn {
-  background: none;
-  color: var(--muted);
-  border: none;
-  padding: 0;
-}
-
-.modal-content button[type="submit"] {
-    width: 120px;
-    padding: 10px;
-    background: var(--blue-nt);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    margin: 15px auto 0;
-    display: block;
-    transition: 0.3s;
-}
-
+/* Botão de fechar: visível no hover */
 .modal-header .btn:hover {
   color: var(--error-color);
   background: none;
 }
 
-/* Corpo do Modal */
+/* Botão de submit dos modais */
+.modal-content button[type="submit"] {
+  width: 120px;
+  padding: 10px;
+  background: var(--blue-nt);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 15px auto 0;
+  display: block;
+  transition: 0.3s;
+}
+
+/* Corpo principal do modal */
 .modal-body {
   padding: 20px;
 }
 
-/* Estilos de Formulários */
+/* Espaçamento entre grupos do formulário */
 .form-group {
   margin-bottom: 16px;
 }
 
+/* Labels dos campos dos formulários de modal */
 .form-group label {
   display: block;
   margin-bottom: 8px;
@@ -385,6 +394,7 @@ th {
   font-weight: 500;
 }
 
+/* Inputs e selects do formulário/modal */
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group select,
@@ -399,7 +409,7 @@ th {
   margin-top: 10px;
 }
 
-/* Tabs */
+/* Navegação entre abas do modal */
 .tab-buttons {
   display: flex;
   border-bottom: 2px solid #eef2f6;
@@ -407,6 +417,7 @@ th {
   gap: 10px;
 }
 
+/* Botão tab não ativo */
 .tab-buttons .btn {
   background: none;
   color: var(--muted);
@@ -418,16 +429,19 @@ th {
   transition: all 0.2s;
 }
 
+/* Botão tab ativo */
 .tab-buttons .btn.active {
   color: var(--blue-nt);
   border-bottom-color: var(--accent-yellow);
   font-weight: 700;
 }
 
+/* Painel da aba do modal */
 .tab-panel {
   padding: 10px 0 0;
 }
 
+/* Mensagem de status */
 .status-message {
   margin-top: 15px;
   padding: 10px;
@@ -437,7 +451,7 @@ th {
   border: 1px solid #cceeff;
 }
 
-/* Alertas */
+/* Mensagem de alerta/erro */
 .alert-message {
   background-color: #f8d7da;
   color: var(--error-color);
@@ -447,13 +461,14 @@ th {
   margin-bottom: 15px;
 }
 
-/* Lista de Componentes */
+/* Lista de componentes no modal */
 #lista-componentes {
   list-style: none;
   padding: 0;
   margin: 15px 0 0;
 }
 
+/* Item da lista de componentes */
 #lista-componentes li {
   border-bottom: 1px solid #eef2f6;
   padding: 10px 0;
@@ -462,16 +477,16 @@ th {
   align-items: center;
 }
 
+/* Remove borda do último item */
 #lista-componentes li:last-child {
   border-bottom: none;
 }
 
-/* Animação para Modais - CORRIGIDA (apenas fade, sem movimento) */
+/* Animação fade para entrada dos modais */
 @keyframes fadeInOnly {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }

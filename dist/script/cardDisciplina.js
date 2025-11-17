@@ -1,5 +1,6 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', () => {
+    // Lê IDs da URL
     const urlParams = new URLSearchParams(window.location.search);
     const idInstituicao = urlParams.get('id_instituicao');
     const idCurso = urlParams.get('id_curso');
@@ -8,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/dashboard';
         return;
     }
+    // Seletores principais
     const btnsCard = document.querySelectorAll(".btn-card");
     const edicaoCard = document.querySelector(".edicao-card");
     const coresEdit = document.querySelectorAll('.cor-btn[data-context="edit"]');
@@ -20,7 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const coresCreate = document.querySelectorAll('.cor-btn[data-context="create"]');
     const btnCreateCard = document.querySelectorAll(".btn-create-card");
     const modalOverlay = document.querySelector('.modal-overlay');
-    let corSelecionada = 'rgb(10, 61, 183)'; // cor padrão
+    let corSelecionada = 'rgb(10, 61, 183)';
+    // Busca disciplinas do curso e gera cards
     const carregarDisciplinas = async () => {
         try {
             const response = await fetch(`http://localhost:3000/api/disciplinas?id_instituicao=${idInstituicao}&id_curso=${idCurso}`, {
@@ -34,10 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.success && Array.isArray(result.data)) {
                 result.data.forEach((disciplina) => {
-                    // Buscar cor salva no localStorage
                     const corSalva = localStorage.getItem(`cor_disciplina_${disciplina.id_disciplina}`);
                     const cor = corSalva || 'rgb(10, 61, 183)';
-                    // Criar card visual com dados do banco
                     criarNovoCard(disciplina.nome, disciplina.sigla || 'Não informado', disciplina.periodo, disciplina.codigo, cor, disciplina.id_disciplina);
                 });
                 console.log(`${result.data.length} disciplinas carregados`);
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao carregar disciplinas: ', erro);
         }
     };
-    //Create Card
+    // Gera o card visual de disciplina
     const criarNovoCard = (nome, sigla, periodo, codigo, cor, id_disciplina) => {
         const section = document.querySelector("main section");
         const novoCard = document.createElement("div");
@@ -57,18 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
             novoCard.dataset.id = id_disciplina.toString();
         }
         novoCard.innerHTML = `
-                    <button class="btn-card">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                            <path fill="#ffffff"
-                                d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
-                        </svg>
-                    </button>
-                    <div class="descricao">
-                        <h1>${codigo} - ${nome}</h1>
-                        <h2>${sigla} - ${periodo}</h2>
-                    </div>                
-        `;
+      <button class="btn-card">
+        <svg xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 640">
+          <path fill="#ffffff"
+            d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
+        </svg>
+      </button>
+      <div class="descricao">
+        <h1>${codigo} - ${nome}</h1>
+        <h2>${sigla} - ${periodo}</h2>
+      </div>                
+    `;
         novoCard.addEventListener('click', (e) => {
             const clickedElement = e.target;
             if (!clickedElement.closest('.btn-card') && id_disciplina) {
@@ -76,11 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         section?.appendChild(novoCard);
-        // Adiciona evento ao botão do novo card
         const btnNovoCard = novoCard.querySelector('.btn-card');
         adicionarEventoEdicao(btnNovoCard, novoCard);
     };
-    //criar disciplina no banco
+    // Criação de disciplina no banco e exibição
     const criarDisciplinaNoBanco = async (nome, sigla, cor, periodo, codigo) => {
         try {
             const response = await fetch(`http://localhost:3000/api/disciplinas`, {
@@ -92,10 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.success) {
                 console.log('Curso criado no banco:', result.data);
-                // Salvar cor no localStorage
                 const id_disciplina = result.data.id_disciplina;
                 localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
-                // Criar card visual com o ID do banco
                 criarNovoCard(nome, sigla, periodo, codigo, cor, id_disciplina);
                 return true;
             }
@@ -110,15 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
     };
+    // Escolha de cor na criação
     coresCreate.forEach((corBtn) => {
         corBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             corSelecionada = window.getComputedStyle(corBtn).backgroundColor;
-            // Feedback visual
             coresCreate.forEach(el => el.style.border = 'none');
             corBtn.style.border = '3px solid #333';
         });
     });
+    // Botão para criar disciplina
     btnCriar.addEventListener('click', async (e) => {
         e.preventDefault();
         const nome = nomeInst.value.trim();
@@ -168,15 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCreateCard.forEach((btnCreate) => {
         adicionarEventoBtnCreate(btnCreate);
     });
-    //Edit Card
+    // Painel de edição de cor dos cards
     let painelEditAberto = false;
     let cardAtual = null;
-    // Verifica se o painel existe
     if (!edicaoCard) {
         console.error('Painel de edição não encontrado!');
         return;
     }
-    // Adiciona evento de clique em cada botão dos cards
     const adicionarEventoEdicao = (btn, card) => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -216,28 +213,25 @@ document.addEventListener('DOMContentLoaded', () => {
             adicionarEventoEdicao(btn, card);
         }
     });
-    // Seleciona a cor ao clicar em uma das opções
+    // Escolha de cor na edição
     coresEdit.forEach((corElement) => {
         corElement.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!cardAtual)
                 return;
             const corSelecionada = window.getComputedStyle(corElement).backgroundColor;
-            // Aplica a cor ao card atual
             cardAtual.style.backgroundColor = corSelecionada;
-            // Feedback visual
             coresEdit.forEach(el => el.style.border = 'none');
             const salvarCor = (cor, id_disciplina) => {
                 localStorage.setItem(`cor_disciplina_${id_disciplina}`, cor);
             };
-            // Opcional: salvar cor
             const instituicaoId = cardAtual.dataset.id;
             if (instituicaoId) {
                 salvarCor(corSelecionada, instituicaoId);
             }
         });
     });
-    // Fecha o painel ao clicar fora dele
+    // Fecha painéis ao clicar fora
     document.addEventListener('click', (e) => {
         const target = e.target;
         if (painelEditAberto &&
@@ -256,7 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
             painelCreateAberto = false;
         }
     });
+    // Exibe as disciplinas ao abrir a tela
     carregarDisciplinas();
+    // Deleção de disciplina
     const btnDeleteDisciplina = edicaoCard?.querySelector('.btn-open-delete');
     btnDeleteDisciplina?.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -280,23 +276,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (response.ok && data.success) {
                 alert(data.message);
-                // Remove o card da tela com animação
                 const cardParaDeletar = document.querySelector(`.card[data-id="${disciplinaId}"]`);
                 if (cardParaDeletar) {
                     cardParaDeletar.style.opacity = '0';
                     cardParaDeletar.style.transition = 'opacity 0.3s';
                     setTimeout(() => cardParaDeletar.remove(), 300);
                 }
-                // Remove cor do localStorage
                 localStorage.removeItem(`cor_disciplina_${disciplinaId}`);
-                // Fecha o painel de edição
                 if (edicaoCard) {
                     edicaoCard.classList.remove('aberto');
                     edicaoCard.style.display = 'none';
                 }
             }
             else {
-                // Mensagem de erro do servidor (incluindo validação de hierarquia)
                 alert(data.message || 'Erro ao deletar disciplina');
                 btnDeleteDisciplina.disabled = false;
             }

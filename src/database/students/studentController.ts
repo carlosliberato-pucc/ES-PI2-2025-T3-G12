@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { db } from '../index';
 
 // Criar aluno
-// Criar aluno
 export const criarAluno = (req: Request, res: Response) => {
   try {
     const { matricula, nome } = req.body;
@@ -103,7 +102,7 @@ export const deletarAluno = (req: Request, res: Response) => {
   try {
     const fk_turma = Number(req.params.id);
     const matricula = req.params.matricula;
-    const { nome } = req.body; // nome vem do body!
+    const { nome } = req.body;
 
     db.query(
       'DELETE FROM alunos WHERE matricula = ? AND nome = ? AND fk_turma = ?',

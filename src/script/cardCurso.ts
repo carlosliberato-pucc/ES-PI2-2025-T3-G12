@@ -1,3 +1,6 @@
+// Desenvolvido por Carlos Liberato
+// Felipe (Funções de armazenar, listar e excluir cards)
+
 document.addEventListener('DOMContentLoaded', () => {
     // Pegar ID da instituição da URL
     const urlParams = new URLSearchParams(window.location.search);

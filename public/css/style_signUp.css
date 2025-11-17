@@ -1,6 +1,7 @@
-/* Autor: Leonardo Amad */
+/* Importa a fonte Montserrat para todo o projeto */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+/* Reset global e fonte padrão */
 * {
   margin: 0;
   padding: 0;
@@ -8,15 +9,17 @@
   font-family: 'Montserrat', sans-serif;
 }
 
+/* Corpo centralizado em tela, com direção vertical */
 body {
   background: #fff;
   display: flex;
-  flex-direction: column; /* Chave 1: Organiza os elementos (título e formulário) em uma coluna vertical */
+  flex-direction: column; /* Organiza título e formulário em coluna */
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
+/* Container principal do cadastro: borda arredondada e sombra */
 .container {
   display: flex;
   width: 600px;
@@ -26,6 +29,7 @@ body {
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Área dos campos do formulário de cadastro */
 .signup-box .campos {
   display: flex;
   width: 600px;
@@ -36,33 +40,38 @@ body {
   padding: 30px;
 }
 
+/* Cabeçalho estilizado com fundo azul e borda arredondada */
 .signup-box .header {
   background: #0a3db7;
   padding: 40px 0px;
   border-radius: 0% 0% 50% 50%;
 }
 
+/* Título (logo + texto) alinhado horizontalmente e com espaçamento no final */
 .title {
-  display: flex; /* Chave 2: Alinha o logo e o texto na mesma linha */
-  align-items: center; /* Centraliza verticalmente o logo e o texto */
-  margin-bottom: 20px; /* Chave 3: Adiciona um espaço abaixo do título, separando-o do formulário */
+  display: flex; /* Alinha logo e texto na mesma linha */
+  align-items: center; /* Centraliza verticalmente logo e texto */
+  margin-bottom: 20px; /* Espaço abaixo do título */
 }
 
+/* Logo do projeto ou sistema */
 .logo {
   width: 70px;
-  margin-right: 15px; /* Adiciona um espaço entre o logo e o texto */
+  margin-right: 15px; /* Espaço entre logo e texto */
 }
 
+/* Nome do sistema: destaque azul e tamanho maior */
 .nome {
   color: #0a3db7;
-  font-size: 2.5rem; /* Aumenta um pouco o tamanho do título */
+  font-size: 2.5rem;
 }
 
+/* Detalhe amarelo em partes do nome */
 .nome span {
   color: #ffc30f;
 }
 
-/* Esta regra não é mais estritamente necessária com o flex no .title, mas não prejudica */
+/* Garante alinhamento e centralização de logo ou nome, se usados separadamente */
 .logo,
 .nome {
   display: inline-block;
@@ -71,6 +80,7 @@ body {
   text-align: center;
 }
 
+/* Título principal do formulário */
 .signup-box h2 {
   font-size: 30px;
   color: #ffc30f;
@@ -78,10 +88,12 @@ body {
   text-align: center;
 }
 
+/* Informativo de input abaixo dos campos */
 .signup-box .info-input {
   text-align: center;
 }
 
+/* Texto pequeno de descrição ou validação abaixo dos campos */
 .signup-box small {
   font-size: 10px;
   color: gray;
@@ -89,12 +101,14 @@ body {
   text-align: left;
 }
 
+/* Mensagem de feedback do cadastro */
 .signup-box #signup-message {
   min-height: 10px;
   text-align: center;
   margin-bottom: 2px;
 }
 
+/* Parágrafos informativos no formulário de cadastro */
 .signup-box p {
   color: #fff;
   font-size: 14px;
@@ -102,6 +116,7 @@ body {
   text-align: center;
 }
 
+/* Campos de input do cadastro */
 .signup-box input {
   width: 100%;
   padding: 12px;
@@ -112,6 +127,7 @@ body {
   font-size: 14px;
 }
 
+/* Botão de ação para cadastrar */
 .signup-box button {
   width: 120px;
   padding: 10px;
@@ -125,30 +141,34 @@ body {
   transition: 0.3s;
 }
 
+/* Efeito hover para botão de cadastro */
 .signup-box button:hover {
   background: #0a3db7;
   color: #ffc30f;
 }
 
+/* Mensagem de erro ou status do login */
 .signup-box #signin-message {
   min-height: 10px;
   margin-top: 5px;
   margin-bottom: 10px;
 }
 
-/* O seletor .logo já define a largura, então este é para outras imagens caso existam */
+/* Para outras imagens do sistema */
 img {
   width: 100px;
 }
 
+/* Link para voltar ao login, destacado abaixo do formulário */
 .login-link {
   font-size: 14px;
   text-decoration: none;
   color: #0a3db7;
   transition: 0.3s;
-  margin-top: 15px; /* Adiciona um espaço acima do link */
+  margin-top: 15px;
 }
 
+/* Efeito hover para o link de login */
 .login-link:hover {
   color: #19053f;
 }

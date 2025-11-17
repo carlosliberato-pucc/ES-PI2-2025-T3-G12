@@ -39,20 +39,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Desenvolvido por Carlos Liberato
 const mysql2_1 = __importDefault(require("mysql2"));
 const dotenv = __importStar(require("dotenv"));
-// Garante que o arquivo .env (onde estão HOST, USER e PASSWORD) seja lido e
-// suas variáveis injetadas em process.env antes de qualquer conexão.
+// Carrega variáveis do .env
 dotenv.config();
+// Configurações do banco
 const dbConfig = {
-    // Tenta usar a variável DB_HOST do .env; se não existir, usa 'localhost'.
     host: process.env.DB_HOST || 'localhost',
-    // Tenta usar a variável DB_USER do .env; se não existir, usa 'root'.
     user: process.env.DB_USER || 'root',
-    // Tenta usar a variável DB_PASSWORD do .env; se não existir, usa uma string vazia.
     password: process.env.DB_PASSWORD || '',
-    // Tenta usar a variável DB_NAME do .env; se não existir, usa 'notadez'.
     database: process.env.DB_NAME || 'notadez',
 };
-// Cria um pool de conexões (mais resiliente que single connection)
+// Cria pool de conexões para escalabilidade
 const pool = mysql2_1.default.createPool({
     ...dbConfig,
     waitForConnections: true,
@@ -60,7 +56,7 @@ const pool = mysql2_1.default.createPool({
     queueLimit: 0,
     namedPlaceholders: false
 });
-// Log simples para desenvolvimento
+// Log de inicialização em desenvolvimento
 if (process.env.NODE_ENV !== 'production') {
     console.log('MySQL pool criado (connectionLimit:', (process.env.DB_CONNECTION_LIMIT || 10) + ')');
 }

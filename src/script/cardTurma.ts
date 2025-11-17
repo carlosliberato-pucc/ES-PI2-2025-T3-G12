@@ -1,4 +1,5 @@
-
+// Desenvolvido por Carlos Liberato
+// Felipe (Funções de armazenar, listar e excluir cards)
 
 // ============================================
 // INTERFACES E TIPOS

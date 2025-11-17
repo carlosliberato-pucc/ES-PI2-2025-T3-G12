@@ -1,23 +1,25 @@
+// Desenvolvido por Felipe Miranda (Armazenar, Listar e Deletar Turma)
+
 import express from 'express';
 import {
-    criarTurma,
-    listarTurmas,
-    deletarTurma,
-    buscarTurmaPorId
+  criarTurma,
+  listarTurmas,
+  deletarTurma,
+  buscarTurmaPorId
 } from './classController';
 
 const router = express.Router();
 
-
-// POST /api/turmas - Criar turma
-// Body: { id_instituicao, id_curso, id_disciplina, nome }
+// Cria turma
 router.post('/', criarTurma);
 
-// GET /api/turmas?id_instituicao=X&id_curso=Y&id_disciplina=Z - Listar turmas
+// Lista turmas por filtros de query
 router.get('/', listarTurmas);
 
+// Busca turma por ID
 router.get('/:id', buscarTurmaPorId);
 
+// Deleta turma por ID
 router.delete('/:id', deletarTurma);
 
 export default router;

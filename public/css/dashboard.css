@@ -1,149 +1,170 @@
-/* Estilos básicos para visualização: adaptar para sua stack (Tailwind, Bootstrap, etc.) */
+/* Importa a fonte Montserrat dos servidores do Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+/* Define variáveis globais para cores e estilos reutilizáveis */
 :root {
-    --bg: #f5f7fb;
-    --divider: #fff;
-    --blue-nt: #0a3db7;
-    --accent: #2858c9;
-    --muted: #6b7280
+  --bg: #f5f7fb;
+  --divider: #fff;
+  --blue-nt: #0a3db7;
+  --accent: #2858c9;
+  --muted: #6b7280;
 }
 
+/* Define o box-sizing padrão para todos os elementos */
 * {
-    box-sizing: border-box;
-    /*font-family: 'Montserrat', sans-serif;*/
-
+  box-sizing: border-box;
+  /*font-family: 'Montserrat', sans-serif;*/
 }
 
+/* Estiliza o corpo da página: fonte, margem, cor do fundo e cor do texto */
 body {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    margin: 0;
-    background: var(--bg);
-    color: #111
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  margin: 0;
+  background: var(--bg);
+  color: #111;
 }
 
+/* Estiliza o cabeçalho da página principal */
 header {
-    background: var(--divider);
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #e6e9ef
+  background: var(--divider);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e6e9ef;
 }
 
+/* Organiza a área da marca/logotipo no cabeçalho */
 .brand {
-    display: flex;
-    gap: 12px;
-    align-items: center
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
+/* Define o estilo do texto da marca */
 .brand h1 {
-    font-size: 18px;
-    margin: 0
+  font-size: 18px;
+  margin: 0;
 }
 
+/* Define o tamanho da imagem no cabeçalho */
 header img {
-    width: 50px;
+  width: 50px;
 }
 
+/* Estiliza a barra lateral de navegação */
 nav.sidebar {
-    width: 220px;
-    background: transparent;
-    padding: 20px;
-    border-right: 1px solid #e6e9ef;
-    min-height: calc(100vh - 66px)
+  width: 220px;
+  background: transparent;
+  padding: 20px;
+  border-right: 1px solid #e6e9ef;
+  min-height: calc(100vh - 66px);
 }
 
+/* Container flexível para layout principal entre sidebar e conteúdo */
 .container {
-    display: flex
+  display: flex;
 }
 
+/* Área principal do conteúdo, ocupando o espaço restante */
 main {
-    flex: 1;
-    padding: 24px
+  flex: 1;
+  padding: 24px;
 }
 
+/* Caixa com fundo branco, borda arredondada e sombra para divisão de conteúdo */
 .divider {
-    background: var(--divider);
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
-    padding: 16px;
-    margin-bottom: 16px
+  background: var(--divider);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
+/* Estrutura de elementos em formato de grade */
 .grid {
-    display: grid;
-    gap: 16px
+  display: grid;
+  gap: 16px;
 }
 
+/* Define uma grid com três colunas de tamanho igual */
 .grid.cols-3 {
-    grid-template-columns: repeat(3, 1fr)
+  grid-template-columns: repeat(3, 1fr);
 }
 
+/* Grid em linha utilizada para formatação horizontal de elementos */
 .inline-grid {
-    display: grid;
-    grid-auto-flow: column;
-    gap: 12px;
-    align-items: center
+  display: grid;
+  grid-auto-flow: column;
+  gap: 12px;
+  align-items: center;
 }
 
+/* Formatação para textos pequenos (usado em informações complementares) */
 .small {
-    font-size: 13px;
-    color: var(--muted)
+  font-size: 13px;
+  color: var(--muted);
 }
 
+/* Estilo base para botões de ação */
 .btn {
-    background: var(--blue-nt);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    display: inline-block
+  background: var(--blue-nt);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
 }
 
+/* Estiliza o botão quando o mouse está sobre ele */
 .btn:hover {
-    background: #facc43;
-    color: #0a3db7;
-    transition: 0.3s;
-
-
+  background: #facc43;
+  color: #0a3db7;
+  transition: 0.3s;
 }
 
+/* Estilo básico para links de navegação que recebem destaque */
 .link {
-    color: var(--accent);
-    text-decoration: none
+  color: var(--accent);
+  text-decoration: none;
 }
 
+/* Estiliza links destacados ao passar o mouse */
 .link:hover {
   color: #19053f;
 }
 
+/* Estiliza tabelas para exibição de dados */
 table {
-    width: 100%;
-    border-collapse: collapse
+  width: 100%;
+  border-collapse: collapse;
 }
 
+/* Estiliza o cabeçalho e células da tabela */
 th,
 td {
-    padding: 10px 8px;
-    text-align: left;
-    border-bottom: 1px solid #eef2f6
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eef2f6;
 }
 
+/* Layout para caixa de busca com elementos lado a lado */
 .search {
-    display: flex;
-    gap: 8px;
-    align-items: center
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
+/* Estiliza miniaturas (avatares) com forma circular */
 .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #ddd;
-    display: inline-block
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ddd;
+  display: inline-block;
 }
 
+/* Classe para aplicar cor mais suave em textos menos importantes */
 .muted {
-    color: var(--muted)
+  color: var(--muted);
 }
