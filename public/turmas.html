@@ -1,234 +1,247 @@
-<!-- Desenvolvido por Carlos Liberato -->
-
 <!doctype html>
 <html lang="pt-BR">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <!-- CSS principal e específico de cards/turmas -->
-  <link rel="stylesheet" href="css/screens_cards.css">
-  <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
-  <title>Turmas | NotaDez</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="css/screens_cards.css">
+    <link rel="icon" type="image/png" href="img/NotaDez_Logo.png">
+    <title>Turmas | NotaDez</title>
 </head>
-
+<!-- Header -->
 <body>
-  <!-- Cabeçalho navegação, logo e título -->
-  <header>
-    <div class="brand">
-      <!-- Botão para voltar à tela anterior -->
-      <button id="btn_voltar" style="padding: 8px 12px; border-style: none; background-color: transparent; cursor: pointer;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20">
-          <path fill="#0a3db7" d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2
-            394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6
-            150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
-        </svg>
-      </button>
-      <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
-      <div>
-        <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">
-          Nota<span style="color: #ffc30f;">Dez</span>
-        </h1>
-        <div class="small">Turmas</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:16px;align-items:center">
-      <div class="inline-grid">
-        <div style="text-align:right">
-          <div class="small muted">Olá, Professor(a)</div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <a href="#" class="link" id="logout-btn">Sair</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="container">
-    <!-- Sidebar chama modais para componentes e fórmula -->
-    <div class="sidebar">
-      <!-- Card dos componentes de nota -->
-      <div class="divider componentes-nota" style="padding:10px;margin-bottom:12px">
-        <div style="font-weight:600;margin-bottom: 5px;">Componentes de Nota</div>
-        <button id="add_component_btn" class="btn" style="width: 100%; height: 35px;">Gerenciar</button>
-      </div>
-      <!-- Card da fórmula de média -->
-      <div class="divider" style="padding:10px;margin-bottom:12px">
-        <div style="font-weight:600;margin-bottom: 5px;">Fórmula de Média</div>
-        <button id="manage_formula_btn" class="btn" style="width: 100%; height: 35px;">Gerenciar</button>
-        <!-- Informações da fórmula visualizadas dinamicamente -->
-        <div class="info-formula" style="margin-bottom: 5px;"></div>
-        <div class="info-formula"></div>
-      </div>
-    </div>
-
-    <main>
-      <!-- Barra de título principal e botão novo card/turma -->
-      <div class="titulo-tela">
-        <h1>Suas Turmas</h1>
-        <button class="btn-create-card">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path d="M232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 
-                24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24zM256 
-                464A208 208 0 1 0 256 48a208 208 0 1 0 0 416zm0 48A256 256 0 1 1 256 0a256 256 0 1 1 0 512z" />
-          </svg>
-        </button>
-      </div>
-      <!-- Área dos cards das turmas (carregados via JS) -->
-      <section style="display:grid;grid-template-columns: repeat(5, 1fr);"></section>
-    </main>
-
-    <!-- Modais principais para criação, edição e gerenciamento de turmas -->
-    <div id="modal_container" class="modal-overlay">
-      <!-- Modal: Criar Turma -->
-      <div class="create-card">
-        <div class="modal-header">
-          <h2>Criar Turma</h2>
-          <button type="button" id="btn-fechar-criar" class="btn secondary">X</button>
-        </div>
-        <center>
-          <small class="info-input">Todos os campos são obrigatórios.</small>
-        </center>
-        <input id="nome" type="text" placeholder="Digite o nome da turma." required>
-        <h3>Escolha uma cor para a Turma:</h3>
-        <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
-          <button class="cor-btn" data-context="create" style="background: rgb(196, 30, 58);"></button>
-          <button class="cor-btn" data-context="create" style="background: rgb(209, 0, 106);"></button>
-          <button class="cor-btn" data-context="create" style="background: rgb(10, 61, 183);"></button>
-          <button class="cor-btn" data-context="create" style="background: rgb(0, 155, 119);"></button>
-          <button class="cor-btn" data-context="create" style="background: rgb(255, 195, 15);"></button>
-          <button class="cor-btn" data-context="create" style="background: rgb(125, 60, 152);"></button>
-        </div>
-        <div style="text-align: center;">
-          <button type="submit" id="btn-criar">Criar</button>
-        </div>
-      </div>
-
-      <!-- Modal: Gerenciar Fórmula de Média da Turma -->
-      <div id="modal_formula" class="modal-content" style="display: none;">
-        <div class="modal-header">
-          <h2>Gerenciar Fórmula de Média</h2>
-          <button type="button" id="btn-fechar-criar" class="btn secondary">X</button>
-        </div>
-        <div class="modal-body">
-          <p class="status-message">Adicione uma fórmula que será aplicada para calcular a nota final dos alunos.</p>
-          <div class="form-group">
-            <label for="formula_type">Tipo de Cálculo</label>
-            <select id="formula_type">
-              <option value="selecione" disabled>Selecione...</option>
-              <option value="aritmetica">Média Aritmética</option>
-              <option value="ponderada">Média Ponderada</option>
-            </select>
-          </div>
-          <div class="form-group" id="formula_display">
-            <label>Fórmula Atual</label>
-            <input type="text" placeholder="exemplo: (P1 + P2 + T1) / 3">
-          </div>
-          <div style="text-align: right; margin-top: 20px;">
-            <button id="save_formula_btn">Salvar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal: Componentes de Nota (Adicionar/Editar/Excluir) -->
-      <div id="modal_componentes" class="modal-content" style="display: none;">
-        <div class="modal-header">
-          <h2>Gerenciar Componentes de Nota</h2>
-          <button class="btn secondary">X</button>
-        </div>
-        <div class="modal-body">
-          <p class="status-message">Adicione ou remova os componentes que compõem a nota.</p>
-          <div id="componentes_lista">
-            <!-- Lista de componentes, cada um com botão para excluir -->
-            <div class="info-componentes"
-              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span></span>
-              <button class="btn secondary"
-                style="background: none; color: #dc3545; padding: 5px 10px; border: none;">X</button>
+    <header>
+        <div class="brand">
+            <button id="btn_voltar"  style="padding: 8px 12px; border-style: none; background-color: transparent; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="20" height="20">
+                    <path fill="#0a3db7" d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2
+                         394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6
+                          150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
+                </svg>
+            </button>
+            <img class="icon_person" src="img/NotaDez_Logo.png" alt="Logo do site">
+            <div>
+                <h1 style="color: #0a3db7; font-family: 'Montserrat', sans-serif;">Nota<span
+                        style="color: #ffc30f;">Dez</span></h1>
+                <div class="small">Turmas</div>
             </div>
-          </div>
-          <!-- Formulário para adicionar novo componente -->
-          <div class="form-group" style="margin-top: 20px; border-top: 1px solid #e6e9ef; padding-top: 15px;">
-            <label for="new_component_nome">Nome do Componente</label>
-            <input type="text" id="new_component_nome" placeholder="Ex: Prova 3">
-            <label for="new_component_sigla">Sigla do Componente</label>
-            <input type="text" id="new_component_sigla" placeholder="Ex: P3">
-            <label for="new_component_descricao">Descrição do Componente</label>
-            <input type="text" id="new_component_descricao" placeholder="Ex: Prova Teórica de Python">
-          </div>
-          <div style="text-align: right; margin-top: 10px;">
-            <button class="btn" id="add_component_btn_modal">Adicionar</button>
-          </div>
         </div>
-      </div>
 
-      <!-- Modal: Confirmação de Exclusão de Componente -->
-      <div id="modal_confirmacao" class="modal-content" style="display: none; max-width: 400px;">
-        <div class="modal-header">
-          <h2>Excluir Componente</h2>
+        <div style="display:flex;gap:16px;align-items:center">
+            <div class="inline-grid">
+                <div style="text-align:right">
+                    <div class="small muted">Olá, Professor(a)</div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <a href="#" class="link" id="logout-btn">Sair</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          <p class="status-message" id="confirmacao_mensagem">
-            Tem certeza que deseja excluir o componente "<strong id="confirmacao_nome"></strong>"?
-          </p>
-          <p style="color: #dc3545; font-size: 14px; margin-top: 10px;">
-            Esta ação não pode ser desfeita.
-          </p>
-          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-            <button class="btn secondary" id="btn_cancelar_exclusao">Cancelar</button>
-            <button class="btn" id="btn_confirmar_exclusao" style="background: #dc3545;">Excluir</button>
-          </div>
-        </div>
-      </div>
+    </header>
+    <!-- SideBar -->
+    <div class="container">
+        <div class="sidebar">
+            <div class="divider componentes-nota" style="padding:10px;margin-bottom:12px">
+                <div style="font-weight:600;margin-bottom: 5px;">Componentes de Nota</div>
+                <button id="add_component_btn" class="btn" style="width: 100%; height: 35px;">Gerenciar</button>
 
-      <!-- Modal de confirmação de exclusão de Turma -->
-      <div id="modal_delete_confirm" class="modal-content" style="display: none; max-width: 420px;">
-        <div class="modal-header">
-          <h2>Confirmar Exclusão</h2>
-          <button type="button" class="btn secondary" id="btn_close_delete_modal">X</button>
-        </div>
-        <div class="modal-body">
-          <p class="status-message">Tem certeza que deseja excluir?</p>
-          <p style="font-size:14px;color:#555;margin-top:6px;">
-            Observação: a exclusão deve seguir a ordem hierárquica: Todas as Turmas &gt; Todas as Disciplinas &gt; Todos os Cursos &gt; Instituição.
-          </p>
-          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
-            <button class="btn secondary" id="btn_cancel_delete">Cancelar</button>
-            <button class="btn" id="btn_confirm_delete" style="background:#dc3545">Excluir</button>
-          </div>
-        </div>
-      </div>
+                <br><br>
 
-      <!-- Modal rápida para edição de cor e exclusão, ativada por cada card -->
-      <div class="edicao-card">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <h2 style="margin:0">Editar Cor</h2>
-          <button class="btn-open-delete" id="btn-delete" title="Excluir" data-id="1" style="background:transparent;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-              <path d="M10 11v6"></path>
-              <path d="M14 11v6"></path>
-              <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
+            </div>
+
+            <div class="divider" style="padding:10px;margin-bottom:12px">
+                <div style="font-weight:600;margin-bottom: 5px;">Fórmula de Média</div>
+                <button id="manage_formula_btn" class="btn" style="width: 100%; height: 35px;">Gerenciar</button>
+
+                <br><br>
+                <div class="info-formula" style="margin-bottom: 5px;"></div>
+                <div class="info-formula"></div>
+
+            </div>
         </div>
-        <h3>Escolha uma cor para a Turma</h3>
-        <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
-          <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
-          <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
-          <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
-          <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
-          <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
-          <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+
+        <main>
+
+            <div class="titulo-tela">
+                <h1>Suas Turmas</h1>
+                <button class="btn-create-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M232 344V280H168c-13.3 0-24-10.7-24-24s10.7-24 
+                                24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 
+                                24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 
+                                24H280v64c0 13.3-10.7 24-24 24s-24-10.7-24-24zM256 
+                                464A208 208 0 1 0 256 48a208 208 0 1 0 0 
+                                416zm0 48A256 256 0 1 1 256 0a256 256 0 1 1 0 
+                                512z" />
+                    </svg>
+                </button>
+            </div>
+
+            <section style="display:grid;grid-template-columns: repeat(5, 1fr);">
+            </section>
+        </main>
+
+        <!-- Modais -->
+        <div id="modal_container" class="modal-overlay">
+            <div class="create-card">
+                <div class="modal-header">
+                    <h2>Criar Turma</h2>
+                    <button type="button" id="btn-fechar-criar" class="btn secondary">X</button>
+                </div>
+
+                <center>
+                    <small class="info-input">Todos os campos são obrigatórios.</small>
+                </center>
+                <input id="nome" type="text" placeholder="Digite o nome da turma." required>
+                <h3>Escolha uma cor para a Turma:</h3>
+                <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+                    <button class="cor-btn" data-context="create" style="background: rgb(196, 30, 58);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(209, 0, 106);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(10, 61, 183);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(0, 155, 119);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(255, 195, 15);"></button>
+                    <button class="cor-btn" data-context="create" style="background: rgb(125, 60, 152);"></button>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" id="btn-criar">Criar</button>
+                </div>
+            </div>
+
+            <!-- Formula -->
+            <div id="modal_formula" class="modal-content" style="display: none;">
+                <div class="modal-header">
+                    <h2>Gerenciar Fórmula de Média</h2>
+                    <button type="button" id="btn-fechar-criar" class="btn secondary">X</button>
+                </div>
+                <div class="modal-body">
+                    <p class="status-message">Adicione uma fórmula que será aplicada para calcular a nota final dos
+                        alunos.
+                    </p>
+
+                    <div class="form-group">
+                        <label for="formula_type">Tipo de Cálculo</label>
+                        <select id="formula_type">
+                            <option value="selecione" disabled>Selecione...</option>
+                            <option value="aritmetica">Média Aritmética</option>
+                            <option value="ponderada">Média Ponderada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="formula_display">
+                        <label>Fórmula Atual</label>
+                        <input type="text" placeholder="exemplo: (P1 + P2 + T1) / 3">
+                    </div>
+
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button id="save_formula_btn">Salvar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Componentes de Nota -->
+            <div id="modal_componentes" class="modal-content" style="display: none;">
+                <div class="modal-header">
+                    <h2>Gerenciar Componentes de Nota</h2>
+                    <button class="btn secondary">X</button>
+                </div>
+                <div class="modal-body">
+                    <p class="status-message">Adicione ou remova os componentes que compõem a nota.</p>
+
+                    <div id="componentes_lista">
+                        <div class="info-componentes"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span></span>
+                            <button class="btn secondary"
+                                style="background: none; color: #dc3545; padding: 5px 10px; border: none;">X</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px; border-top: 1px solid #e6e9ef; padding-top: 15px;">
+                        <label for="new_component_nome">Nome do Componente</label>
+                        <input type="text" id="new_component_nome" placeholder="Ex: Prova 3">
+                        <label for="new_component_sigla">Sigla do Componente</label>
+                        <input type="text" id="new_component_sigla" placeholder="Ex: P3">
+                        <label for="new_component_descricao">Descrição do Componente</label>
+                        <input type="text" id="new_component_descricao" placeholder="Ex: Prova Teórica de Python">
+                    </div>
+
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button class="btn" id="add_component_btn_modal">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Confirmação de Exclusão -->
+            <div id="modal_confirmacao" class="modal-content" style="display: none; max-width: 400px;">
+                <div class="modal-header">
+                    <h2>Excluir Componente</h2>
+                </div>
+                <div class="modal-body">
+                    <p class="status-message" id="confirmacao_mensagem">
+                        Tem certeza que deseja excluir o componente "<strong id="confirmacao_nome"></strong>"?
+                    </p>
+                    <p style="color: #dc3545; font-size: 14px; margin-top: 10px;">
+                        Esta ação não pode ser desfeita.
+                    </p>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                        <button class="btn secondary" id="btn_cancelar_exclusao">Cancelar</button>
+                        <button class="btn" id="btn_confirmar_exclusao" style="background: #dc3545;">Excluir</button>
+                    </div>
+                </div>
+            </div>
+
+            
+
+
         </div>
-      </div>
+<!-- Modal de confirmação de exclusão de Turma -->
+            <div id="modal_delete_confirm" class="modal-content" style="display: none; max-width: 420px;">
+                <div class="modal-header">
+                    <h2>Confirmar Exclusão</h2>
+                    <button type="button" class="btn secondary" id="btn_close_delete_modal">X</button>
+                </div>
+                <div class="modal-body">
+                    <p class="status-message">Tem certeza que deseja excluir?</p>
+                    <p style="font-size:14px;color:#555;margin-top:6px;">Observação: a exclusão deve seguir a ordem hierárquica: Todas as Turmas &gt; Todas as Disciplinas &gt; Todos os Cursos &gt; Instituição.</p>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+                        <button class="btn secondary" id="btn_cancel_delete">Cancelar</button>
+                        <button class="btn" id="btn_confirm_delete" style="background:#dc3545">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        <div class="edicao-card">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <h2 style="margin:0">Editar Cor</h2>
+                <button class="btn-open-delete" id="btn-delete" title="Excluir" data-id="1" style="background:transparent;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">
+                    <!-- ícone de lixeira padronizado -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+            <h3>Escolha uma cor para a Turma</h3>
+            <div class="div_cores" style="display:grid;grid-template-columns: repeat(3, 1fr);">
+                <button class="cor-btn" data-context="edit" style="background: rgb(196, 30, 58);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(209, 0, 106);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(10, 61, 183);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(0, 155, 119);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(255, 195, 15);"></button>
+                <button class="cor-btn" data-context="edit" style="background: rgb(125, 60, 152);"></button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Scripts de interação JS para cards, logout e navegação -->
+    <!-- Script de exclusão removido conforme solicitado -->
     <script src="../dist/script/cardTurma.js"></script>
     <script src="../dist/script/logout.js"></script>
     <script src="../dist/script/btn_back.js"></script>
-  </div>
+
 </body>
+
 </html>
