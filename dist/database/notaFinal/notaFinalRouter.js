@@ -7,4 +7,5 @@ const express_1 = __importDefault(require("express"));
 const notaFinalController_1 = require("./notaFinalController");
 const router = express_1.default.Router();
 router.post('/', notaFinalController_1.salvarNotaFinal);
+router.get('/:turma', notaFinalController_1.buscarNotasFinais); // Nova rota GET
 exports.default = router;

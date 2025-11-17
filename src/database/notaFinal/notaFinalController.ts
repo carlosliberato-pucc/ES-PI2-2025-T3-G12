@@ -29,3 +29,30 @@ export const salvarNotaFinal = async (req: Request, res: Response) => {
 };
 
 
+// Adicione essa função ao notaFinalController.ts
+export const buscarNotasFinais = async (req: Request, res: Response) => {
+  try {
+    const { turma } = req.params;
+    
+    if (!turma) {
+      return res.status(400).json({ success: false, message: 'ID da turma não fornecido!' });
+    }
+
+    db.query(
+      `SELECT nf.valor, nf.fk_matricula as matricula, nf.fk_turma as turma
+       FROM nota_final nf
+       WHERE nf.fk_turma = ?`,
+      [turma],
+      (err, results) => {
+        if (err) {
+          console.error('Erro ao buscar notas finais:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao buscar notas finais' });
+        }
+        res.json({ success: true, data: results });
+      }
+    );
+  } catch (e) {
+    console.error('Falha ao buscar notas finais:', e);
+    res.status(500).json({ success: false, message: 'Erro no servidor' });
+  }
+};

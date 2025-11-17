@@ -84,33 +84,36 @@ async function montarGradeTable(disciplinaId) {
 // =======================
 // ATUALIZAR TABELA DE ALUNOS
 // =======================
-function atualizarTabelaAlunos() {
+async function atualizarTabelaAlunos() {
     const tabela = document.getElementById('grade_table');
     if (!tabela)
         return;
     const tbody = tabela.querySelector('tbody');
     if (!tbody)
         return;
+    // Carregar notas finais do backend
+    const notasFinaisMap = await carregarNotasFinais(fk_turma);
     tbody.innerHTML = '';
     alunosTurma.forEach(aluno => {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${aluno.matricula}</td><td>${aluno.nome}</td>`;
+        // Criar colunas para cada componente de nota
         componentesNotas.forEach(comp => {
             const td = document.createElement('td');
             const input = document.createElement('input');
             input.type = 'number';
             input.min = '0';
             input.max = '10';
-            input.step = '0.01'; // ← Permite 2 casas decimais
+            input.step = '0.01';
             input.dataset.matricula = aluno.matricula;
             input.dataset.componente = String(comp.id_compNota);
             input.disabled = true;
             const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
             if (notasTurma && notasTurma[chaveNota] != null) {
-                input.value = String(notasTurma[chaveNota]); // ← SEM .replace() !
+                input.value = String(notasTurma[chaveNota]);
             }
             input.addEventListener('change', async () => {
-                let valor = parseFloat(input.value); // já vai receber ponto
+                let valor = parseFloat(input.value);
                 if (isNaN(valor) || valor < 0 || valor > 10) {
                     alert('Nota deve ser de 0 a 10!');
                     input.value = '';
@@ -131,12 +134,46 @@ function atualizarTabelaAlunos() {
             td.appendChild(input);
             tr.appendChild(td);
         });
+        // Coluna de nota final
         const tdFinal = document.createElement('td');
         tdFinal.className = 'final-grade-col';
-        tdFinal.textContent = '-';
+        // Verifica se existe nota final salva no banco
+        if (notasFinaisMap[aluno.matricula] != null) {
+            const notaFinal = notasFinaisMap[aluno.matricula];
+            tdFinal.textContent = notaFinal.toFixed(2);
+            tdFinal.style.fontWeight = 'bold';
+            tdFinal.style.color = notaFinal >= 5 ? '#28a745' : '#dc3545';
+        }
+        else {
+            tdFinal.textContent = '-';
+        }
         tr.appendChild(tdFinal);
         tbody.appendChild(tr);
     });
+}
+// =======================
+// FUNÇÃO AUXILIAR PARA CARREGAR NOTAS FINAIS
+// =======================
+async function carregarNotasFinais(fk_turma) {
+    const resp = await fetch(`/api/nota-final/${fk_turma}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+    if (!resp.ok) {
+        console.error('Erro ao carregar notas finais:', resp.statusText);
+        return {};
+    }
+    const json = await resp.json();
+    const notasFinaisMap = {};
+    if (json.success && Array.isArray(json.data)) {
+        json.data.forEach((linha) => {
+            if (linha.valor != null) {
+                notasFinaisMap[linha.matricula] = Number(linha.valor);
+            }
+        });
+    }
+    return notasFinaisMap;
 }
 // =======================
 // VALIDAÇÃO DA FÓRMULA
@@ -248,7 +285,7 @@ async function calcularTodasNotasFinais() {
             catch (error) {
                 console.error('Erro ao salvar nota final:', error);
             }
-            tdFinal.textContent = notaFinal.toFixed(2).replace('.', ',');
+            tdFinal.textContent = notaFinal.toFixed(2);
             tdFinal.style.fontWeight = 'bold';
             tdFinal.style.color = notaFinal >= 5 ? '#28a745' : '#dc3545';
         }
@@ -514,6 +551,132 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 // =======================
+// EXPORTAR NOTAS PARA CSV
+// =======================
+async function exportarNotasCSV() {
+    // Validar se todas as notas estão preenchidas
+    let todasNotasPreenchidas = true;
+    let alunosSemNotas = [];
+    for (const aluno of alunosTurma) {
+        // Verificar se todas as notas de componentes estão preenchidas
+        for (const comp of componentesNotas) {
+            const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
+            if (notasTurma[chaveNota] == null) {
+                todasNotasPreenchidas = false;
+                if (!alunosSemNotas.includes(aluno.nome)) {
+                    alunosSemNotas.push(aluno.nome);
+                }
+            }
+        }
+        // Verificar se a nota final foi calculada
+        const notaFinal = calcularNotaFinal(aluno.matricula);
+        if (notaFinal === null) {
+            todasNotasPreenchidas = false;
+            if (!alunosSemNotas.includes(aluno.nome)) {
+                alunosSemNotas.push(aluno.nome);
+            }
+        }
+    }
+    // Se não estiver tudo preenchido, mostrar aviso
+    if (!todasNotasPreenchidas) {
+        alert('Não é possível exportar as notas!\n\n' +
+            'Todas as notas devem estar atribuídas e o cálculo final deve ser realizado para todos os estudantes.\n\n' +
+            `Alunos com pendências (${alunosSemNotas.length}):\n${alunosSemNotas.join(', ')}`);
+        return;
+    }
+    // Buscar informações da turma e disciplina para o nome do arquivo
+    const turmaInfo = await buscarInfoTurma(fk_turma);
+    const disciplinaInfo = await buscarInfoDisciplina(disciplinaId);
+    // Gerar nome do arquivo: YYYY-MM-DD_HHmmssms-TurmaX_Sigla.csv
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const hora = String(agora.getHours()).padStart(2, '0');
+    const minuto = String(agora.getMinutes()).padStart(2, '0');
+    const segundo = String(agora.getSeconds()).padStart(2, '0');
+    const milissegundo = String(agora.getMilliseconds()).padStart(3, '0');
+    const nomeTurma = turmaInfo?.nome || `T${fk_turma}`;
+    const siglaDisciplina = disciplinaInfo?.sigla || 'DISC';
+    const nomeArquivo = `${ano}-${mes}-${dia}_${hora}${minuto}${segundo}${milissegundo}-${nomeTurma}-${siglaDisciplina}.csv`;
+    // Montar conteúdo CSV
+    let csvContent = 'Matrícula,Nome';
+    // Adicionar cabeçalhos dos componentes
+    componentesNotas.forEach(comp => {
+        csvContent += `,${comp.sigla}`;
+    });
+    csvContent += ',Nota Final\n';
+    // Adicionar dados dos alunos
+    alunosTurma.forEach(aluno => {
+        csvContent += `${aluno.matricula},${aluno.nome}`;
+        // Adicionar notas dos componentes
+        componentesNotas.forEach(comp => {
+            const chaveNota = `${aluno.matricula}_${comp.id_compNota}`;
+            const nota = notasTurma[chaveNota];
+            csvContent += `,${nota != null ? nota.toFixed(2) : '-'}`;
+        });
+        // Adicionar nota final
+        const notaFinal = calcularNotaFinal(aluno.matricula);
+        csvContent += `,${notaFinal != null ? notaFinal.toFixed(2) : '-'}`;
+        csvContent += '\n';
+    });
+    // Criar blob e fazer download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', nomeArquivo);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    console.log(`Arquivo exportado: ${nomeArquivo}`);
+}
+// =======================
+// BUSCAR INFORMAÇÕES DA TURMA
+// =======================
+async function buscarInfoTurma(fk_turma) {
+    try {
+        const resp = await fetch(`/api/turmas/${fk_turma}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        if (!resp.ok) {
+            console.error('Erro ao buscar info da turma:', resp.statusText);
+            return null;
+        }
+        const json = await resp.json();
+        return json.success && json.data ? json.data : null;
+    }
+    catch (error) {
+        console.error('Erro ao buscar info da turma:', error);
+        return null;
+    }
+}
+// =======================
+// BUSCAR INFORMAÇÕES DA DISCIPLINA
+// =======================
+async function buscarInfoDisciplina(disciplinaId) {
+    try {
+        const resp = await fetch(`/api/disciplinas/${disciplinaId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        if (!resp.ok) {
+            console.error('Erro ao buscar info da disciplina:', resp.statusText);
+            return null;
+        }
+        const json = await resp.json();
+        return json.success && json.data ? json.data : null;
+    }
+    catch (error) {
+        console.error('Erro ao buscar info da disciplina:', error);
+        return null;
+    }
+}
+// =======================
 // INICIALIZAÇÃO COMPLETA
 // =======================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -525,9 +688,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     await carregarAlunosDaTurma(fk_turma);
     await carregarNotasTurma(fk_turma);
     await carregarFormula(disciplinaId);
-    atualizarTabelaAlunos();
+    await atualizarTabelaAlunos();
     initModalAlunos();
-    // Evento do botão calcular
     const btnCalcular = document.getElementById('btn-calcular-notas');
     btnCalcular?.addEventListener('click', calcularTodasNotasFinais);
+    // ADICIONE ESTA LINHA:
+    const btnExportar = document.getElementById('export_grades_btn');
+    btnExportar?.addEventListener('click', exportarNotasCSV);
 });

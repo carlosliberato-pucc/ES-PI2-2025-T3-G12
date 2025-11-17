@@ -167,13 +167,6 @@ main {
     color: #19053f;
 }
 
-.avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #ddd;
-    display: inline-block;
-}
 
 .muted {
     color: var(--muted);
