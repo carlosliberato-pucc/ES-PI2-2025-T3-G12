@@ -1,4 +1,5 @@
 "use strict";
+//Desenvolvido por Carlos Liberato
 document.addEventListener('DOMContentLoaded', () => {
     const btnsCard = document.querySelectorAll(".btn-card");
     const edicaoCard = document.querySelector(".edicao-card");

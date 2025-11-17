@@ -1,4 +1,4 @@
-// Script para popular a tabela do dashboard com resumo por instituição
+//Desenvolvido por Carlos Liberato
 
 document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('table tbody') as HTMLTableSectionElement | null;

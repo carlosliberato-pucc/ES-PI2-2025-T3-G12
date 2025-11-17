@@ -1,3 +1,5 @@
+//Desenvolvido por Carlos Liberato
+
 document.addEventListener('DOMContentLoaded', () => {
   const btnVoltar = document.getElementById('btn_voltar');
   

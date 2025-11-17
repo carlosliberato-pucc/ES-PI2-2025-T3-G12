@@ -1,17 +1,16 @@
-create database notadez;
-use notadez;
-drop database notadez;
+CREATE DATABASE notadez;
+USE notadez;
 
-CREATE TABLE usuario
-(
-	id_usuario int auto_increment primary key,
-	nome varchar(255),
-	email varchar(255) not null unique,
-	telefone varchar(20),
-	senha varchar(255)
+-- 1. USUARIO
+CREATE TABLE usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    telefone VARCHAR(20),
+    senha VARCHAR(255)
 );
-select * from usuario;
 
+-- 2. INSTITUICAO
 CREATE TABLE instituicao (
     id_instituicao INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -20,8 +19,7 @@ CREATE TABLE instituicao (
     FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
 
-select * from instituicao;
-
+-- 3. CURSOS
 CREATE TABLE cursos (
     id_curso INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -30,18 +28,15 @@ CREATE TABLE cursos (
     FOREIGN KEY (fk_instituicao) REFERENCES instituicao(id_instituicao)
 );
 
+-- 4. FORMULA
 CREATE TABLE formula (
     id_formula INT AUTO_INCREMENT PRIMARY KEY,
     expressao TEXT NOT NULL,
     descricao VARCHAR(255),
-    tipo VARCHAR(20) NOT NULL DEFAULT 'aritmetica' -- 'aritmetica' or 'ponderada'
+    tipo VARCHAR(20) NOT NULL DEFAULT 'aritmetica'
 );
 
-CREATE TABLE nota_final (
-    id_notaFinal INT AUTO_INCREMENT PRIMARY KEY,
-    valor DECIMAL(5,2)
-);
-
+-- 5. DISCIPLINAS
 CREATE TABLE disciplinas (
     id_disciplina INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -50,13 +45,12 @@ CREATE TABLE disciplinas (
     periodo VARCHAR(20) NOT NULL DEFAULT '1º semestre',
     fk_curso INT NOT NULL,
     fk_formula INT,
-    fk_notaFinal INT,
     FOREIGN KEY (fk_curso) REFERENCES cursos(id_curso),
-    FOREIGN KEY (fk_formula) REFERENCES formula(id_formula),
-    FOREIGN KEY (fk_notaFinal) REFERENCES nota_final(id_notaFinal)
+    FOREIGN KEY (fk_formula) REFERENCES formula(id_formula)
 );
 select * from disciplinas;
 
+-- 6. TURMAS
 CREATE TABLE turmas (
     id_turma INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -64,14 +58,26 @@ CREATE TABLE turmas (
     FOREIGN KEY (fk_disciplina) REFERENCES disciplinas(id_disciplina)
 );
 
+-- 7. ALUNOS
 CREATE TABLE alunos (
     matricula INT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     fk_turma INT NOT NULL,
     FOREIGN KEY (fk_turma) REFERENCES turmas(id_turma)
 );
-select * from alunos;
 
+-- 8. NOTA_FINAL
+CREATE TABLE nota_final (
+    id_notaFinal INT AUTO_INCREMENT PRIMARY KEY,
+    valor DECIMAL(5,2),
+    fk_matricula INT NOT NULL,
+    fk_turma INT NOT NULL,
+    CONSTRAINT fk_nf_aluno FOREIGN KEY (fk_matricula) REFERENCES alunos(matricula),
+    CONSTRAINT fk_nf_turma FOREIGN KEY (fk_turma) REFERENCES turmas(id_turma),
+    UNIQUE KEY unico_nota_final (fk_matricula, fk_turma)
+);
+
+-- 9. COMPONENTES_NOTAS
 CREATE TABLE componentes_notas (
     id_compNota INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -82,25 +88,33 @@ CREATE TABLE componentes_notas (
 );
 select * from componentes_notas;
 
+-- 10. NOTAS
 CREATE TABLE notas (
     id_nota INT AUTO_INCREMENT PRIMARY KEY,
     valor DECIMAL(5,2) NOT NULL,
     fk_matricula INT NOT NULL,
     fk_compNota INT NOT NULL,
     FOREIGN KEY (fk_matricula) REFERENCES alunos(matricula),
-    FOREIGN KEY (fk_compNota) REFERENCES componentes_notas(id_compNota)
+    FOREIGN KEY (fk_compNota) REFERENCES componentes_notas(id_compNota),
+    UNIQUE KEY unique_nota_aluno_componente (fk_matricula, fk_compNota)
 );
 
+-- 11. AUDITORIA
 CREATE TABLE auditoria (
     id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
     data_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    acao VARCHAR(255) NOT NULL,
+    acao TEXT NOT NULL,
     fk_usuario INT NOT NULL,
-    FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
+    fk_matricula INT NULL,
+    fk_compNota INT NULL,
+    valor_anterior DECIMAL(5,2) NULL,
+    valor_novo DECIMAL(5,2) NULL,
+    FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (fk_matricula) REFERENCES alunos(matricula),
+    FOREIGN KEY (fk_compNota) REFERENCES componentes_notas(id_compNota)
 );
 
-SELECT * FROM auditoria;
-
+-- 12. REGISTRA
 CREATE TABLE registra (
     fk_compNota INT NOT NULL,
     fk_auditoria INT NOT NULL,
@@ -109,95 +123,7 @@ CREATE TABLE registra (
     FOREIGN KEY (fk_auditoria) REFERENCES auditoria(id_auditoria)
 );
 
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_instituicoes
-AFTER INSERT ON INSTITUICAO
-FOR EACH ROW
-BEGIN
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT('O usuário de ID = ', NEW.fk_usuario, ' criou a INSTITUICAO', NEW.nome),
-        NEW.fk_usuario
-    );
-END $$
-
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_cursos
-AFTER INSERT ON CURSOS
-FOR EACH ROW
-BEGIN
-    DECLARE v_usuario_instituicao INT;
-    DECLARE v_nome_instituicao VARCHAR(100);
-
-    SELECT fk_usuario, nome
-    INTO v_usuario_instituicao, v_nome_instituicao
-    FROM INSTITUICAO
-    WHERE ID_INSTITUICAO = NEW.fk_instituicao;
-
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT(
-            'O usuário de ID = ', v_usuario_instituicao,
-            ' criou o CURSO ', NEW.nome,
-            ' na INSTITUIÇÃO ', v_nome_instituicao
-        ),
-        v_usuario_instituicao
-    );
-END $$
-
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_disciplinas
-AFTER INSERT ON DISCIPLINAS
-FOR EACH ROW
-BEGIN
-    DECLARE v_usuario_instituicao INT;
-    DECLARE v_nome_instituicao VARCHAR(100);
-
-    SELECT i.fk_usuario, i.nome
-    INTO v_usuario_instituicao, v_nome_instituicao
-    FROM INSTITUICAO i
-    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
-    WHERE c.ID_CURSO = NEW.fk_curso;
-
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT(
-            'O usuário de ID = ', v_usuario_instituicao,
-            ' criou a DISCIPLINA ', NEW.nome,
-            ' na INSTITUIÇÃO ', v_nome_instituicao
-        ),
-        v_usuario_instituicao
-    );
-END $$
-
-DELIMITER $$
-CREATE TRIGGER trg_auditoria_turmas
-AFTER INSERT ON TURMAS
-FOR EACH ROW
-BEGIN
-    DECLARE v_usuario_instituicao INT;
-    DECLARE v_nome_instituicao VARCHAR(100);
-
-    SELECT i.fk_usuario, i.nome
-    INTO v_usuario_instituicao, v_nome_instituicao
-    FROM INSTITUICAO i
-    INNER JOIN CURSOS c ON c.fk_instituicao = i.ID_INSTITUICAO
-    INNER JOIN DISCIPLINAS d ON d.fk_curso = c.ID_CURSO
-    WHERE d.ID_DISCIPLINA = NEW.fk_disciplina;
-
-    INSERT INTO auditoria(acao, fk_usuario)
-    VALUES (
-        CONCAT(
-            'O usuário de ID = ', v_usuario_instituicao,
-            ' criou a TURMA ', NEW.nome,
-            ' na INSTITUIÇÃO ', v_nome_instituicao
-        ),
-        v_usuario_instituicao
-    );
-END $$
-
-DELIMITER ;
-
+-- 13. PASSWORD_RESET_TOKENS
 CREATE TABLE password_reset_tokens (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_email VARCHAR(255) NOT NULL,
@@ -206,3 +132,67 @@ CREATE TABLE password_reset_tokens (
     used BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ============================================
+-- TRIGGERS - APENAS PARA NOTAS
+-- ============================================
+
+-- TRIGGER PARA INSERT DE NOTAS
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_notas_insert
+AFTER INSERT ON notas
+FOR EACH ROW
+BEGIN
+    DECLARE v_nome_aluno VARCHAR(100);
+    DECLARE v_nome_componente VARCHAR(100);
+    DECLARE v_usuario_id INT;
+    
+    SELECT nome INTO v_nome_aluno FROM alunos WHERE matricula = NEW.fk_matricula;
+    SELECT nome INTO v_nome_componente FROM componentes_notas WHERE id_compNota = NEW.fk_compNota;
+    
+    SELECT i.fk_usuario INTO v_usuario_id
+    FROM alunos a
+    INNER JOIN turmas t ON a.fk_turma = t.id_turma
+    INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
+    INNER JOIN cursos c ON d.fk_curso = c.id_curso
+    INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+    WHERE a.matricula = NEW.fk_matricula LIMIT 1;
+    
+    INSERT INTO auditoria(acao, fk_usuario, fk_matricula, fk_compNota, valor_anterior, valor_novo)
+    VALUES (
+        CONCAT('(Aluno ', v_nome_aluno, ') - Nota de ', v_nome_componente, ' = ', NEW.valor, ' lançada'),
+        IFNULL(v_usuario_id, 1), NEW.fk_matricula, NEW.fk_compNota, NULL, NEW.valor
+    );
+END $$
+DELIMITER ;
+
+-- TRIGGER PARA UPDATE DE NOTAS
+DELIMITER $$
+CREATE TRIGGER trg_auditoria_notas_update
+AFTER UPDATE ON notas
+FOR EACH ROW
+BEGIN
+    DECLARE v_nome_aluno VARCHAR(100);
+    DECLARE v_nome_componente VARCHAR(100);
+    DECLARE v_usuario_id INT;
+    
+    IF OLD.valor <> NEW.valor THEN
+        SELECT nome INTO v_nome_aluno FROM alunos WHERE matricula = NEW.fk_matricula;
+        SELECT nome INTO v_nome_componente FROM componentes_notas WHERE id_compNota = NEW.fk_compNota;
+        
+        SELECT i.fk_usuario INTO v_usuario_id
+        FROM alunos a
+        INNER JOIN turmas t ON a.fk_turma = t.id_turma
+        INNER JOIN disciplinas d ON t.fk_disciplina = d.id_disciplina
+        INNER JOIN cursos c ON d.fk_curso = c.id_curso
+        INNER JOIN instituicao i ON c.fk_instituicao = i.id_instituicao
+        WHERE a.matricula = NEW.fk_matricula LIMIT 1;
+        
+        INSERT INTO auditoria(acao, fk_usuario, fk_matricula, fk_compNota, valor_anterior, valor_novo)
+        VALUES (
+            CONCAT('(Aluno ', v_nome_aluno, ') - Nota de ', v_nome_componente, ' de ', OLD.valor, ' para ', NEW.valor, ' modificada e salva'),
+            IFNULL(v_usuario_id, 1), NEW.fk_matricula, NEW.fk_compNota, OLD.valor, NEW.valor
+        );
+    END IF;
+END $$
+DELIMITER ;

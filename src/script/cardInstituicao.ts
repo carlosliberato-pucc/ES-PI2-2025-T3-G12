@@ -1,3 +1,5 @@
+//Desenvolvido por Carlos Liberato
+
 document.addEventListener('DOMContentLoaded', () => {
     const btnsCard = document.querySelectorAll<HTMLButtonElement>(".btn-card");
     const edicaoCard = document.querySelector<HTMLDivElement>(".edicao-card");

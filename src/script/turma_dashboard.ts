@@ -1,3 +1,5 @@
+//Desenvolvido por Carlos Liberato
+
 // =======================
 // ARRAYS GLOBAIS
 // =======================
@@ -737,11 +739,22 @@ async function buscarInfoDisciplina(disciplinaId: number): Promise<{ sigla: stri
 // INICIALIZAÇÃO COMPLETA
 // =======================
 document.addEventListener('DOMContentLoaded', async () => {
+  // Pegar parâmetros da URL
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Tentar pegar dos inputs HTML primeiro
   const fk_turmaInput = document.getElementById('id-turma') as HTMLInputElement | null;
   const disciplinaInput = document.getElementById('id-disciplina') as HTMLInputElement | null;
   
-  fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : 1;
-  disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : 1;
+  // Se não existir input, pegar da URL
+  fk_turma = fk_turmaInput ? Number(fk_turmaInput.value) : Number(urlParams.get('id_turma')) || 1;
+  disciplinaId = disciplinaInput ? Number(disciplinaInput.value) : Number(urlParams.get('id_disciplina')) || 1;
+  
+  console.log('===== DEBUG =====');
+  console.log('fk_turma final:', fk_turma);
+  console.log('disciplinaId final:', disciplinaId);
+  console.log('URL:', window.location.href);
+  console.log('=================');
   
   await montarGradeTable(disciplinaId);
   await carregarAlunosDaTurma(fk_turma);
@@ -754,8 +767,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnCalcular = document.getElementById('btn-calcular-notas');
   btnCalcular?.addEventListener('click', calcularTodasNotasFinais);
   
-  // ADICIONE ESTA LINHA:
   const btnExportar = document.getElementById('export_grades_btn');
   btnExportar?.addEventListener('click', exportarNotasCSV);
 });
+
 

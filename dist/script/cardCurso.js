@@ -1,4 +1,5 @@
 "use strict";
+//Desenvolvido por Carlos Liberato
 document.addEventListener('DOMContentLoaded', () => {
     // Pegar ID da instituição da URL
     const urlParams = new URLSearchParams(window.location.search);

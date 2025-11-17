@@ -1,7 +1,5 @@
 "use strict";
-// ============================================
-// INTERFACES E TIPOS
-// ============================================
+//Desenvolvido por Carlos Liberato
 // ============================================
 // VARIÁVEIS GLOBAIS (com prefixo para evitar conflito)
 // ============================================

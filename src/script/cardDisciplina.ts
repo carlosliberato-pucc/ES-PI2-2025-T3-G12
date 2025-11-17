@@ -1,3 +1,5 @@
+//Desenvolvido por Carlos Liberato
+
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const idInstituicao = urlParams.get('id_instituicao');
