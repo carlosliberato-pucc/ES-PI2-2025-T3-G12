@@ -19,6 +19,7 @@ CREATE TABLE instituicao (
     CONSTRAINT fk_instituicao_usuario
       FOREIGN KEY (fk_usuario) REFERENCES usuario(id_usuario)
 );
+select * from instituicao;
 
 -- 3. CURSOS
 CREATE TABLE cursos (
@@ -29,6 +30,7 @@ CREATE TABLE cursos (
     CONSTRAINT fk_curso_instituicao
       FOREIGN KEY (fk_instituicao) REFERENCES instituicao(id_instituicao)
 );
+select * from cursos;
 
 -- 4. FORMULA
 CREATE TABLE formula (
@@ -52,6 +54,7 @@ CREATE TABLE disciplinas (
     CONSTRAINT fk_disc_formula
       FOREIGN KEY (fk_formula) REFERENCES formula(id_formula)
 );
+select * from disciplinas;
 
 -- 6. TURMAS
 CREATE TABLE turmas (
@@ -96,8 +99,8 @@ CREATE TABLE componentes_notas (
     fk_disciplina INT NOT NULL,
     CONSTRAINT fk_comp_disciplina
       FOREIGN KEY (fk_disciplina) REFERENCES disciplinas(id_disciplina)
+      ON DELETE CASCADE
 );
-
 -- 10. NOTA
 CREATE TABLE notas (
     id_nota     INT AUTO_INCREMENT PRIMARY KEY,
